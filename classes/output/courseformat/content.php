@@ -64,7 +64,7 @@ class content extends content_base {
 
         /** @var format_ucl $format */
         $format = $this->format;
-        $course = $format->get_course();
+        $data->courseid = $format->get_course()->id;
 
         // Am i editing?
         $data->isediting = $USER->editing;
@@ -72,6 +72,7 @@ class content extends content_base {
         // Single section specific data.
         if (isset($data->singlesection) && $singlesectionnum > 0) {
             $sectioninfo = $format->get_modinfo()->get_section_info($singlesectionnum);
+            $data->id = $sectioninfo->id;
             $data->sectionname = $output->container(
                 $output->render($format->inplace_editable_render_section_name($sectioninfo, false)),
                 attributes: ['data-for' => 'section_title'],

@@ -125,4 +125,25 @@ class renderer extends section_renderer {
 
         return $this->render($sectionselector);
     }
+
+    /**
+     * Get the updated rendered version of the section navigation.
+     *
+     * This method will only be used when the course editor requires to get an updated section navigation HTML
+     * to perform partial page refresh. It will be used for supporting the course editor webservices.
+     *
+     *
+     * @param course_format $format the course format
+     * @param section_info $section the section info
+     * @return string the rendered element
+     */
+    public function course_section_controlmenu_updated(
+        course_format $format,
+        section_info $section
+    ): string {
+        $sectioncontrolmenuclass = $format->get_output_classname('content\\section\\controlmenu');
+        $controlmenu = new $sectioncontrolmenuclass($format, $section);
+
+        return $this->render($controlmenu->get_action_menu($this));
+    }
 }

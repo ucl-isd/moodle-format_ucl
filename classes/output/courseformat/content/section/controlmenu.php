@@ -145,17 +145,6 @@ class controlmenu extends controlmenu_base {
 
         if (array_key_exists('delete', $controls)) {
             $control = $controls['delete'];
-            // We want a confirmation dialogue.
-            // $control['attr'] = [
-            //     'class' => 'icon editing_delete text-danger',
-            //     'hasconfirm' => true,
-            //     'confirmlabel' => json_encode(['deletesection', 'format_ucl']),
-            //     'confirmcontent' => json_encode([
-            //         'deletepresetconfirm',
-            //         'format_ucl',
-            //         $this->format->get_section_name($this->section->section)
-            //     ]),
-            // ];
             $actionlink = $this->format_control($control);
             $menu->add($actionlink);
         }

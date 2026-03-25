@@ -41,6 +41,7 @@ class Section extends BaseComponent {
             SECTION: `[data-for='section']`,
             SECTION_NAVIGATION: `[data-for='section-nav']`,
             SECTION_DIVIDER: `[data-for='section-divider']`,
+            SECTION_CONTROLMENU: `[data-for='section-controlmenu']`,
             SETMARKER: `[data-action="sectionHighlight"]`,
             REMOVEMARKER: `[data-action="sectionUnhighlight"]`,
             ACTIONTEXT: `.menu-action-text`,
@@ -172,6 +173,35 @@ class Section extends BaseComponent {
     }
 
     /**
+     * Reload a course section control menu.
+     *
+     * @param {details} param0 the watcher details
+     * @param {object} param0.element the state object
+     */
+    _reloadSectionControlMenu({element}) {
+        const pendingReload = new Pending(`format_ucl/section:reloadControlmenu_${element.id}`);
+        const sectioncontrolmenu = this.getElement(this.selectors.SECTION_CONTROLMENU, element.id);
+
+        if (sectioncontrolmenu) {
+            const promise = Fragment.loadFragment(
+                'format_ucl',
+                'section_controlmenu',
+                Config.courseContextId,
+                {
+                    id: element.id,
+                    courseid: Config.courseId,
+                }
+            );
+            promise.then((html, js) => {
+                Templates.replaceNode(sectioncontrolmenu, html, js);
+                pendingReload.resolve();
+            }).catch(() => {
+                pendingReload.resolve();
+            });
+        }
+    }
+
+    /**
      * Reload a course section divider and navigation.
      *
      * Called when a section has been moved
@@ -182,6 +212,7 @@ class Section extends BaseComponent {
     _reloadSectionDividerAndNavigation({element}) {
         this._reloadSectionDivider({element});
         this._reloadSectionNavigation({element});
+        this._reloadSectionControlMenu({element});
     }
 
     /**

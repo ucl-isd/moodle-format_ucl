@@ -126,7 +126,7 @@ class format_ucl extends core_courseformat\base {
         if ($sectionnum == 0) {
             return get_string('section0name', 'format_ucl');
         }
-        
+
         if (get_string_manager()->string_exists('sectionname', 'format_' . $this->format)) {
             return get_string('sectionname', 'format_' . $this->format) . ' ' . $sectionnum;
         }
@@ -151,7 +151,7 @@ class format_ucl extends core_courseformat\base {
      *     'expanded' (bool) if true the section will be shown expanded, true by default
      * @return null|moodle_url
      */
-    public function get_view_url($section, $options = array()) {
+    public function get_view_url($section, $options = []) {
         $course = $this->get_course();
         $url = new moodle_url('/course/view.php', ['id' => $course->id]);
 

@@ -78,7 +78,7 @@ class controlmenu extends controlmenu_base {
             }
 
             if (has_capability('moodle/course:movesections', $coursecontext, $USER)) {
-                $controls['movepopup'] = $this->get_move_control();                        
+                $controls['movepopup'] = $this->get_move_control();
             }
         }
 
@@ -114,7 +114,7 @@ class controlmenu extends controlmenu_base {
             $actionlink = $this->format_control($control);
             $menu->add($actionlink);
         }
-        
+
         if (array_key_exists('visibility', $controls)) {
             $control = $controls['visibility'];
             $actionlink = $this->format_control($control);
@@ -160,7 +160,6 @@ class controlmenu extends controlmenu_base {
             $menu->add($actionlink);
         }
 
-        
         return $menu;
     }
 
@@ -285,7 +284,7 @@ class controlmenu extends controlmenu_base {
                 'data-id' => $section->id,
              ],
         ];
-        
+
         return $result;
     }
 }

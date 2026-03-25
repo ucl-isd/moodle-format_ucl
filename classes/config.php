@@ -28,7 +28,7 @@ class config {
     private \stdClass $config;
     /** @var int the default for the maximum number of sections suggested */
     public const MAX_SECTIONS = 16;
-    
+
     /**
      * Create the config variable from the format_ucl config.
      */

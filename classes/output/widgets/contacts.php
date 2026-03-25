@@ -89,15 +89,15 @@ class contacts implements renderable, templatable {
                     case "leader":
                         $template->leader[] = $contact;
                         $template->hasleader = true;
-                      break;
+                        break;
                     case "tutor":
                         $template->tutor[] = $contact;
                         $template->hastutor = true;
-                      break;
+                        break;
                     case "course administrator":
                         $template->admin[] = $contact;
                         $template->hasadmin = true;
-                      break;
+                        break;
                     default:
                         // Do nothing.
                 }
@@ -107,11 +107,11 @@ class contacts implements renderable, templatable {
                     case "teacher":
                         $template->leader[] = $contact;
                         $template->hasleader = true;
-                      break;
+                        break;
                     case "teacher":
                         $template->tutor[] = $contact;
                         $template->hastutor = true;
-                      break;
+                        break;
                     default:
                         // Do nothing.
                 }

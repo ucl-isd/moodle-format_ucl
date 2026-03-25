@@ -1,0 +1,65 @@
+<div class="row">
+    {{#hasleader}}
+    <div class="col-12 col-md-5">
+        <div class="font-weight-bold">Leader</div>
+        {{#leader}}
+        <div class="d-flex align-items-center py-3">
+            <img class="rounded-circle mr-2" src="{{picture}}" style=" width: 3rem; height: 3rem;">
+            <div>
+                <a class="" href="{{{url}}}">{{{name}}}</a>
+                <br>
+                <small>Email:
+                <a class="text-break" href="mailto:{{{email}}}">{{{email}}}</a>
+                </small>
+            </div>
+        </div>
+        {{/leader}}
+    </div>
+    {{/hasleader}}
+
+    <div class="col-md-7">
+        <div class="row">
+            {{#hastutor}}
+            <div class="col-6">
+                <div class="font-weight-bold">Tutor</div>
+                {{#tutor}}
+                {{> format_ucl/contacts/contact }}
+                {{/tutor}}
+            </div>
+            {{/hastutor}}
+
+            {{#hasadmin}}
+            <div class="col-6">
+                <div class="font-weight-bold">Administrator</div>
+                {{#admin}}
+                {{> format_ucl/contacts/contact }}
+                {{/admin}}
+            </div>
+            {{/hasadmin}}
+        </div>
+    </div>
+</div>
+
+<style>
+.course-contact-icon {
+    background: #ccc;
+    outline: solid 2px white;
+    width: 3rem;
+    height: 3rem;
+    margin-top: .3rem;
+    transition: all .25s;
+}
+.course-contact {
+    display: inline-block;
+}
+.course-contact + .course-contact {
+    margin-left: -.5rem;
+}
+.course-contact:hover {
+
+    .course-contact-icon {
+        outline: solid 2px var(--dark);
+        transform: scale(1.1);
+    }
+}
+</style>

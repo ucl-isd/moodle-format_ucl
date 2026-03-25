@@ -1,0 +1,15 @@
+<div class="progress-indicator ml-auto" style="max-height: 36px;">
+    {{#total}}
+    <div data-id="{{id}}"
+        data-percentage="{{percentage}}"
+        class="pie animate {{#done}} complete {{/done}}"
+        style="--p:{{percentage}};--c:green"
+        data-toggle="tooltip" data-placement="right"
+        title="{{complete}} of {{total}} complete"
+        aria-label="{{complete}} of {{total}} complete">
+            <i class="fa-solid fa-check fa-xs text-white"></i>
+    </div>
+    <span class="sr-only">{{complete}} of {{total}} complete</span>
+    {{/total}}
+</div>
+

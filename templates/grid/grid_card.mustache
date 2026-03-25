@@ -1,0 +1,30 @@
+<div class="{{#active}} active {{/active}}">
+    <div class="bg-light" style="height: 150px;">
+        {{#highlight}}
+        <span badge class="badge badge-primary badge-pill">
+            Highlighted
+        </span>
+        <br>
+        {{/highlight}}
+
+        {{^visible}}
+        <div class="ml-auto">
+            <div class="badge badge-warning rounded-circle p-2 m-1"
+                data-toggle="tooltip" data-html="true" data-placement="right"
+                title="{{#str}} hiddenfromstudents {{/str}}">
+                <i class="fa-solid fa-eye-slash"
+                ></i>
+            </div>
+            <div class="sr-only">{{#str}} hiddenfromstudents {{/str}}</div>
+        </div>
+        {{/visible}}
+    </div>
+
+    <a href="{{{url}}}" class="line-clamp-2">
+        {{{name}}}
+    </a>
+
+    {{#visible}}
+        {{! TODO - progress }}
+    {{/visible}}
+</div>

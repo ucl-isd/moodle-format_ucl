@@ -1,0 +1,44 @@
+
+{{#toc}}
+{{#showwarning}}
+<div class="d-none d-lg-block p-3 alert alert-primary">
+    <div class="badge badge-primary">Tips</div><br>
+    {{courseimage}}
+    {{#noimage}}
+        <div class="behat-nocourseimg">
+            <b>No course image</b>
+            <p>Add a <a href="{{{ config.wwwroot }}}/course/edit.php?id={{courseid}}#fitem_id_overviewfiles_filemanager">course image</a> to make your course more identifiable, and add personality.</p>
+        </div>
+    {{/noimage}}
+
+    {{#namecount}}
+        <div class="behat-unnamedsections">
+            <b><span class="behat-namecount">{{namecount}}</span> unnamed sections</b>
+            <p>All course sections should have meaningful names. <a href="">How to structure content guide</a></p>
+        </div>
+    {{/namecount}}
+
+    {{#sectioncount}}
+        <div class="behat-toomanysections">
+            <b>{{sectioncount}} sections</b>
+            <p>Courses should have a maximum of <span class="behat-sectioncount">{{recommendedmaxsections}}</span> sections. Consider combining related materials into a single section. <a href="">How to structure content guide</a></p>
+        </div>
+    {{/sectioncount}}
+
+    {{#modcount}}
+        <div class="behat-toofewmods">
+            <b><span class="behat-modcount">{{modcount}}</span> sections have one or less activities/resources</b>
+            <p>Consider combining related materials into a single section. <a href="">How to structure content guide</a></p>
+        </div>
+    {{/modcount}}
+</div>
+{{/showwarning}}
+{{/toc}}
+
+{{! TODO - only output on main page, currently using css to hide on sections. }}
+<style>
+#page-course-view-section-ucl .alert-primary {
+    display: none !important;
+}
+</style>
+

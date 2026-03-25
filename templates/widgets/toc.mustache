@@ -1,0 +1,26 @@
+
+<nav class="sticky-top" style="top: 2rem;">
+    <h4>Table of contents</h4>
+
+    <ol id="toc" class="list-unstyled pb-2">
+    {{#coursesection}}
+        {{> format_ucl/widgets/toc/toc_link }}
+    {{/coursesection}}
+    </ol>
+
+    {{#isediting}}
+      {{#addsections}}
+      <div class="p-2 bg-primary-light text-center">
+        <a class="btn add-section bg-white" href="{{{url}}}">
+          <i class="fa-solid fa-circle-plus mr-2"></i> Add new section
+        </a>
+      </div>
+      {{/addsections}}
+    {{/isediting}}
+
+</nav>
+{{#js}}
+  require(['format_ucl/local/toc'], function(component) {
+        component.init('toc');
+    });
+{{/js}}

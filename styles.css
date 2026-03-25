@@ -1,0 +1,202 @@
+
+/* UCL course format. */
+body.format-ucl {
+    /* Page width. */
+    #page-header,
+    .main-inner,
+    .secondary-navigation .nav-tabs {
+        max-width: 1140px !important;
+    }
+
+    #page-navbar {
+        position: relative !important;
+    }
+    .path-course-view #page.drawers {
+        overflow: unset;
+    }
+    .single-section ul.course-format-ucl {
+        padding-left: 0;
+    }
+    
+    /* Remove "current" border. */
+    .course-content .current::before {
+        border-left: none !important;
+        content: none !important; /* This removes the pseudo-element entirely */
+    }
+    /* Section name - better display when editing. */
+    .ucl-section-name {
+    min-width: 95%;
+        input {
+            font-size: 2rem;
+            min-width: 100%;
+        }
+    }
+
+    /* Toc. */
+    /* Sticky top gutter when navbar is fixed top - e.g. boost theme. */
+    &:has(.fixed-top) {
+       .sticky-top {
+            top: 5rem !important;
+       }
+    }
+
+    /* Active or coursehome links. */
+    #toc .active a,
+    &#page-course-view-ucl .course-home {
+        color: var(--dark);
+    }
+
+    #toc li {
+        a {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Section visibility flag and highlight flag logic. */
+        /* Default state - hide flags. */
+        .flag-current,
+        .flag-hidden {
+            display: none;
+        }
+
+        /* Highlighted section. */
+        &.current {
+            .flag-current {
+                display: inline-block;
+            }
+        }
+
+        /* Hidden from students. */
+        &.dimmed {
+            .flag-hidden {
+                display: block;
+            }
+            .progress-indicator {
+                display: none;
+            }
+        }
+    }
+
+
+    /* Progress cicle. */
+    @property --p {
+        syntax: "<number>";
+        inherits: true;
+        initial-value: 0;
+    }
+
+    .pie {
+        --p: 0;
+        --b: 3px;
+        --c: transparent;
+        --w: 26px;
+
+        width: var(--w);
+        min-width: var(--w);
+        aspect-ratio: 1;
+        position: relative;
+        display: inline-grid;
+        margin: 5px;
+        place-content: center;
+        background-color: #e9ecef;
+        border-radius: 50%;
+    }
+
+    .pie:before,
+    .pie:after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+    }
+
+    .pie:before {
+        inset: 0;
+        background: radial-gradient(farthest-side, var(--success) 98%, #0000)
+        top/var(--b) var(--b) no-repeat,
+        conic-gradient(var(--success) calc(var(--p) * 1%), #0000 0);
+        background-size: 0 0, auto;
+        -webkit-mask: radial-gradient(
+                farthest-side,
+                #0000 calc(99% - var(--b)),
+                #000 calc(100% - var(--b))
+        );
+        mask: radial-gradient(
+                farthest-side,
+                #0000 calc(99% - var(--b)),
+                #000 calc(100% - var(--b))
+        );
+    }
+
+    .pie:after {
+        inset: calc(50% - var(--b) / 2);
+        background: var(--success);
+        transform: rotate(calc(var(--p) * 3.6deg))
+        translateY(calc(50% - var(--w) / 2));
+        content: none;
+    }
+
+    .pie.animate {
+        animation: p 1s 1s both;
+        .fa-check {
+            display: none;
+        }
+    }
+    
+    .pie.complete {
+        transition: all 1s;
+        background-color: var(--success);
+
+        .fa-check {
+            display: block;
+        }
+    }
+
+    @keyframes p {
+        from {
+            --p: 0;
+        }
+    }
+
+    #mobile-toc-fab {
+        bottom: 30px;
+        left: 0;
+        z-index: 6666;
+            a {
+                font-weight: bold;
+                box-shadow: 0.3em 0.3em 0 0 var(--dark);
+                border: 2px solid var(--dark);
+            }
+    }
+}
+
+/* Mobile toc. */
+@media (max-width: 1200px) {
+    #ucl-course-toc:target {
+        display: block !important;
+        position: fixed !important;
+        inset: 0;
+        z-index: 6666;
+        background: white;
+        padding: 2rem;
+        overflow-y: auto;
+    }
+
+    #ucl-course-toc:target + #ucl-course-content {
+        display: none;
+    }
+
+    /* TODO - make better. */
+    /* Can we reverse, so anything not this is display none? */
+    .format-ucl:has(#ucl-course-toc:target) {
+        #ucl-footer,
+        #course-header-bg,
+        #ucl-navbar,
+        #ucl-mobile-menu,
+        #mobile-toc-fab,
+        .drawer-toggles {
+            display: none !important;
+        }
+    } 
+}

@@ -152,8 +152,8 @@ class content extends content_base {
             $data->initialsection = $section;
 
             // Assessments.
-            // $assessmentswidget = new assessments($this->format);
-            // $data->assessments = $assessmentswidget->export_for_template($output);
+            $assessmentswidget = new assessments($this->format);
+            $data->assessments = $assessmentswidget->export_for_template($output);
 
             // Contacts.
             // $data->contacts = contacts::course_contacts_list();

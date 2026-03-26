@@ -27,6 +27,7 @@ use moodle_url;
 use stdClass;
 
 
+
 require_once($CFG->libdir . '/gradelib.php');
 require_once($CFG->dirroot . '/grade/querylib.php');
 
@@ -97,12 +98,14 @@ class assessments implements renderable, templatable {
                     // Check mod is visible.
                     if ($mod->uservisible && $mod->visible) {
                         // Due date field.
-                        $duedate = self::get_duedate($mod);
+                        $handler = \format_ucl\output\widgets\assessment\assess_base::instance($mod);
+                        $duedate = $handler->get_activity_duedate();
 
                         // Check mod has a due date.
                         if ($duedate) {
                             $assess = new stdClass();
-                            // Duedate.
+                            $modname = 'mod_' . $mod->modname;
+                            $assess->$modname = true;
                             $assess->duedate = $duedate;
                             $assess->url = new moodle_url('/mod/' . $mod->modname . '/view.php', [ 'id' => $cmid]);
                             $assess->name = $mod->name;
@@ -120,26 +123,49 @@ class assessments implements renderable, templatable {
 
                                 if ($isgroupmode || $hasrestrictions) {
                                     // Set flags to message user that stats are not available.
-
                                     $assess->groupmode = $isgroupmode;
                                     $assess->hasrestrictions = $hasrestrictions;
                                 } else {
                                     // Marking stats.
+                                    $markingdata = $handler->get_staff_marking();
                                     $assess->hasstats = true;
                                     $assess->expectedcount = $studentcount;
-                                    $stats = self::get_assessment_stats($mod);
-                                    $assess->submittedcount = $stats->submitted;
-                                    $assess->marked = $stats->marked;
-                                    $assess->requiremarking = $stats->requiremarking;
+                                    $assess->submittedcount = $markingdata->submitted;
+                                    // Calculate the raw percentage.
+                                    $rawpercent = ($studentcount > 0) ? ($markingdata->submitted / $studentcount) * 100 : 0;
+                                    // Remove trailing .0 or only show 2 decimal places.
+                                    $assess->percent = floatval(round($rawpercent, 2));
+                                    $assess->requiremarking = $markingdata->requiremarking;
                                 }
                             }
 
                             // Student data.
-                            if ($canedit) {
-                                // Get student mark.
-                                $markdata = self::get_mark($mod, $USER->id);
-                                $assess->mark = $markdata->mark;
+                            if (!$canedit) {
+                                $markdata = $handler->get_learner_mark();
                                 $assess->submitted = $markdata->submitted;
+                                $assess->duedate = $handler->get_user_duedate();
+
+                                // Overdue flag.
+                                if (!$markdata->mark && !$assess->submitted) {
+                                    $now = time();
+                                    if (!empty($assess->duedate) && $now > $assess->duedate) {
+                                        $assess->overdue = true;
+                                    }
+                                }
+
+                                // Mark.
+                                if ($markdata->mark !== null) {
+                                    $assess->hasmark = true;
+                                    if (is_numeric($markdata->mark)) {
+                                        $assess->mark = floatval(round($markdata->mark, 2));
+                                        if (!empty($markdata->max)) {
+                                            $assess->max = floatval(round($markdata->max, 2));
+                                        }
+                                    } else {
+                                        // Non-numeric mark (e.g., "Pass").
+                                        $assess->mark = $markdata->mark;
+                                    }
+                                }
                             }
 
                             $template->assessments[] = $assess;
@@ -155,7 +181,8 @@ class assessments implements renderable, templatable {
 
             // Format dates.
             foreach ($template->assessments as $assess) {
-                $assess->duedate = date('jS M y · g:ia', $assess->duedate);
+                $assess->duedatedate = date('jS M', $assess->duedate); // Leon will not like this.
+                $assess->duedatetime = userdate($assess->duedate, '%I:%M%P');
             }
 
             // Return data.
@@ -165,83 +192,7 @@ class assessments implements renderable, templatable {
         return [];
     }
 
-    /**
-     * Get the mark and submission status for a student.
-     *
-     * @param \cm_info $mod
-     * @param int $userid
-     * @return \stdClass
-     */
-    public static function get_mark(\cm_info $mod, int $userid): \stdClass {
-        $result = new \stdClass();
-        $result->mark = null;
-        $result->submitted = false;
 
-        $gradeitems = grade_get_grade_items_for_activity($mod, true);
-        if (empty($gradeitems)) {
-            return $result;
-        }
-
-        $gradeitem = reset($gradeitems);
-        $grade = \grade_grade::fetch([
-            'itemid' => $gradeitem->id,
-            'userid' => $userid,
-        ]);
-
-        if ($grade) {
-            // 1. Check if the final mark is released and not hidden.
-            if (!is_null($grade->finalgrade) && !$grade->is_hidden()) {
-                $result->mark = grade_format_gradevalue($grade->finalgrade, $gradeitem);
-            } else if (!is_null($grade->rawgrade)) {
-                // 2. Only show submitted if a raw grade exists (meaning they've done the work).
-                $result->submitted = true;
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * Get submission stats for editors.
-     *
-     * @param \cm_info $mod
-     * @return \stdClass
-     */
-    public static function get_assessment_stats(\cm_info $mod): \stdClass {
-        global $DB;
-
-        $stats = new \stdClass();
-        $stats->submitted = 0;
-        $stats->marked = 0;
-        $stats->requiremarking = 0;
-
-        $gradeitems = grade_get_grade_items_for_activity($mod, true);
-        if (empty($gradeitems)) {
-            return $stats;
-        }
-        $gradeitem = reset($gradeitems);
-        $itemid = $gradeitem->id;
-
-        // Count Marked (Unique users with a final grade).
-        $stats->marked = $DB->count_records_select(
-            'grade_grades',
-            "itemid = :itemid AND userid > 0 AND finalgrade IS NOT NULL",
-            ['itemid' => $itemid],
-            "COUNT(DISTINCT userid)"
-        );
-
-        // Count Submitted (Unique users with EITHER a raw OR final grade).
-        $stats->submitted = $DB->count_records_select(
-            'grade_grades',
-            "itemid = :itemid AND userid > 0 AND (rawgrade IS NOT NULL OR finalgrade IS NOT NULL)",
-            ['itemid' => $itemid],
-            "COUNT(DISTINCT userid)"
-        );
-
-        $stats->requiremarking = max(0, $stats->submitted - $stats->marked);
-
-        return $stats;
-    }
 
     protected static function get_student_count(int $courseid): int {
         global $DB;
@@ -272,7 +223,7 @@ class assessments implements renderable, templatable {
      * @param cm_info $cm
      * @return int
      */
-    public static function get_duedate(\cm_info $cm): int {
+    public static function get_activity_duedate(\cm_info $cm): int {
         global $DB;
         $customdata = (array) $cm->customdata;
 
@@ -317,5 +268,96 @@ class assessments implements renderable, templatable {
 
         // Return custom data where available.
         return (int) ($customdata[$index] ?? 0);
+    }
+
+    /**
+     * Get a due date for a user including optional overrides and extensions.
+     *
+     * @param \cm_info $cm
+     * @param int $userid
+     * @return false|int
+     */
+    public static function get_user_duedate(\cm_info $cm, int $userid): false|int {
+        global $DB;
+
+        $overridedate = false;
+
+        switch ($cm->modname) {
+            case 'assign':
+                // Get individual override where available.
+                $params = ['assignid' => $cm->instance, 'userid' => $userid];
+                $overridedate = $DB->get_field('assign_overrides', 'duedate', $params);
+
+                // If there is no individual override check for a group override date.
+                if (!$overridedate) {
+                    $usergroups = groups_get_user_groups($cm->course, $userid);
+                    if (!empty($usergroups[0])) {
+                        foreach ($usergroups[0] as $usergroupid) {
+                            $params = ['assignid' => $cm->instance, 'groupid' => $usergroupid];
+                            $overrideduedate = $DB->get_field('assign_overrides', 'duedate', $params);
+
+                            if ($overrideduedate > $overridedate) {
+                                $overridedate = $overrideduedate;
+                            }
+                        }
+                    }
+                }
+
+                // Get individual extension where available.
+                $params = ['assignment' => $cm->instance, 'userid' => $userid];
+                $extensiondate = $DB->get_field('assign_user_flags', 'extensionduedate', $params);
+
+                // Use the date that gives the most time to the student.
+                if ($extensiondate > $overridedate) {
+                    $overridedate = $extensiondate;
+                }
+
+                break;
+
+            case 'coursework':
+                // Get individual override where available.
+                $params = [
+                    'courseworkid' => $cm->instance,
+                    'allocatableid' => $userid,
+                    'allocatabletype' => 'user',
+                ];
+                $overridedate = $DB->get_field('coursework_person_deadlines', 'personaldeadline', $params);
+
+                // If there is no individual override check for a group override date.
+                if (!$overridedate) {
+                    $usergroups = groups_get_user_groups($cm->course, $userid);
+                    if (!empty($usergroups[0])) {
+                        foreach ($usergroups[0] as $usergroupid) {
+                            $params = [
+                                'courseworkid' => $cm->instance,
+                                'allocatableid' => $usergroupid,
+                                'allocatabletype' => 'group',
+                            ];
+                            $overrideduedate = $DB->get_field('coursework_extensions', 'extended_deadline', $params);
+
+                            if ($overrideduedate > $overridedate) {
+                                $overridedate = $overrideduedate;
+                            }
+                        }
+                    }
+                }
+                break;
+
+            case 'lesson':
+                $params = ['lessonid' => $cm->instance, 'userid' => $userid];
+                $overridedate = $DB->get_field('lesson_overrides', 'deadline', $params);
+                break;
+
+            case 'quiz':
+                $params = ['quiz' => $cm->instance, 'userid' => $userid];
+                $overridedate = $DB->get_field('quiz_overrides', 'timeclose', $params);
+                break;
+
+            default:
+                $overridedate = false;
+                break;
+        }
+
+        return $overridedate ?: false;
     }
 }

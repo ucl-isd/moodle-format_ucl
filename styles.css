@@ -34,7 +34,7 @@ body.format-ucl {
 
     /* Toc. */
     /* Sticky top gutter when navbar is fixed top - e.g. boost theme. */
-    &:has(.fixed-top) {
+    &:has(.navbar.fixed-top) {
        .sticky-top {
             top: 5rem !important;
        }
@@ -176,6 +176,7 @@ body.format-ucl {
     #ucl-course-toc:target {
         display: block !important;
         position: fixed !important;
+        max-width: 100%;
         inset: 0;
         z-index: 6666;
         background: white;
@@ -195,8 +196,27 @@ body.format-ucl {
         #ucl-navbar,
         #ucl-mobile-menu,
         #mobile-toc-fab,
+        .secondary-navigation,
         .drawer-toggles {
             display: none !important;
         }
     } 
+}
+
+.status-icon {
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid currentColor;
+    &.status-success {
+        color: var(--success);
+        background-color: rgb(from var(--success) r g b / .05);
+    }
+    &.status-overdue {
+        color: var(--danger);
+        background-color: rgb(from var(--danger) r g b / .05);
+    }
+    &.status-requiremarking {
+        color: var(--primary);
+        background-color: rgb(from var(--primary) r g b / .05);
+    }
 }

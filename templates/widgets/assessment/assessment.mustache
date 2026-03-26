@@ -1,33 +1,57 @@
- <div class="col-12 col-md-6 mb-2">
-    <div class="d-flex align-items-center">
-        <img src="{{icon}}" alt="" class="flex-shrink-0 mr-2" style="width: 2rem; height: 2rem;">
-        <div class="mt-n3">
-            <small class="line-clamp-1 text-muted">{{{section}}}</small>
-            <a href="{{{url}}}">{{{name}}}</a>
+ <div class="col-12 col-md-3 mb-2">
+    <div class="d-flex align-items-start">
+        <div class="status-icon 
+        {{#hasmark}} status-success {{/hasmark}}
+        {{#submitted}} status-success {{/submitted}}
+        {{#overdue}} status-overdue {{/overdue}}
+        {{#requiremarking}} status-requiremarking {{/requiremarking}}
+        rounded-circle mr-2 d-flex align-items-center justify-content-center">
+            <i class="fa-regular fa-calendar"></i>
+        </div>
+        <div>
+            <span class="text-muted d-md-none">Due: </span>
+            <strong>{{duedatedate}}</strong>
+            <div class="small text-muted">{{duedatetime}}</div>
         </div>
     </div>
 </div>
 
-<div class="col-12 col-md-6 mt-2">
+<div class="col-12 col-md-9">
     <div class="row">
+        {{! Activity.}}
         <div class="col-6">
-            <span class="text-muted d-md-none">Due: </span> {{duedate}}
-            {{! Badges }}
-            {{#overdue}}
-                <br><div class="badge badge-danger badge-pill">Overdue</div>
-            {{/overdue}}
+            <div class="d-flex align-items-start">
+                    <img src="{{icon}}" alt="" class="flex-shrink-0 mr-2" style="width: 2rem; height: 2rem;">
+                <div>
+                    <a href="{{{url}}}" class="line-clamp-2">{{{name}}}</a>
+                    <small class="line-clamp-1 text-muted">{{{section}}}</small>
+                </div>
+            </div>
         </div>
 
-       
-        <div class="col text-right">
+       {{! Activity metadata.}}
+        <div class="col-6 pl-3">
+            
             {{! Learner data. }}
             {{#learner}}
-                {{#mark}}
-                    Mark: {{.}}
-                {{/mark}}
-                {{#submitted}}
-                    <div class="badge badge-success badge-pill">Submitted</div>
-                {{/submitted}}
+                <div class="text-right">
+                    {{#hasmark}}
+                        <span class="text-muted d-md-none">Mark: </span>
+                        <span class="h5">{{mark}}</span>
+                        <small>{{#max}} of {{.}}{{/max}}</small>
+                    {{/hasmark}}
+                    
+                    {{! Overdue.}}
+                    {{#overdue}}
+                        <div class="badge badge-danger badge-pill mt-1">Overdue</div>
+                    {{/overdue}}
+                    
+                    {{! Submitted.}}
+                    {{#submitted}}
+                        <div class="badge badge-success badge-pill">Submitted</div>
+                    {{/submitted}}
+
+                </div>
             {{/learner}}
             
             {{! Staff data. }}
@@ -40,10 +64,18 @@
                 {{/hasrestrictions}}
 
                 {{#hasstats}}
-                    <div>{{submittedcount}} of {{expectedcount}}</div>
+                    {{> format_ucl/widgets/assessment/progress }}
+                    {{! Coursework specific notice.}}
+                    {{#mod_coursework}}
+                        <div class="small py-2">Note: Coursework marking depends on your role.</div>
+                    {{/mod_coursework}}
                     {{#requiremarking}}
-                        <a href="{{{url}}}" class="btn btn-primary btn-sm">{{{.}}} to mark</a>
+                        <div class="text-right">
+                            <a href="{{{url}}}" class="btn btn-primary btn-sm my-2">{{{.}}} to mark</a>
+                        </div>
                     {{/requiremarking}}
+                    
+                    
                 {{/hasstats}}
             {{/staff}}
         </div>

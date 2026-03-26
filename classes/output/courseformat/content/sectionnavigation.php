@@ -105,7 +105,7 @@ class sectionnavigation extends \core_courseformat\output\local\content\sectionn
 
         $forward = $this->sectionno + 1;
         $numsections = course_get_format($course)->get_last_section_number();
-        while ($forward <= $numsections and empty($data->nexturl)) {
+        while ($forward <= $numsections && empty($data->nexturl)) {
             if ($canviewhidden || $sections[$forward]->uservisible) {
                 if (!$sections[$forward]->visible) {
                     $data->nexthidden = true;

@@ -17,7 +17,7 @@
 /**
  * Contains the default section selector.
  *
- * @package   core_courseformat
+ * @package   format_ucl
  * @copyright 2020 Ferran Recio <ferran@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

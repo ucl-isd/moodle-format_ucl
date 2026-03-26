@@ -26,8 +26,17 @@
 }}
 <div class="behat-ucl-section-description">
     {{{beforefirstsectionhtml}}}
+    
     <div>
         {{> format_ucl/local/content/section/summary }}
     </div>
+
     {{{afterfirstsectionhtml}}}
+
+    {{#assessments}}
+        <div class="py-3">
+            <h3>Summative assessments</h3>
+            {{> format_ucl/widgets/assessments }}
+        </div>
+    {{/assessments}}
 </div>

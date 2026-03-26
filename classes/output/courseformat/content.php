@@ -157,6 +157,10 @@ class content extends content_base {
             $data->initialsection = $section;
             $data->beforefirstsectionhtml = $this->get_before_first_section_html($output, $data);
             $data->afterfirstsectionhtml = $this->get_after_first_section_html($output, $data);
+
+            // Assessments.
+            $assessmentswidget = new assessments($this->format);
+            $data->assessments = $assessmentswidget->export_for_template($output);
         }
         return $data;
     }

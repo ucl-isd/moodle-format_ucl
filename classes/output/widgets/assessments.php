@@ -104,9 +104,9 @@ class assessments implements renderable, templatable {
                         // Check mod has a due date.
                         if ($duedate) {
                             $assess = new stdClass();
-                            $modname = 'mod_' . $mod->modname;
-                            $assess->$modname = true;
                             $assess->duedate = $duedate;
+                            $modname = 'mod' . $mod->modname;
+                            $assess->$modname = true;
                             $assess->url = new moodle_url('/mod/' . $mod->modname . '/view.php', [ 'id' => $cmid]);
                             $assess->name = $mod->name;
                             $assess->icon = $mod->get_icon_url()->out(false);
@@ -143,7 +143,6 @@ class assessments implements renderable, templatable {
                             if (!$canedit) {
                                 $markdata = $handler->get_learner_mark();
                                 $assess->submitted = $markdata->submitted;
-                                $assess->duedate = $handler->get_user_duedate();
 
                                 // Overdue flag.
                                 if (!$markdata->mark && !$assess->submitted) {

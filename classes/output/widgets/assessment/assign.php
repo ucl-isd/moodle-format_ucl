@@ -28,55 +28,6 @@ defined('MOODLE_INTERNAL') || die();
  */
 class assign extends assess_base {
     /**
-     * Get the user due date for assignment.
-     * @return int Unix timestamp or 0 if no duedate exists.
-     */
-    public function get_user_duedate(): int {
-        global $DB, $USER;
-
-        $userid = $USER->id;
-        $instanceid = $this->cm->instance;
-        $courseid = $this->cm->course;
-        $overridedate = 0;
-
-        // 1. Check for individual user override.
-        $overridedate = (int) $DB->get_field('assign_overrides', 'duedate', [
-            'assignid' => $instanceid,
-            'userid' => $userid,
-        ]);
-
-        // 2. Check for group overrides if no user override exists.
-        if (!$overridedate) {
-            $usergroups = groups_get_user_groups($courseid, $userid);
-            if (!empty($usergroups[0])) {
-                [$insql, $inparams] = $DB->get_in_or_equal($usergroups[0]);
-                $inparams['assignid'] = $instanceid;
-
-                $sql = "SELECT MAX(duedate) FROM {assign_overrides} 
-                        WHERE assignid = :assignid AND groupid $insql";
-
-                $groupdate = (int) $DB->get_value_sql($sql, $inparams);
-                $overridedate = max($overridedate, $groupdate);
-            }
-        }
-
-        // 3. Check for individual teacher-granted extension.
-        $extension = (int) $DB->get_field('assign_user_flags', 'extensionduedate', [
-            'assignment' => $instanceid,
-            'userid' => $userid,
-        ]);
-
-        $overridedate = max($overridedate, $extension);
-
-        // 4. Fallback to base duedate if no overrides found.
-        if (!$overridedate) {
-            $overridedate = $this->get_activity_duedate();
-        }
-
-        return ($overridedate > 0) ? $overridedate : 0;
-    }
-
-    /**
      * Get marking statistics for the assignment.
      * @return \stdClass
      */
@@ -111,15 +62,12 @@ class assign extends assess_base {
     public function get_learner_mark(): \stdClass {
         global $DB, $USER;
 
-        // First, do the standard Gradebook check from the parent.
         $result = parent::get_learner_mark();
-
-        // If we already have a mark or a 'submitted' status from the gradebook, stop.
         if ($result->mark || $result->submitted) {
             return $result;
         }
 
-        // Fallback: Check assign-specific tables for recent submissions not yet in gradebook.
+        // Check assign specific tables for submissions not yet in gradebook.
         $submission = $DB->get_record('assign_submission', [
             'assignment' => $this->cm->instance,
             'userid' => $USER->id,

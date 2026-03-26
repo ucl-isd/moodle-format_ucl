@@ -39,19 +39,31 @@ abstract class assess_base {
     }
 
     /**
-     * Helper to get the default duedate from the course module.
-     * * @return int
+     * Helper to get the final duedate for the current user, including overrides.
+     * @return int Unix timestamp or 0 if no date is found.
      */
     public function get_activity_duedate(): int {
-        $customdata = (array) $this->cm->customdata;
-        return (int) ($customdata['duedate'] ?? $customdata['deadline'] ?? $customdata['timeclose'] ?? 0);
-    }
+        global $USER;
 
-    /**
-     * Get the due date for a specific user.
-     * @return int Unix timestamp or 0 if no duedate exists.
-     */
-    abstract public function get_user_duedate(): int;
+        $userid = $USER->id;
+
+        // Fetch dates from the Moodle 4.x API (handles overrides and extensions).
+        $dates = \core\activity_dates::get_dates_for_module($this->cm, $userid);
+
+        if (!empty($dates)) {
+            foreach ($dates as $date) {
+                // Return the first timestamp that matches a 'due' type event.
+                if (in_array($date['dataid'], ['duedate', 'timeclose', 'deadline'])) {
+                    return (int) $date['timestamp'];
+                }
+            }
+        }
+
+        // TODO - is this needed?
+        // Final fallback to the raw customdata in the course cache.
+        // $customdata = (array) $this->cm->customdata;
+        // return (int) ($customdata['duedate'] ?? $customdata['deadline'] ?? $customdata['timeclose'] ?? 0);
+    }
 
     /**
      * Get marking data for staff view.

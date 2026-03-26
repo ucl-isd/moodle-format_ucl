@@ -88,7 +88,7 @@ class controlmenu extends controlmenu_base {
     /**
      * Format control array into an action_menu.
      *
-     * @param \renderer_base $output typically, the renderer that's calling this function
+     * @param array $controls
      * @return action_menu|null the action menu
      */
     protected function format_controls(array $controls): ?action_menu {
@@ -145,17 +145,6 @@ class controlmenu extends controlmenu_base {
 
         if (array_key_exists('delete', $controls)) {
             $control = $controls['delete'];
-            // We want a confirmation dialogue.
-            // $control['attr'] = [
-            //     'class' => 'icon editing_delete text-danger',
-            //     'hasconfirm' => true,
-            //     'confirmlabel' => json_encode(['deletesection', 'format_ucl']),
-            //     'confirmcontent' => json_encode([
-            //         'deletepresetconfirm',
-            //         'format_ucl',
-            //         $this->format->get_section_name($this->section->section)
-            //     ]),
-            // ];
             $actionlink = $this->format_control($control);
             $menu->add($actionlink);
         }
@@ -163,7 +152,14 @@ class controlmenu extends controlmenu_base {
         return $menu;
     }
 
-    protected function format_control($value) {
+    /**
+     * Format a control
+     *
+     * @param array $value
+     * @return action_menu_link_secondary
+     * @throws \core\exception\moodle_exception
+     */
+    protected function format_control(array $value) {
         $icon = empty($value['icon']) ? '' : $value['icon'];
         $url = empty($value['url']) ? '' : $value['url'];
         $name = empty($value['name']) ? '' : $value['name'];

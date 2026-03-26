@@ -51,7 +51,7 @@ class toc implements renderable, templatable {
     /**
      * Return data for course table of contents.
      *
-     * @return array|stdClass the TOC context
+     * @param renderer_base $output
      */
     public function export_for_template(renderer_base $output) {
         global $PAGE, $USER;
@@ -83,7 +83,7 @@ class toc implements renderable, templatable {
                             $namecount++;
                         }
 
-                        // Sections with one or less mods,
+                        // Sections with one or less mods.
                         $modinfo = $format->get_modinfo();
                         $cmids = $modinfo->sections[$section->section] ?? [];
                         if (count($cmids) < 2) {
@@ -91,6 +91,7 @@ class toc implements renderable, templatable {
                         }
 
                         // Sections with lots of mods, and no labels.
+                        // phpcs:disable Generic.CodeAnalysis.EmptyStatement.DetectedIf
                         if (count($cmids) > 5) {
                             // TODO - not sure yet.
                         }
@@ -190,8 +191,6 @@ class toc implements renderable, templatable {
      * Given a section, return the data for progress.
      *
      * @param section_info $section
-     * @param base $format
-     * @param stdClass $course
      * @return stdClass
      */
     public function format_ucl_section_progress(section_info $section): stdClass {

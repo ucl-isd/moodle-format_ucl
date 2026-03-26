@@ -70,7 +70,7 @@ class renderer extends section_renderer {
      *     option 'inblock' => true, suggesting to display controls vertically
      * @return string
      */
-    function course_section_add_cm_control($course, $section, $sectionreturn = null, $displayoptions = []) {
+    public function course_section_add_cm_control($course, $section, $sectionreturn = null, $displayoptions = []) {
         // Check to see if user can add menus.
         if (
             !has_capability('moodle/course:manageactivities', context_course::instance($course->id))

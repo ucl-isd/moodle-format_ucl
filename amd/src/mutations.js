@@ -86,6 +86,7 @@ export const init = () => {
     const courseEditor = getCurrentCourseEditor();
     // Some plugin (activity or block) may have their own mutations already registered.
     // This is why we use addMutations instead of setMutations here.
+    // eslint-disable-next-line @babel/new-cap
     courseEditor.addMutations(new uclMutations());
     // Add direct mutation content actions.
     CourseActions.addActions({

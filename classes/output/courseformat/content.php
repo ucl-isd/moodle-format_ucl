@@ -83,7 +83,7 @@ class content extends content_base {
         }
 
         // TOC layout.
-        // TODO
+        // TODO.
         $layout = 'toc';
         if ($layout == 'toc') {
             // Table of contents for ucl format.
@@ -151,6 +151,7 @@ class content extends content_base {
             // Set first section to enable adding ucl metadata.
             $data->initialsection = $section;
 
+            // phpcs:disable Squiz.PHP.CommentedOutCode.Found
             // Assessments.
             // $assessmentswidget = new assessments($this->format);
             // $data->assessments = $assessmentswidget->export_for_template($output);
@@ -165,6 +166,8 @@ class content extends content_base {
      * SHAME - copied from
      * moodle/course/format/classes/output/local/content/section/summary.php
      * Generate html for first section summary.
+     *
+     * @param stdClass $section
      *
      */
     public function get_ucl_initialsection_summary_text(stdClass $section): string {
@@ -222,6 +225,7 @@ class content extends content_base {
 
     // TODO - best practice - build into format.
 
+    // phpcs:disable moodle.Commenting.InlineComment.InvalidEndChar
     // More than 16 sections - not display well on laptops.
     // This course contains unnamed sections - you can improve your course by giving each section a meanigful title.
     // This course contains sections with one or less visbible actitivites - you can imporve your course by re-organising these.

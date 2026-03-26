@@ -26,7 +26,9 @@ use local_assess_type\assess_type;
 use moodle_url;
 use stdClass;
 
+defined('MOODLE_INTERNAL') || die();
 
+global $CFG;
 require_once($CFG->libdir . '/gradelib.php');
 require_once($CFG->dirroot . '/grade/querylib.php');
 
@@ -53,6 +55,7 @@ class assessments implements renderable, templatable {
     /**
      * Return data for assessments.
      *
+     * @param renderer_base $output
      * @return stdClass|array the assessment data
      */
     public function export_for_template(renderer_base $output) {
@@ -243,6 +246,13 @@ class assessments implements renderable, templatable {
         return $stats;
     }
 
+    /**
+     * TODO needs description
+     *
+     * @param int $courseid
+     * @return int
+     * @throws \dml_exception
+     */
     protected static function get_student_count(int $courseid): int {
         global $DB;
         static $counts = [];

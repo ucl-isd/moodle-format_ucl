@@ -136,6 +136,7 @@ class Section extends BaseComponent {
             promise.then((html, js) => {
                 Templates.replaceNode(sectionnavigation, html, js);
                 pendingReload.resolve();
+                return;
             }).catch(() => {
                 pendingReload.resolve();
             });
@@ -165,6 +166,7 @@ class Section extends BaseComponent {
             promise.then((html, js) => {
                 Templates.replaceNode(sectiondivider, html, js);
                 pendingReload.resolve();
+                return;
             }).catch(() => {
                 pendingReload.resolve();
             });

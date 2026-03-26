@@ -27,7 +27,7 @@ require_once("../../../config.php");
 
 global $PAGE, $DB;
 
-$courseid = required_param('course', PARAM_INT);    // course_sections.id
+$courseid = required_param('course', PARAM_INT);
 $sectionnum = optional_param('section', null, PARAM_INT);
 
 $course = get_course($courseid);

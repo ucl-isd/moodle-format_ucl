@@ -48,6 +48,7 @@ class contacts implements renderable, templatable {
     /**
      * Return data for contacts.
      *
+     * @param renderer_base $output
      * @return stdClass|array the assessment data
      */
     public function export_for_template(renderer_base $output) {

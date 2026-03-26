@@ -66,9 +66,9 @@
                 {{#hasstats}}
                     {{> format_ucl/widgets/assessment/progress }}
                     {{! Coursework specific notice.}}
-                    {{#mod_coursework}}
+                    {{#modcoursework}}
                         <div class="small py-2">Note: Coursework marking depends on your role.</div>
-                    {{/mod_coursework}}
+                    {{/modcoursework}}
                     {{#requiremarking}}
                         <div class="text-right">
                             <a href="{{{url}}}" class="btn btn-primary btn-sm my-2">{{{.}}} to mark</a>

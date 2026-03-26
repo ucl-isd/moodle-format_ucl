@@ -82,34 +82,4 @@ class quiz extends assess_base {
 
         return $stats;
     }
-
-    /**
-     * Get the quiz close date, checking for overrides first.
-     */
-    public function get_user_duedate(): int {
-        global $DB, $USER;
-
-        $instanceid = $this->cm->instance;
-        $userid = $USER->id;
-
-        // 1. Check for individual user override.
-        $overridedate = (int) $DB->get_field('quiz_overrides', 'timeclose', [
-            'quiz' => $instanceid,
-            'userid' => $userid,
-        ]);
-
-        // 2. Check for group overrides if no user override exists.
-        if (!$overridedate) {
-            $usergroups = groups_get_user_groups($this->cm->course, $userid);
-            if (!empty($usergroups[0])) {
-                [$insql, $inparams] = $DB->get_in_or_equal($usergroups[0]);
-                $sql = "SELECT MAX(timeclose) FROM {quiz_overrides} 
-                        WHERE quiz = ? AND groupid $insql";
-                $overridedate = (int) $DB->get_value_sql($sql, array_merge([$instanceid], $inparams));
-            }
-        }
-
-        // 3. Use the override if found, otherwise the standard quiz deadline.
-        return ($overridedate > 0) ? $overridedate : $this->get_activity_duedate();
-    }
 }

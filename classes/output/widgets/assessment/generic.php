@@ -28,15 +28,6 @@ defined('MOODLE_INTERNAL') || die();
  */
 class generic extends assess_base {
     /**
-     * Generic helper to fetch the due date for a specific user.
-     * @return int Unix timestamp or 0.
-     */
-    public function get_user_duedate(): int {
-        // Inherits the customdata check from assess_base.
-        return $this->get_activity_duedate();
-    }
-
-    /**
      * Generic helper to fetch a mark from the Gradebook.
      * @return \stdClass Object with mark (string|null) and submitted (bool)
      */

@@ -30,48 +30,6 @@ use mod_coursework\models\coursework as coursework_model;
  * @author     Stuart Lamour <s.lamour@ucl.ac.uk>
  */
 class coursework extends assess_base {
-
-    /**
-     * Get the due date for a specific user.
-     * @return int
-     */
-    public function get_user_duedate(): int {
-        global $DB, $USER;
-
-        $instanceid = $this->cm->instance;
-        $userid = $USER->id;
-        $overridedate = 0;
-
-        // 1. Check for individual coursework override.
-        $overridedate = (int) $DB->get_field('coursework_person_deadlines', 'personaldeadline', [
-            'courseworkid' => $instanceid,
-            'allocatableid' => $userid,
-            'allocatabletype' => 'user',
-        ]);
-
-        // 2. Check for group extensions.
-        if (!$overridedate) {
-            $usergroups = groups_get_user_groups($this->cm->course, $userid);
-            if (!empty($usergroups[0])) {
-                list($insql, $inparams) = $DB->get_in_or_equal($usergroups[0]);
-                $inparams['cwid'] = $instanceid;
-                $inparams['type'] = 'group';
-
-                $sql = "SELECT MAX(extended_deadline) 
-                        FROM {coursework_extensions} 
-                        WHERE courseworkid = :cwid 
-                          AND allocatabletype = :type 
-                          AND allocatableid $insql";
-                
-                $overridedate = (int) $DB->get_value_sql($sql, $inparams);
-            }
-        }
-
-        $finaldate = ($overridedate > 0) ? $overridedate : $this->get_activity_duedate();
-
-        return (int) $finaldate;
-    }
-
     /**
      * Get marking data for staff view using coursework services.
      * @return \stdClass
@@ -79,7 +37,7 @@ class coursework extends assess_base {
     public function get_staff_marking(): \stdClass {
         $stats = new \stdClass();
         $instanceid = $this->cm->instance;
-        
+
         // TODO - check with David.
         try {
             // Use the coursework service to get submissions for this user.
@@ -118,7 +76,7 @@ class coursework extends assess_base {
         $sql = "SELECT id FROM {coursework_submissions} 
                 WHERE courseworkid = ? AND userid = ? 
                 AND (finalisedstatus = 1 OR timesubmitted > 0)";
-        
+
         if ($DB->record_exists_sql($sql, [$this->cm->instance, $USER->id])) {
             $result->submitted = true;
         }
@@ -132,6 +90,7 @@ class coursework extends assess_base {
      */
     public function get_activity_duedate(): int {
         global $DB;
+
         $deadline = $DB->get_field('coursework', 'deadline', ['id' => $this->cm->instance]);
         return $deadline ? (int) $deadline : parent::get_activity_duedate();
     }

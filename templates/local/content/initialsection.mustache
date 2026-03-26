@@ -28,11 +28,17 @@
     <div>
         {{> format_ucl/local/content/section/summary }}
     </div>
-    
-    {{{hookdataintrohtml}}}
 
+    {{{hookdataintrohtml}}}
 </div>
 
 {{#contactdata}}
     {{> format_ucl/widgets/contacts/contacts }}
 {{/contactdata}}
+
+{{#assessments}}
+    <div class="py-3">
+        <h3>Summative assessments</h3>
+        {{> format_ucl/widgets/assessments }}
+    </div>
+{{/assessments}}

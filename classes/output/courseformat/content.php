@@ -169,6 +169,10 @@ class content extends content_base {
             // Set first section to enable adding ucl metadata.
             $data->initialsection = $section;
             $data->hookdataintrohtml = '';
+
+            // Assessments.
+            $assessmentswidget = new assessments($this->format);
+            $data->assessments = $assessmentswidget->export_for_template($output);
         }
         return $data;
     }

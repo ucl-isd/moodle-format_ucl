@@ -97,6 +97,7 @@ body.format-ucl {
     @property --p {
         syntax: "<number>";
         inherits: true;
+        /* stylelint-disable-line */
         initial-value: 0;
     }
 

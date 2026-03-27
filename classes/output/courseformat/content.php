@@ -113,11 +113,11 @@ class content extends content_base {
     /**
      * Return data for first section.
      *
-     * @param $data
+     * @param stdClass $data
      * @param \renderer_base $output
      * @return stdClass
      */
-    public function get_ucl_initialsection($data, \renderer_base $output): stdClass {
+    public function get_ucl_initialsection(stdClass $data, \renderer_base $output): stdClass {
         $section = $data->singlesection;
         // TODO - does this actually improve speed? - This will be an empty array.
         $data->sections = ''; // Remove the rest of the data, not needed.
@@ -152,6 +152,7 @@ class content extends content_base {
             $data->initialsection = $section;
 
             // phpcs:disable Squiz.PHP.CommentedOutCode.Found
+            // phpcs:disable moodle.Commenting.InlineComment.InvalidEndChar
             // Assessments.
             // $assessmentswidget = new assessments($this->format);
             // $data->assessments = $assessmentswidget->export_for_template($output);
@@ -228,7 +229,9 @@ class content extends content_base {
     // phpcs:disable moodle.Commenting.InlineComment.InvalidEndChar
     // More than 16 sections - not display well on laptops.
     // This course contains unnamed sections - you can improve your course by giving each section a meanigful title.
-    // This course contains sections with one or less visbible actitivites - you can imporve your course by re-organising these.
-    // This section contains lots of activites without any structure - you can improve this by using lables to structure the content.
+    // This course contains sections with one or less visbible actitivites - you can imporve your course by
+    // re-organising these.
+    // This section contains lots of activites without any structure - you can improve this by using lables to structure
+    // the content.
     // etc
 }

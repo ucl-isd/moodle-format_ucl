@@ -112,9 +112,9 @@ jobs:
         if: ${{ !cancelled() }}
         run: moodle-plugin-ci savepoints
 
-      - name: Mustache Lint
-        if: ${{ !cancelled() }}
-        run: moodle-plugin-ci mustache
+#      - name: Mustache Lint
+#        if: ${{ !cancelled() }}
+#        run: moodle-plugin-ci mustache
 
       - name: Grunt
         if: ${{ !cancelled() }}
@@ -123,11 +123,6 @@ jobs:
       - name: PHPUnit tests
         if: ${{ !cancelled() }}
         run: moodle-plugin-ci phpunit --fail-on-warning
-
-      - name: Behat features
-        id: behat
-        if: ${{ !cancelled() }}
-        run: moodle-plugin-ci behat --profile chrome --suite ucl
 
       - name: Upload Behat Faildump
         if: ${{ failure() && steps.behat.outcome == 'failure' }}

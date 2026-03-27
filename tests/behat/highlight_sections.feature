@@ -1,5 +1,5 @@
 @format @format_ucl
-Feature: Sections can be highlighted
+Feature: UCL sections can be highlighted
   In order to mark sections
   As a teacher
   I need to highlight and unhighlight sections

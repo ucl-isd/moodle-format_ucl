@@ -126,19 +126,22 @@ body.format-ucl {
 
     .pie:before {
         inset: 0;
-        background: radial-gradient(farthest-side, var(--success) 98%, #0000) top/var(--b) var(--b) no-repeat,
-        conic-gradient(var(--success) calc(var(--p) * 1%), #0000 0);
+        background:
+            radial-gradient(farthest-side, var(--success) 98%, #0000) top/var(--b) var(--b) no-repeat,
+            conic-gradient(var(--success) calc(var(--p) * 1%), #0000 0);
         background-size: 0 0, auto;
-        -webkit-mask: radial-gradient(
+        -webkit-mask:
+            radial-gradient(
                 farthest-side,
                 #0000 calc(99% - var(--b)),
                 #000 calc(100% - var(--b))
-        );
-        mask: radial-gradient(
+            );
+        mask:
+            radial-gradient(
                 farthest-side,
                 #0000 calc(99% - var(--b)),
                 #000 calc(100% - var(--b))
-        );
+            );
     }
 
     .pie:after {

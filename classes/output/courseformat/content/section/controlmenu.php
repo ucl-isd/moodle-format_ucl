@@ -25,10 +25,16 @@
 namespace format_ucl\output\courseformat\content\section;
 
 use core\output\action_menu;
+use core\output\action_menu\link;
+use core\output\action_menu\link as action_menu_link;
+use core\output\action_menu\link_secondary;
+use core\url;
+use core_courseformat\base as course_format;
 use core_courseformat\output\local\content\section\controlmenu as controlmenu_base;
 use moodle_url;
 use action_menu_link_secondary;
 use pix_icon;
+use section_info;
 
 /**
  * Base class to render a course section menu.
@@ -38,139 +44,111 @@ use pix_icon;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class controlmenu extends controlmenu_base {
-    /** @var array sortorder */
-    protected const SORTORDER = [
-        'edit',
-        'move',
-        'visibility',
-        'highlight',
-        'unhighlight',
-        'duplicate',
-        'delete',
-    ];
-
-    /** @var \core_courseformat\base the course format class */
-    protected $format;
-
-    /** @var \section_info the course section class */
-    protected $section;
-
     /**
      * Generate the edit control items of a section.
-     *
-     * This method must remain public until the final deprecation of section_edit_control_items.
      *
      * @return array of edit control items
      */
     public function section_control_items() {
-        global $USER;
+        $controls = [];
 
-        $format = $this->format;
-        $section = $this->section;
-        $coursecontext = $format->get_context();
-
-        // Maintain the logic/capability checks from the parent function.
-        $controls = parent::section_control_items();
-
-        if (!$section->is_orphan() && $section->section) {
-            if (has_capability('moodle/course:setcurrentsection', $coursecontext)) {
-                $controls['highlight'] = $this->get_highlight_control();
-            }
-
-            if (has_capability('moodle/course:movesections', $coursecontext, $USER)) {
-                $controls['movepopup'] = $this->get_move_control();
-            }
+        if (!$this->section->is_orphan()) {
+            $controls['edit'] = $this->get_section_edit_item();
+            $controls['movesection'] = $this->get_section_movesection_item();
+            $controls['visibility'] = $this->get_section_visibility_item();
+            $divider = new \action_menu_filler();
+            $divider->primary = false;
+            $controls['divider'] = $divider;
+            $controls['highlight'] = $this->get_section_highlight_item();
+            $controls['duplicate'] = $this->get_section_duplicate_item();
         }
+
+        $controls['delete'] = $this->get_section_delete_item();
 
         return $controls;
     }
 
     /**
-     * Format control array into an action_menu.
+     * Retrieves the edit item for the section control menu.
      *
-     * @param array $controls
-     * @return action_menu|null the action menu
+     * @return link|null The menu item if applicable, otherwise null.
      */
-    protected function format_controls(array $controls): ?action_menu {
-        if (empty($controls)) {
+    protected function get_section_edit_item(): ?link {
+        if (!has_capability('moodle/course:update', $this->coursecontext)) {
             return null;
         }
 
-        $menu = new action_menu();
-        $menu->set_kebab_trigger(get_string('edit'));
-        $menu->attributes['class'] .= ' section-actions';
-        $menu->attributes['data-sectionid'] = $this->section->id;
+        $sectionreturn = $this->format->get_sectionnum();
+        $returnparams = !is_null($sectionreturn) ? ['sr' => $sectionreturn] : [];
+        $url = new url(
+            '/course/editsection.php',
+            array_merge(['id' => $this->section->id], $returnparams)
+        );
 
-        if (array_key_exists('edit', $controls)) {
-            $control = $controls['edit'];
-            // We want to use a different icon.
-            $control['icon'] = 'i/manual_item';
-            $actionlink = $this->format_control($control);
-            $menu->add($actionlink);
-        }
-
-        if (array_key_exists('movepopup', $controls)) {
-            $control = $controls['movepopup'];
-            $actionlink = $this->format_control($control);
-            $menu->add($actionlink);
-        }
-
-        if (array_key_exists('visibility', $controls)) {
-            $control = $controls['visibility'];
-            $actionlink = $this->format_control($control);
-            $menu->add($actionlink);
-        }
-
-        $divider = new \action_menu_filler();
-        $divider->primary = false;
-        $menu->add($divider);
-
-        if (array_key_exists('highlight', $controls)) {
-            $control = $controls['highlight'];
-            $actionlink = $this->format_control($control);
-            $menu->add($actionlink);
-        }
-
-        if (array_key_exists('unhighlight', $controls)) {
-            $control = $controls['unhighlight'];
-            $actionlink = $this->format_control($control);
-            $menu->add($actionlink);
-        }
-
-        if (array_key_exists('duplicate', $controls)) {
-            $control = $controls['duplicate'];
-            $actionlink = $this->format_control($control);
-            $menu->add($actionlink);
-        }
-
-        if (array_key_exists('delete', $controls)) {
-            $control = $controls['delete'];
-            $actionlink = $this->format_control($control);
-            $menu->add($actionlink);
-        }
-
-        return $menu;
+        return new link_secondary(
+            url: $url,
+            icon: new pix_icon('i/manual_item', ''),
+            text: get_string('editsection'),
+            attributes: ['class' => 'edit'],
+        );
     }
 
     /**
-     * Format a control
+     * Retrieves the view item for the section control menu.
      *
-     * @param array $value
-     * @return action_menu_link_secondary
-     * @throws \core\exception\moodle_exception
+     * @return action_menu_link|null The menu item if applicable, otherwise null.
      */
-    protected function format_control(array $value) {
-        $icon = empty($value['icon']) ? '' : $value['icon'];
-        $url = empty($value['url']) ? '' : $value['url'];
-        $name = empty($value['name']) ? '' : $value['name'];
-        $attr = empty($value['attr']) ? [] : $value['attr'];
-        $class = empty($value['pixattr']['class']) ? '' : $value['pixattr']['class'];
+    protected function get_section_highlight_item(): \core\output\action_menu\link_secondary {
+        $format = $this->format;
+        $section = $this->section;
+        $course = $format->get_course();
+        $sectionreturn = $format->get_sectionnum();
+
+        $highlightoff = get_string('highlightoff');
+        $highlightofficon = 'i/marked';
+
+        $highlighton = get_string('highlight');
+        $highlightonicon = 'i/marker';
+
+        if ($course->marker == $section->sectionnum) {  // Show the "light globe" on/off.
+            $action = 'section_unhighlight';
+            $icon = $highlightofficon;
+            $name = $highlightoff;
+            $attributes = [
+                'class' => 'editing_highlight',
+                'data-action' => 'sectionUnhighlight',
+                'data-sectionreturn' => $sectionreturn,
+                'data-id' => $section->id,
+                'data-icon' => $highlightofficon,
+                'data-swapname' => $highlighton,
+                'data-swapicon' => $highlightonicon,
+            ];
+        } else {
+            $action = 'section_highlight';
+            $icon = $highlightonicon;
+            $name = $highlighton;
+            $attributes = [
+                'class' => 'editing_highlight',
+                'data-action' => 'sectionHighlight',
+                'data-sectionreturn' => $sectionreturn,
+                'data-id' => $section->id,
+                'data-icon' => $highlightonicon,
+                'data-swapname' => $highlightoff,
+                'data-swapicon' => $highlightofficon,
+            ];
+        }
+
+        $url = $this->format->get_update_url(
+            action: $action,
+            ids: [$section->id],
+            returnurl: $this->baseurl,
+        );
 
         return new action_menu_link_secondary(
-            new moodle_url($url),
-            new pix_icon($icon, '', null, ['class' => "smallicon " . $class]),
-            $name,
-            $attr
+            url: $url,
+            icon: new \core\output\pix_icon($icon, ''),
+            text: $name,
+            attributes: $attributes,
         );
     }
 

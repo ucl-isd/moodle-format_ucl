@@ -37,7 +37,7 @@ use stdClass;
  */
 class sectionnavigation extends \core_courseformat\output\local\content\sectionnavigation {
     /** @var stdClass the calculated data to prevent calculations when rendered several times */
-    private $data = null;
+    protected $data = null;
 
     /**
      * Returns the output class template path.

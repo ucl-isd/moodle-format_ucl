@@ -36,16 +36,15 @@ class behat_format_ucl extends behat_base {
      *
      * @return behat_component_named_selector[]
      */
-     public static function get_partial_named_selectors(): array {
-         // @TODO We will implement some once the html is finalised.
-         return [];
-     }
+    public static function get_partial_named_selectors(): array {
+        // TODO We will implement some once the html is finalised.
+        return [];
+    }
 
     /**
      * Opens a section edit menu if it is not already opened.
      *
      * @Given /^I open ucl section "(?P<section>(?:[^"]|\\")*)" edit menu$/
-     * @throws DriverException The step is not available when Javascript is disabled
      * @param string|int $section
      */
     public function i_open_ucl_section_edit_menu($section) {

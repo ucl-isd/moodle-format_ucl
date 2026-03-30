@@ -1,0 +1,4 @@
+# Exclude all the templates here from HTML validity checks
+# Partials are linted with the main template.
+# They fail when linted as if directly included in <body> tags.
+*.mustache

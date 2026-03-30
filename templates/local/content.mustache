@@ -167,7 +167,7 @@
     }
 }}
 <div id="course-format-{{uniqid}}">
-    <h2 class="accesshide">{{{title}}}</h2>
+    {{#title}}<h2 class="accesshide">{{{title}}}</h2>{{/title}}
     {{{completionhelp}}}
     <div class="single-section">
         <div class="{{format}}" data-for="course_sectionlist">
@@ -199,7 +199,6 @@
 </div>
 {{#js}}
     require(['core_courseformat/local/content'], function(component) {
-    component.init(
-    'page', {}, {{sectionreturn}});
+    component.init('page', {});
     });
 {{/js}}

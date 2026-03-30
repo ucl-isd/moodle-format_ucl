@@ -173,7 +173,7 @@ class toc implements renderable, templatable {
             );
 
             $data->addsections = (object) [
-                'url' => $format->get_update_url('section_add', null, 0, null, $returnurl),
+                'url' => $format->get_update_url('section_add', [], 0, null, $returnurl),
                 'title' => "Add new section",
             ];
         }

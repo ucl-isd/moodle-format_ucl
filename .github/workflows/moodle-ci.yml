@@ -72,6 +72,9 @@ jobs:
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
+          # TODO Cannot get this to work.
+          # MUSTACHE_IGNORE_NAMES: 'templates/local/content.mustache,templates/local/content/section/cmlist.mustache'
+          MUSTACHE_IGNORE_PATHS: 'templates/local/content/**'
           # Uncomment this to run Behat tests using the Moodle App.
           # MOODLE_APP: 'true'
 

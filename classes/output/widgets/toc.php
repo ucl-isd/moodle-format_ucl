@@ -172,15 +172,8 @@ class toc implements renderable, templatable {
                 ]
             );
 
-            $params = [
-                'courseid' => $course->id,
-                'insertsection' => 0,
-                'sesskey' => sesskey(),
-                'returnurl' => $returnurl,
-            ];
-
             $data->addsections = (object) [
-                'url' => new moodle_url('/course/changenumsections.php', $params),
+                'url' => $format->get_update_url('section_add', null, 0, null, $returnurl),
                 'title' => "Add new section",
             ];
         }

@@ -32,22 +32,33 @@
         "selector": "<select><option>Section 4</option></select>"
     }
 }}
-<div class="section-navigation mdl-bottom d-flex justify-content-between" data-for="section-nav" data-id="{{id}}">
-    <div class="prevsection">
+<nav id="ucl-section-navigation" class="bg-light my-5 p-3 d-flex justify-content-between"
+    aria-label="{{#str}} next-and-previous-section-links, theme_ucl {{/str}}" data-for="section-nav" data-id="{{id}}">
+    <div class="max-w-50 mr-1">
         {{#hasprevious}}
-        <a href="{{{previousurl}}}" class="{{#previoushidden}} dimmed_text {{/previoushidden}}">
-            <span class="larrow">{{{larrow}}}</span>{{{previousname}}}
-        </a>
+            <div class="d-flex align-items-center">
+                <i class="fa-solid fa-circle-chevron-left mr-2"></i><small>{{#str}} previoussection {{/str}}</small>
+            </div>
+            <a href="{{{previousurl}}}">
+                <span class="sr-only">{{#str}} previoussection {{/str}}</span>  {{{previousname}}}
+                {{#previoushidden}}
+                <br><small class="badge badge-pill badge-warning">{{#str}} hiddenfromstudents {{/str}}</small>
+                {{/previoushidden}}
+            </a>
         {{/hasprevious}}
     </div>
-    <div>
-        {{{selector}}}
-    </div>
-    <div class="nextsection">
+
+    <div class="text-right max-w-50 ml-1">
         {{#hasnext}}
-        <a href="{{{nexturl}}}" class="{{#nexthidden}} dimmed_text {{/nexthidden}}">
-            <span class="rarrow">{{{rarrow}}}</span>{{{nextname}}}
-        </a>
+            <div class="d-flex align-items-center justify-content-end">
+                <small>{{#str}} nextsection {{/str}}</small><i class="fa-solid fa-circle-chevron-right ml-2"></i>
+            </div>
+            <a href="{{{nexturl}}}">
+                <span class="sr-only">{{#str}} nextsection {{/str}}</span> {{{nextname}}}
+                {{#nexthidden}}
+                <br><small class="badge badge-pill badge-warning">{{#str}} hiddenfromstudents {{/str}}</small>
+                {{/nexthidden}}
+            </a>
         {{/hasnext}}
     </div>
-</div>
+</nav>

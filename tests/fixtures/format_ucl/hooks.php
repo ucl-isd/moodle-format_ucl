@@ -1,5 +1,5 @@
 <?php
-// This file is part of Moodle - https://moodle.org/
+// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,20 +12,23 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
-
-/**
- * Plugin version and other meta-data are defined here.
- *
- * @package     format_ucl
- * @copyright   2026 Amanda Doughty <m.doughty@ucl.ac.uk>
- * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'format_ucl';
-$plugin->release = '0.1.0';
-$plugin->version = 2026041500;
-$plugin->requires = 2022041900;
-$plugin->maturity = MATURITY_BETA;
+$callbacks = [
+    [
+        'hook' => \format_ucl\hook\before_first_section_html::class,
+        'callback' => [
+            \format_ucl\fixtures\format_ucl\mock_callbacks::class,
+            'before_first_section_html',
+        ],
+    ],
+    [
+        'hook' => \format_ucl\hook\after_first_section_html::class,
+        'callback' => [
+            \format_ucl\fixtures\format_ucl\mock_callbacks::class,
+            'after_first_section_html',
+        ],
+    ],
+];

@@ -82,6 +82,9 @@ class content extends content_base {
             }
         }
 
+        $data->beforecontent = $this->get_before_first_section_html($output);
+        $data->aftercontent = $this->get_after_first_section_html($output);
+
         // TOC layout.
         // TODO
         $layout = 'toc';
@@ -218,6 +221,32 @@ class content extends content_base {
             $i++;
         }
         return new stdClass();
+    }
+
+    /**
+     * Dispatch hook to allow other plugins to add content before the first section html.
+     * 
+     * @param $output
+     * @return string
+     */
+    public function get_before_first_section_html($output) {
+        // Dispatch hook to retrieve extra content to add at the start of the section.
+        $hook = new \format_ucl\hook\before_first_section_html($output, '');
+        \core\di::get(\core\hook\manager::class)->dispatch($hook);
+        return $hook->get_output();
+    }
+
+    /**
+     * Dispatch hook to allow other plugins to add content after the first section html.
+     * 
+     * @param $output
+     * @return string
+     */
+    public function get_after_first_section_html($output) {
+        // Dispatch hook to retrieve extra content to add at the end of the section.
+        $hook = new \format_ucl\hook\after_first_section_html($output, '');
+        \core\di::get(\core\hook\manager::class)->dispatch($hook);
+        return $hook->get_output();
     }
 
     // TODO - best practice - build into format.

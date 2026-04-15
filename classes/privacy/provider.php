@@ -16,165 +16,25 @@
 
 namespace format_ucl\privacy;
 
-use core_privacy\local\metadata\collection;
-use core_privacy\local\request\approved_contextlist;
-use core_privacy\local\request\contextlist;
-use core_privacy\local\request\helper;
-use core_privacy\local\request\transform;
-use core_privacy\local\request\writer;
+use core_privacy\local\metadata\null_provider;
 
 /**
- * Privacy API implementation for the UCL plugin.
+ * Privacy Subsystem for UCL course format implementing null_provider.
  *
  * @package     format_ucl
  * @category    privacy
  * @copyright   2026 Amanda Doughty <m.doughty@ucl.ac.uk>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements
-    \core_privacy\local\metadata\provider,
-    \core_privacy\local\request\plugin\provider,
-    \core_privacy\local\request\user_preference_provider {
-    use \core_privacy\local\legacy_polyfill;
-
-    // phpcs:disable PSR2.Methods.MethodDeclaration.Underscore
-    /**
-     * Describe all the places where the UCL plugin stores some personal data.
-     *
-     * @param collection $collection Collection of items to add metadata to.
-     * @return collection Collection with our added items.
-     */
-    public static function _get_metadata(collection $collection) {
-
-        $collection->add_database_table('format_ucl_sometable', [
-           'username' => 'privacy:metadata:db:sometable:username',
-           'timecreated' => 'privacy:metadata:db:sometable:timecreated',
-           'timemodified' => 'privacy:metadata:db:sometable:timemodified',
-        ], 'privacy:metadata:db:sometable');
-
-        $collection->add_database_table('format_ucl_another', [
-           'email' => 'privacy:metadata:db:another:email',
-        ], 'privacy:metadata:db:another');
-
-        $collection->add_user_preference('preferencename', 'privacy:metadata:preference:preferencename');
-        $collection->add_user_preference('format_ucl_anotherpreference', 'privacy:metadata:preference:anotherpreference');
-
-        $collection->add_subsystem_link('core_comment', [], 'privacy:metadata:subsystem:comment');
-        $collection->add_subsystem_link('core_files', [], 'privacy:metadata:subsystem:files');
-        $collection->add_subsystem_link('core_portfolio', [
-           'firstname' => 'privacy:metadata:subsystem:portfolio:firstname',
-           'lastname' => 'privacy:metadata:subsystem:portfolio:lastname',
-        ], 'privacy:metadata:subsystem:portfolio');
-
-        $collection->add_external_location_link('customexternalsystem', [], 'privacy:metadata:external:customexternalsystem');
-        $collection->add_external_location_link('mahara', [
-           'firstname' => 'privacy:metadata:external:mahara:firstname',
-           'lastname' => 'privacy:metadata:external:mahara:lastname',
-        ], 'privacy:metadata:external:mahara');
-
-        return $collection;
-    }
+class provider implements null_provider {
 
     /**
-     * Get the list of contexts that contain personal data for the specified user.
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
      *
-     * @param int $userid ID of the user.
-     * @return contextlist List of contexts containing the user's personal data.
+     * @return  string
      */
-    public static function _get_contexts_for_userid($userid) {
-
-        $contextlist = new contextlist();
-
-        // You will probably implement something using `$contextlist->add_from_sql()` here. See examples in other plugins.
-
-        return $contextlist;
+    public static function get_reason(): string {
+        return 'privacy:metadata';
     }
-
-    /**
-     * Export personal data stored in the given contexts.
-     *
-     * @param approved_contextlist $contextlist List of contexts approved for export.
-     */
-    public static function _export_user_data(approved_contextlist $contextlist) {
-        global $DB;
-
-        if (!count($contextlist)) {
-            return;
-        }
-
-        $user = $contextlist->get_user();
-
-        // You will probably implement something using writer's methods `export_data()`, `export_area_files()` etc.
-        // The following code is just a dummy example.
-
-        foreach ($contextlist->get_contexts() as $context) {
-            $data = helper::get_context_data($context, $user);
-            $data->implemented = transform::yesno(false);
-            $data->todo = 'Not implemented yet.';
-            writer::with_context($context)->export_data([], $data);
-        }
-    }
-
-    /**
-     * Delete personal data for all users in the context.
-     *
-     * @param context $context Context to delete personal data from.
-     */
-    public static function _delete_data_for_all_users_in_context(\context $context) {
-        global $DB;
-
-        // You will probably use some variant of `$DB->delete_records()` here to remove user data from your tables.
-        // If you have plugin files, do not forget to clean the relevant files areas too.
-    }
-
-    /**
-     * Delete personal data for the user in a list of contexts.
-     *
-     * @param approved_contextlist $contextlist List of contexts to delete data from.
-     */
-    public static function _delete_data_for_user(approved_contextlist $contextlist) {
-        global $DB;
-
-        if (!count($contextlist)) {
-            return;
-        }
-
-        [$contextsql, $contextparams] = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
-        $user = $contextlist->get_user();
-        $fs = get_file_storage();
-
-        // You will probably use some variant of `$DB->delete_records()` here to remove user data from your tables.
-        // If you have plugin files, do not forget to clean the relevant files areas too.
-    }
-
-    /**
-     * Export all user preferences controlled by this plugin.
-     *
-     * @param int $userid ID of the user we are exporting data for
-     */
-    public static function _export_user_preferences($userid) {
-
-        $preferencename = get_user_preferences('preferencename', null, $userid);
-
-        if ($preferencename !== null) {
-            writer::export_user_preference(
-                'format_ucl',
-                'preferencename',
-                $preferencename,
-                get_string('privacy:metadata:preference:preferencename', 'format_ucl')
-            );
-        }
-        $anotherpreference = get_user_preferences('format_ucl_anotherpreference', null, $userid);
-
-        if ($anotherpreference !== null) {
-            writer::export_user_preference(
-                'format_ucl',
-                'format_ucl_anotherpreference',
-                $anotherpreference,
-                get_string('privacy:metadata:preference:anotherpreference', 'format_ucl')
-            );
-        }
-    }
-
-    // phpcs:enable
 }

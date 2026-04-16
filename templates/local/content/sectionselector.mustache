@@ -32,22 +32,4 @@
         "selector": "<select><option>Section 4</option></select>"
     }
 }}
-<div class="section-navigation mdl-bottom d-flex justify-content-between" data-for="section-nav" data-id="{{id}}">
-    <div class="prevsection">
-        {{#hasprevious}}
-        <a href="{{{previousurl}}}" class="{{#previoushidden}} dimmed_text {{/previoushidden}}">
-            <span class="larrow">{{{larrow}}}</span>{{{previousname}}}
-        </a>
-        {{/hasprevious}}
-    </div>
-    <div>
-        {{{selector}}}
-    </div>
-    <div class="nextsection">
-        {{#hasnext}}
-        <a href="{{{nexturl}}}" class="{{#nexthidden}} dimmed_text {{/nexthidden}}">
-            <span class="rarrow">{{{rarrow}}}</span>{{{nextname}}}
-        </a>
-        {{/hasnext}}
-    </div>
-</div>
+{{> core_courseformat/local/content/sectionselector }}

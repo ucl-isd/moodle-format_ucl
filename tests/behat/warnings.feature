@@ -28,7 +28,7 @@ Feature: Appropriate Tips are shown to user
     Given I log in as "admin"
     And I am on the "Course 1 > New section 1" "course > section" page
     And I turn editing mode on
-    When I set the field "Edit section name" in the "[data-region='ucl-section-name']" "css_element" to "Stamptown"
+    When I set the field "Edit section name" in the ".ucl-section-name" "css_element" to "Stamptown"
     And I am on "Course 1" course homepage
     # "4 unnamed sections"
     Then ".behat-unnamedsections" "css_element" should exist

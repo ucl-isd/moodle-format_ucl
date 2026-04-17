@@ -14,4 +14,4 @@ Feature: Adding a new section lands on the editing page
     Then I should see "Edit section settings"
     And I set the field "Section name" to "Welcome to Stamptown"
     And I press "Save changes"
-    And "Welcome to Stamptown" "link" should appear after "New section 5" "link"
+    And "Welcome to Stamptown" "link" should appear after "New section" "link"

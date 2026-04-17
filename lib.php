@@ -128,7 +128,7 @@ class format_ucl extends core_courseformat\base {
         }
 
         if (get_string_manager()->string_exists('sectionname', 'format_' . $this->format)) {
-            return get_string('sectionname', 'format_' . $this->format, $sectionnum);
+            return get_string('sectionname', 'format_' . $this->format);
         }
 
         // Return an empty string if there's no available section name string for the given format.

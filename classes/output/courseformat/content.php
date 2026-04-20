@@ -151,15 +151,6 @@ class content extends content_base {
 
             // Set first section to enable adding ucl metadata.
             $data->initialsection = $section;
-
-            // phpcs:disable Squiz.PHP.CommentedOutCode.Found
-            // phpcs:disable moodle.Commenting.InlineComment.InvalidEndChar
-            // Assessments.
-            // $assessmentswidget = new assessments($this->format);
-            // $data->assessments = $assessmentswidget->export_for_template($output);
-
-            // Contacts.
-            // $data->contacts = contacts::course_contacts_list();
         }
         return $data;
     }

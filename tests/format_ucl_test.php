@@ -32,7 +32,6 @@ require_once($CFG->dirroot . '/course/lib.php');
  * @covers     \format_ucl
  */
 final class format_ucl_test extends \advanced_testcase {
-
     /**
      * Tests for format_ucl::get_section_name method with default section names.
      *
@@ -45,8 +44,10 @@ final class format_ucl_test extends \advanced_testcase {
         // Generate a course with 5 sections.
         $generator = $this->getDataGenerator();
         $numsections = 5;
-        $course = $generator->create_course(['numsections' => $numsections, 'format' => 'ucl'],
-            ['createsections' => true]);
+        $course = $generator->create_course(
+            ['numsections' => $numsections, 'format' => 'ucl'],
+            ['createsections' => true]
+        );
 
         // Get section names for course.
         $coursesections = $DB->get_records('course_sections', ['course' => $course->id]);
@@ -71,8 +72,10 @@ final class format_ucl_test extends \advanced_testcase {
         // Generate a course with 5 sections.
         $generator = $this->getDataGenerator();
         $numsections = 5;
-        $course = $generator->create_course(['numsections' => $numsections, 'format' => 'ucl'],
-            ['createsections' => true]);
+        $course = $generator->create_course(
+            ['numsections' => $numsections, 'format' => 'ucl'],
+            ['createsections' => true]
+        );
 
         // Get section names for course.
         $coursesections = $DB->get_records('course_sections', ['course' => $course->id]);
@@ -105,8 +108,10 @@ final class format_ucl_test extends \advanced_testcase {
         // Generate a course with 5 sections.
         $generator = $this->getDataGenerator();
         $numsections = 5;
-        $course = $generator->create_course(['numsections' => $numsections, 'format' => 'ucl'],
-            ['createsections' => true]);
+        $course = $generator->create_course(
+            ['numsections' => $numsections, 'format' => 'ucl'],
+            ['createsections' => true]
+        );
 
         // Get section names for course.
         $coursesections = $DB->get_records('course_sections', ['course' => $course->id]);
@@ -136,8 +141,10 @@ final class format_ucl_test extends \advanced_testcase {
         $this->resetAfterTest();
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
-        $course = $this->getDataGenerator()->create_course(['numsections' => 5, 'format' => 'ucl'],
-            ['createsections' => true]);
+        $course = $this->getDataGenerator()->create_course(
+            ['numsections' => 5, 'format' => 'ucl'],
+            ['createsections' => true]
+        );
         $section = $DB->get_record('course_sections', ['course' => $course->id, 'section' => 2]);
 
         // Call webservice without necessary permissions.
@@ -145,8 +152,10 @@ final class format_ucl_test extends \advanced_testcase {
             \core_external::update_inplace_editable('format_ucl', 'sectionname', $section->id, 'New section name');
             $this->fail('Exception expected');
         } catch (\moodle_exception $e) {
-            $this->assertEquals('Course or activity not accessible. (Not enrolled)',
-                    $e->getMessage());
+            $this->assertEquals(
+                'Course or activity not accessible. (Not enrolled)',
+                $e->getMessage()
+            );
         }
 
         // Change to teacher and make sure that section name can be updated using web service update_inplace_editable().
@@ -169,8 +178,10 @@ final class format_ucl_test extends \advanced_testcase {
 
         $this->resetAfterTest();
         $user = $this->getDataGenerator()->create_user();
-        $course = $this->getDataGenerator()->create_course(['numsections' => 5, 'format' => 'ucl'],
-            ['createsections' => true]);
+        $course = $this->getDataGenerator()->create_course(
+            ['numsections' => 5, 'format' => 'ucl'],
+            ['createsections' => true]
+        );
         $teacherrole = $DB->get_record('role', ['shortname' => 'editingteacher']);
         $this->getDataGenerator()->enrol_user($user->id, $course->id, $teacherrole->id);
         $this->setUser($user);
@@ -216,7 +227,7 @@ final class format_ucl_test extends \advanced_testcase {
             'category' => $category,
             'editoroptions' => [
                 'context' => \context_course::instance($course->id),
-                'subdirs' => 0
+                'subdirs' => 0,
             ],
             'returnto' => new \moodle_url('/'),
             'returnurl' => new \moodle_url('/'),

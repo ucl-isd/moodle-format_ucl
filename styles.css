@@ -11,7 +11,7 @@ body.format-ucl {
     #page-navbar {
         position: relative !important;
     }
-    .path-course-view #page.drawers {
+    &.path-course-view #page.drawers {
         overflow: unset;
     }
     .single-section ul.course-format-ucl {
@@ -34,7 +34,7 @@ body.format-ucl {
 
     /* Toc. */
     /* Sticky top gutter when navbar is fixed top - e.g. boost theme. */
-    &:has(.fixed-top) {
+    &:has(.navbar.fixed-top) {
        .sticky-top {
             top: 5rem !important;
        }

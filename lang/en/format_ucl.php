@@ -47,6 +47,7 @@ $string['privacy:metadata'] = 'The UCL format plugin does not store any personal
 $string['section0name'] = 'Introduction';
 $string['sectionname'] = 'New section';
 $string['showfromothers'] = 'Show';
+$string['toc'] = 'Table of contents';
 $string['ucl:edit'] = 'Edit test';
 $string['ucl:view'] = 'View test';
 $string['unhighlight'] = 'Unhighlight';

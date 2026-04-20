@@ -195,7 +195,7 @@ function format_ucl_inplace_editable($itemtype, $itemid, $newvalue) {
 }
 
 /**
- * Section fragment renderer method.
+ * Section navigation fragment renderer method.
  *
  * The fragment arguments are courseid, section id and sr (section return).
  *
@@ -224,7 +224,7 @@ function format_ucl_output_fragment_section_navigation($args): string {
 }
 
 /**
- * Section fragment renderer method.
+ * Section divider fragment renderer method.
  *
  * The fragment arguments are courseid, section id and sr (section return).
  *
@@ -250,4 +250,33 @@ function format_ucl_output_fragment_section_divider($args): string {
 
     $renderer = $format->get_renderer($PAGE);
     return $renderer->course_section_add_cm_control($course, $section->section, $section->section);
+}
+
+/**
+ * Section actions fragment renderer method.
+ *
+ * The fragment arguments are courseid, section id and sr (section return).
+ *
+ * @param array $args The fragment arguments.
+ * @return string The rendered section.
+ *
+ * @throws require_login_exception
+ */
+function format_ucl_output_fragment_section_controlmenu($args): string {
+    global $PAGE;
+
+    $course = get_course($args['courseid']);
+    if (!can_access_course($course, null, '', true)) {
+        throw new require_login_exception('Course is not available');
+    }
+
+    $format = course_get_format($course);
+    $modinfo = $format->get_modinfo();
+    $section = $modinfo->get_section_info_by_id($args['id'], MUST_EXIST);
+    if (!$section->uservisible) {
+        throw new require_login_exception('Section is not available');
+    }
+
+    $renderer = $format->get_renderer($PAGE);
+    return $renderer->course_section_controlmenu_updated($format, $section);
 }

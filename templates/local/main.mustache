@@ -35,10 +35,10 @@
 <div class="row p-3 px-lg-0">
     {{#toc}}
     {{! Mobile toc trigger. }}
-        <div id="mobile-toc-fab" class="d-lg-none  position-fixed w-100 text-center">
-            <a href="#ucl-course-toc" class="fadeInUp btn btn-warning rounded-pill mb-2 d-inline-flexjustify-content-center align-items-center">
+       <div id="mobile-toc-fab" class="d-lg-none position-fixed w-100 text-center">
+            <a href="#ucl-course-toc" class="fadeInUp btn btn-warning rounded-pill mb-2 d-inline-flex justify-content-center align-items-center">
                 <i class="fa-solid fa-bars mr-2"></i>
-                Table of contents
+                {{#str}} toc, format_ucl {{/str}}
             </a>
         </div>
 
@@ -49,10 +49,10 @@
 
     <div id="ucl-course-content" class="col">
         <div class="d-flex align-items-center">
-            <h2 data-region="ucl-section-name" class="ucl-section-name">{{{sectionname}}}</h2>
+            <h2 class="ucl-section-name">{{{sectionname}}}</h2>
 
             {{#sectionactions}}
-                <div class="ml-auto" id="ucl-section-actions">
+                <div class="ml-auto" data-for="section-controlmenu" data-id="{{id}}">
                     {{{sectionactions}}}
                 </div>
             {{/sectionactions}}

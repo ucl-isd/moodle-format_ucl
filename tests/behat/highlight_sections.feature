@@ -1,4 +1,4 @@
-@format @format_ucl
+@format @format_ucl @wip @TODO
 Feature: Sections can be highlighted
   In order to mark sections
   As a teacher

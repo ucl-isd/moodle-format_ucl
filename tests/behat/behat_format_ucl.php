@@ -61,6 +61,5 @@ class behat_format_ucl extends behat_base {
         $exception = new ExpectationException('Section "' . $section . '" was not found', $this->getSession());
         $menu = $this->find('xpath', $xpath, $exception);
         $menu->click();
-        $this->execute('behat_course::i_wait_until_section_is_available', [$section]);
     }
 }

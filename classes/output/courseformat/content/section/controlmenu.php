@@ -157,7 +157,6 @@ class controlmenu extends controlmenu_base {
      *
      * @param array $value
      * @return action_menu_link_secondary
-     * @throws \core\exception\moodle_exception
      */
     protected function format_control(array $value) {
         $icon = empty($value['icon']) ? '' : $value['icon'];

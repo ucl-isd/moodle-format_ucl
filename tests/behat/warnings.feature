@@ -10,8 +10,14 @@ Feature: Appropriate Tips are shown to user
       | Course 1 | C1        | ucl    | 0             | 5           | ##yesterday## |
       | Course 2 | C2        | ucl    | 0             | 17          | ##yesterday## |
 
+  Scenario: Tips do not appear on section pages
+    When I am on the "C1" "Course" page logged in as "admin"
+    And I click on "New section 2" "link" in the "#toc" "css_element"
+    Then ".behat-ucl-tips" "css_element" should not exist
+
   Scenario: Course image tip is shown for courses without images
     When I am on the "C1" "Course" page logged in as "admin"
+    Then ".behat-ucl-tips" "css_element" should exist
     Then ".behat-nocourseimg" "css_element" should exist
 
   @javascript @_file_upload

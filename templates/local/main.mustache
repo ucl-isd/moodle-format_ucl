@@ -28,10 +28,9 @@
   Include the core content template.
   This is the top template for a course.
 }}
-
-{{! TODO - only show wranings when "this is the main course page"... }}
-{{> format_ucl/widgets/warnings/warnings }}
-
+{{#initialsection}}
+    {{> format_ucl/widgets/warnings/warnings }}
+{{/initialsection}}
 
 <div class="row p-3 px-lg-0">
     {{#toc}}

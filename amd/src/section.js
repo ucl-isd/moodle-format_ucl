@@ -194,6 +194,7 @@ class Section extends BaseComponent {
                     courseid: Config.courseId,
                 }
             );
+            // eslint-disable-next-line promise/always-return
             promise.then((html, js) => {
                 Templates.replaceNode(sectioncontrolmenu, html, js);
                 pendingReload.resolve();

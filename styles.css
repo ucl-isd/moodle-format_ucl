@@ -1,7 +1,6 @@
 /* UCL course format. */
 body.format-ucl {
     /* Page width. */
-
     #page-header,
     .main-inner,
     .secondary-navigation .nav-tabs {
@@ -20,7 +19,6 @@ body.format-ucl {
     }
 
     /* Remove "current" border. */
-
     .course-content .current::before {
         border-left: none !important; /* stylelint-disable-line declaration-no-important */
         /* This removes the pseudo-element entirely */
@@ -28,7 +26,6 @@ body.format-ucl {
     }
 
     /* Section name - better display when editing. */
-
     .ucl-section-name {
         min-width: 95%;
 
@@ -41,13 +38,12 @@ body.format-ucl {
     /* Toc. */
     /* Sticky top gutter when navbar is fixed top - e.g. boost theme. */
     &:has(.navbar.fixed-top) {
-       .sticky-top {
-            top: 5rem !important;
-       }
+        .sticky-top {
+            top: 5rem !important; /* stylelint-disable-line declaration-no-important */
+        }
     }
 
     /* Active or coursehome links. */
-
     #toc .active a,
     &#page-course-view-ucl .course-home {
         color: var(--dark);
@@ -63,14 +59,12 @@ body.format-ucl {
 
         /* Section visibility flag and highlight flag logic. */
         /* Default state - hide flags. */
-
         .flag-current,
         .flag-hidden {
             display: none;
         }
 
         /* Highlighted section. */
-
         &.current {
             .flag-current {
                 display: inline-block;
@@ -78,7 +72,6 @@ body.format-ucl {
         }
 
         /* Hidden from students. */
-
         &.dimmed {
             .flag-hidden {
                 display: block;
@@ -213,10 +206,4 @@ body.format-ucl {
             display: none !important; /* stylelint-disable-line declaration-no-important */
         }
     }
-}
-
-
-/* TODO - only output on main page, currently using css to hide on sections. */
-#page-course-view-section-ucl .alert-primary {
-    display: none !important; /* stylelint-disable-line declaration-no-important */
 }

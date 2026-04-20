@@ -28,6 +28,7 @@
   Include the core content template.
   This is the top template for a course.
 }}
+
 {{#initialsection}}
     {{> format_ucl/widgets/warnings/warnings }}
 {{/initialsection}}
@@ -49,7 +50,7 @@
 
     <div id="ucl-course-content" class="col">
         <div class="d-flex align-items-center">
-            <h2 class="ucl-section-name">{{{sectionname}}}</h2>
+            {{#sectionname}}<h2 data-region="ucl-section-name" class="ucl-section-name">{{{sectionname}}}</h2>{{/sectionname}}
 
             {{#sectionactions}}
                 <div class="ml-auto" data-for="section-controlmenu" data-id="{{id}}">
@@ -74,90 +75,90 @@
 {{^isediting}}
     {{#js}}
         require(['jquery'], function($) {
-        $('.header-action .section-actions').remove();
+            // Section progress.
+            // Timeout so course-index can load.
+            setTimeout(() => {
+                // Select the node that will be observed for mutations.
+                const targetNode = document.getElementById('course-index');
+                // Config.
+                const config = {attributes: true, childList: true, subtree: true};
 
-        // Section progress.
-        // Timeout so course-index can load.
-        setTimeout(() => {
-        // Select the node that will be observed for mutations.
-        const targetNode = document.getElementById('course-index');
-        // Config.
-        const config = { attributes: true, childList: true, subtree: true };
+                // Callback.
+                // eslint-disable-next-line no-unused-vars
+                const callback = function(mutationList, observer) {
+                    // Use traditional 'for loops' for IE 11
+                    for (const mutation of mutationList) {
+                        if (mutation.type === 'childList') {
+                            updateSectionProgress();
+                        }
+                    }
+                };
 
-        // Callback.
-        const callback = function(mutationList, observer) {
-        // Use traditional 'for loops' for IE 11
-        for(const mutation of mutationList) {
-        if (mutation.type === 'childList') {
-        updateSectionProgress();
-        }
-        }
-        };
+                // Create observer instance linked to callback function.
+                const observer = new MutationObserver(callback);
 
-        // Create observer instance linked to callback function.
-        const observer = new MutationObserver(callback);
+                // Start observing.
+                observer.observe(targetNode, config);
+            }, 1000);
 
-        // Start observing.
-        observer.observe(targetNode, config);
-        }, 1000);
+            function updateSectionProgress() {
+                // Loop through sections and calculate progress.
+                // eslint-disable-next-line no-unused-vars
+                $('#course-index .courseindex-section').each(function(i) {
+                    const id = $(this).data('id');
+                    const total = $(this).find('.completioninfo:not(.completion_none)').length;
+                    // Check we have mods to complete.
+                    const validTotal = parseInt(total, 10) || 0;
 
-        function updateSectionProgress() {
-        // Loop through sections and calculate progress.
-        $('#course-index .courseindex-section').each(function (i) {
-        const id = $(this).data('id');
-        const total = $(this).find('.completioninfo:not(.completion_none)').length;
-        // Check we have mods to complete.
-        const validTotal = parseInt(total, 10) || 0;
+                    // Only update if section has mods to complete.
+                    if (validTotal > 0) {
+                        const done = $(this).find('.completion_complete').length;
+                        const validDone = parseInt(done, 10) || 0;
+                        updateSectionPie(id, validTotal, validDone);
+                    }
+                });
+            }
 
-        // Only update if section has mods to complete.
-        if (validTotal > 0) {
-        const done = $(this).find('.completion_complete').length;
-        const validDone = parseInt(done, 10) || 0;
-        updateSectionPie(id, validTotal, validDone);
-        }
-        });
-        }
+            function updateSectionPie(id, total, done) {
+                const pie = $('.pie[data-id="' + id + '"]');
+                const percentage = Math.round((done / total) * 100);
 
-        function updateSectionPie(id, total, done) {
-        const pie = $('.pie[data-id="' + id + '"]');
-        const percentage = Math.round((done / total) * 100);
+                // Ensure current percentage is a valid number.
+                let currentPercentage = parseInt($(pie).attr('data-percentage'), 10) || 0;
 
-        // Ensure current percentage is a valid number.
-        let currentPercentage = parseInt($(pie).attr('data-percentage'), 10) || 0;
+                // Check if an update is needed.
+                if (currentPercentage !== percentage) {
+                    const tooltip = '' + done + ' of ' + total + ' complete';
 
-        // Check if an update is needed.
-        if (currentPercentage !== percentage) {
-        const tooltip = ''+done+' of '+total+' complete';
+                    // Set tooltip and aria-label
+                    $(pie).attr({
+                        'data-original-title': tooltip,
+                        'aria-label': tooltip
+                    });
 
-        // Set tooltip and aria-label
-        $(pie).attr({
-        'data-original-title': tooltip,
-        'aria-label': tooltip
-        });
+                    // Update pie class based on completion.
+                    if (percentage === 100) {
+                        $(pie).addClass('complete').removeClass('animate');
+                    } else {
+                        $(pie).removeClass('complete').addClass('animate');
+                    }
 
-        // Update pie class based on completion.
-        if (percentage === 100) {
-        $(pie).addClass('complete').removeClass('animate');
-        } else {
-        $(pie).removeClass('complete').addClass('animate');
-        }
+                    // Animate pie to target percentage.
+                    const interval = setInterval(() => {
+                        const direction = percentage > currentPercentage ? 1 : -1;
+                        currentPercentage += direction;
 
-        // Animate pie to target percentage.
-        const interval = setInterval(() => {
-        const direction = percentage > currentPercentage ? 1 : -1;
-        currentPercentage += direction;
+                        $(pie).attr({
+                            'style': `--p:${currentPercentage};--c:green`,
+                            'data-percentage': currentPercentage
+                        });
 
-        $(pie).attr({
-        'style': `--p:${currentPercentage};--c:green`,
-        'data-percentage': currentPercentage
-        });
-
-        if (currentPercentage === percentage) {
-        clearInterval(interval);
-        }
-        }, 10); // Timing.
-        }
-        }
+                        if (currentPercentage === percentage) {
+                            clearInterval(interval);
+                        }
+                    }, 10); // Timing.
+                }
+            }
         });
     {{/js}}
 {{/isediting}}

@@ -88,7 +88,7 @@ class controlmenu extends controlmenu_base {
     /**
      * Format control array into an action_menu.
      *
-     * @param \renderer_base $output typically, the renderer that's calling this function
+     * @param array $controls
      * @return action_menu|null the action menu
      */
     protected function format_controls(array $controls): ?action_menu {
@@ -152,7 +152,13 @@ class controlmenu extends controlmenu_base {
         return $menu;
     }
 
-    protected function format_control($value) {
+    /**
+     * Format a control
+     *
+     * @param array $value
+     * @return action_menu_link_secondary
+     */
+    protected function format_control(array $value) {
         $icon = empty($value['icon']) ? '' : $value['icon'];
         $url = empty($value['url']) ? '' : $value['url'];
         $name = empty($value['name']) ? '' : $value['name'];

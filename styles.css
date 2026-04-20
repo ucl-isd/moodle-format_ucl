@@ -1,31 +1,34 @@
-
 /* UCL course format. */
 body.format-ucl {
     /* Page width. */
     #page-header,
     .main-inner,
     .secondary-navigation .nav-tabs {
-        max-width: 1140px !important;
+        max-width: 1140px !important; /* stylelint-disable-line declaration-no-important */
     }
 
     #page-navbar {
-        position: relative !important;
+        position: relative !important; /* stylelint-disable-line declaration-no-important */
     }
     &.path-course-view #page.drawers {
         overflow: unset;
     }
+
     .single-section ul.course-format-ucl {
         padding-left: 0;
     }
-    
+
     /* Remove "current" border. */
     .course-content .current::before {
-        border-left: none !important;
-        content: none !important; /* This removes the pseudo-element entirely */
+        border-left: none !important; /* stylelint-disable-line declaration-no-important */
+        /* This removes the pseudo-element entirely */
+        content: none !important; /* stylelint-disable-line declaration-no-important */
     }
+
     /* Section name - better display when editing. */
     .ucl-section-name {
-    min-width: 95%;
+        min-width: 95%;
+
         input {
             font-size: 2rem;
             min-width: 100%;
@@ -35,9 +38,9 @@ body.format-ucl {
     /* Toc. */
     /* Sticky top gutter when navbar is fixed top - e.g. boost theme. */
     &:has(.navbar.fixed-top) {
-       .sticky-top {
-            top: 5rem !important;
-       }
+        .sticky-top {
+            top: 5rem !important; /* stylelint-disable-line declaration-no-important */
+        }
     }
 
     /* Active or coursehome links. */
@@ -73,6 +76,7 @@ body.format-ucl {
             .flag-hidden {
                 display: block;
             }
+
             .progress-indicator {
                 display: none;
             }
@@ -84,7 +88,7 @@ body.format-ucl {
     @property --p {
         syntax: "<number>";
         inherits: true;
-        initial-value: 0;
+        initial-value: 0; /* stylelint-disable-line */
     }
 
     .pie {
@@ -113,37 +117,39 @@ body.format-ucl {
 
     .pie:before {
         inset: 0;
-        background: radial-gradient(farthest-side, var(--success) 98%, #0000)
-        top/var(--b) var(--b) no-repeat,
-        conic-gradient(var(--success) calc(var(--p) * 1%), #0000 0);
+        background:
+            radial-gradient(farthest-side, var(--success) 98%, #0000) top/var(--b) var(--b) no-repeat,
+            conic-gradient(var(--success) calc(var(--p) * 1%), #0000 0);
         background-size: 0 0, auto;
-        -webkit-mask: radial-gradient(
+        -webkit-mask:
+            radial-gradient(
                 farthest-side,
                 #0000 calc(99% - var(--b)),
                 #000 calc(100% - var(--b))
-        );
-        mask: radial-gradient(
+            );
+        mask:
+            radial-gradient(
                 farthest-side,
                 #0000 calc(99% - var(--b)),
                 #000 calc(100% - var(--b))
-        );
+            );
     }
 
     .pie:after {
         inset: calc(50% - var(--b) / 2);
         background: var(--success);
-        transform: rotate(calc(var(--p) * 3.6deg))
-        translateY(calc(50% - var(--w) / 2));
+        transform: rotate(calc(var(--p) * 3.6deg)) translateY(calc(50% - var(--w) / 2));
         content: none;
     }
 
     .pie.animate {
         animation: p 1s 1s both;
+
         .fa-check {
             display: none;
         }
     }
-    
+
     .pie.complete {
         transition: all 1s;
         background-color: var(--success);
@@ -163,19 +169,20 @@ body.format-ucl {
         bottom: 30px;
         left: 0;
         z-index: 6666;
-            a {
-                font-weight: bold;
-                box-shadow: 0.3em 0.3em 0 0 var(--dark);
-                border: 2px solid var(--dark);
-            }
+
+        a {
+            font-weight: bold;
+            box-shadow: 0.3em 0.3em 0 0 var(--dark);
+            border: 2px solid var(--dark);
+        }
     }
 }
 
 /* Mobile toc. */
 @media (max-width: 1200px) {
     #ucl-course-toc:target {
-        display: block !important;
-        position: fixed !important;
+        display: block !important; /* stylelint-disable-line declaration-no-important */
+        position: fixed !important; /* stylelint-disable-line declaration-no-important */
         inset: 0;
         z-index: 6666;
         background: white;
@@ -196,7 +203,7 @@ body.format-ucl {
         #ucl-mobile-menu,
         #mobile-toc-fab,
         .drawer-toggles {
-            display: none !important;
+            display: none !important; /* stylelint-disable-line declaration-no-important */
         }
-    } 
+    }
 }

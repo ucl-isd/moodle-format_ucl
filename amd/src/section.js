@@ -137,6 +137,7 @@ class Section extends BaseComponent {
             promise.then((html, js) => {
                 Templates.replaceNode(sectionnavigation, html, js);
                 pendingReload.resolve();
+                return;
             }).catch(() => {
                 pendingReload.resolve();
             });
@@ -166,6 +167,7 @@ class Section extends BaseComponent {
             promise.then((html, js) => {
                 Templates.replaceNode(sectiondivider, html, js);
                 pendingReload.resolve();
+                return;
             }).catch(() => {
                 pendingReload.resolve();
             });
@@ -192,6 +194,7 @@ class Section extends BaseComponent {
                     courseid: Config.courseId,
                 }
             );
+            // eslint-disable-next-line promise/always-return
             promise.then((html, js) => {
                 Templates.replaceNode(sectioncontrolmenu, html, js);
                 pendingReload.resolve();

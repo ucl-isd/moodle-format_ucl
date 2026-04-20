@@ -167,14 +167,14 @@
     }
 }}
 <div id="course-format-{{uniqid}}">
-    <h2 class="accesshide">{{{title}}}</h2>
+    {{#title}}<h2 class="accesshide">{{{title}}}</h2>{{/title}}
     {{{completionhelp}}}
     <div class="single-section">
-        <ul class="{{format}} list-unstyled" data-for="course_sectionlist">
+        <div class="{{format}} list-unstyled" data-for="course_sectionlist">
             {{! UCL Change.
-                    Output section 0 only on course home page.
-                    Add UCL meta-data to this section.
-                }}
+                Output section 0 only on course home page.
+                Add UCL meta-data to this section.
+            }}
             {{#initialsection}}
                 {{> format_ucl/local/content/initialsection }}
                 {{> format_ucl/local/content/section }}
@@ -187,7 +187,7 @@
                     {{/ core_courseformat/local/content/section }}
                 {{/singlesection}}
             {{/initialsection}}
-        </ul>
+        </div>
     </div>
 
     {{#bulkedittools}}
@@ -198,7 +198,6 @@
 </div>
 {{#js}}
     require(['core_courseformat/local/content'], function(component) {
-    component.init(
-    'page', {}, {{sectionreturn}});
+    component.init('page', {});
     });
 {{/js}}

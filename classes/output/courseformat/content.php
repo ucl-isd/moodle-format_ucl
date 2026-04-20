@@ -19,7 +19,6 @@ namespace format_ucl\output\courseformat;
 use context_course;
 use core_courseformat\output\local\content as content_base;
 use format_ucl;
-use format_ucl\output\widgets\assessments;
 use format_ucl\output\widgets\sectionactions;
 use format_ucl\output\widgets\toc;
 use moodle_url;
@@ -84,7 +83,7 @@ class content extends content_base {
         }
 
         // TOC layout.
-        // TODO
+        // TODO.
         $layout = 'toc';
         if ($layout == 'toc') {
             // Table of contents for ucl format.
@@ -114,11 +113,11 @@ class content extends content_base {
     /**
      * Return data for first section.
      *
-     * @param $data
+     * @param stdClass $data
      * @param \renderer_base $output
      * @return stdClass
      */
-    public function get_ucl_initialsection($data, \renderer_base $output): stdClass {
+    public function get_ucl_initialsection(stdClass $data, \renderer_base $output): stdClass {
         $section = $data->singlesection;
         // TODO - does this actually improve speed? - This will be an empty array.
         $data->sections = ''; // Remove the rest of the data, not needed.
@@ -151,13 +150,6 @@ class content extends content_base {
 
             // Set first section to enable adding ucl metadata.
             $data->initialsection = $section;
-
-            // Assessments.
-            // $assessmentswidget = new assessments($this->format);
-            // $data->assessments = $assessmentswidget->export_for_template($output);
-
-            // Contacts.
-            // $data->contacts = contacts::course_contacts_list();
         }
         return $data;
     }
@@ -166,6 +158,8 @@ class content extends content_base {
      * SHAME - copied from
      * moodle/course/format/classes/output/local/content/section/summary.php
      * Generate html for first section summary.
+     *
+     * @param stdClass $section
      *
      */
     public function get_ucl_initialsection_summary_text(stdClass $section): string {
@@ -223,9 +217,12 @@ class content extends content_base {
 
     // TODO - best practice - build into format.
 
+    // phpcs:disable moodle.Commenting.InlineComment.InvalidEndChar
     // More than 16 sections - not display well on laptops.
     // This course contains unnamed sections - you can improve your course by giving each section a meanigful title.
-    // This course contains sections with one or less visbible actitivites - you can imporve your course by re-organising these.
-    // This section contains lots of activites without any structure - you can improve this by using lables to structure the content.
+    // This course contains sections with one or less visbible actitivites - you can imporve your course by
+    // re-organising these.
+    // This section contains lots of activites without any structure - you can improve this by using lables to structure
+    // the content.
     // etc
 }

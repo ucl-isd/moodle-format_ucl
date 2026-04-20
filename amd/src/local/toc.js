@@ -90,8 +90,6 @@ export default class Component extends BaseComponent {
     _refreshCourseToc({state}) {
         const sectionlist = this.reactive.getExporter().listedSectionIds(state);
         this._fixOrder(this.element, sectionlist, this.sections);
-        // Fire section navigation updated @TODO temp using section updated.
-
     }
 
     /**

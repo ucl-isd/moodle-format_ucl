@@ -1,5 +1,5 @@
-@format @format_ucl @wip @TODO
-Feature: Sections can be highlighted
+@format @format_ucl
+Feature: UCL sections can be highlighted
   In order to mark sections
   As a teacher
   I need to highlight and unhighlight sections
@@ -29,25 +29,29 @@ Feature: Sections can be highlighted
 
   @javascript
   Scenario: Highlight a section
-    When I open section "2" edit menu
-    And I click on "Highlight" "link" in the "Section 2" "section"
-    Then I should see "Highlighted" in the "Section 2" "section"
+    Given I click on "Section 2" "link" in the "#toc" "css_element"
+    And I open ucl section "Section 2" edit menu
+    When I click on "Highlight" "link" in the ".section-actions" "css_element"
+    Then I should see "Highlighted" in the "[data-sectionname='Section 2']" "css_element"
 
   @javascript
   Scenario: Highlight a section when another section is already highlighted
-    Given I open section "3" edit menu
-    And I click on "Highlight" "link" in the "Section 3" "section"
-    And I should see "Highlighted" in the "Section 3" "section"
-    When I open section "2" edit menu
-    And I click on "Highlight" "link" in the "Section 2" "section"
-    Then I should see "Highlighted" in the "Section 2" "section"
-    And I should not see "Highlighted" in the "Section 3" "section"
+    Given I click on "Section 3" "link" in the "#toc" "css_element"
+    And I open ucl section "Section 3" edit menu
+    When I click on "Highlight" "link" in the ".section-actions" "css_element"
+    Then I should see "Highlighted" in the "[data-sectionname='Section 3']" "css_element"
+    And I click on "Section 2" "link" in the "#toc" "css_element"
+    And I open ucl section "Section 2" edit menu
+    And I click on "Highlight" "link" in the ".section-actions" "css_element"
+    And I click on "Section 3" "link" in the "#toc" "css_element"
+    And I should not see "Highlighted" in the "[data-sectionname='Section 3']" "css_element"
 
   @javascript
   Scenario: Unhighlight a section
-    Given I open section "3" edit menu
-    And I click on "Highlight" "link" in the "Section 3" "section"
-    And I should see "Highlighted" in the "Section 3" "section"
-    When I open section "3" edit menu
-    And I click on "Unhighlight" "link" in the "Section 3" "section"
-    Then I should not see "Highlighted" in the "Section 3" "section"
+    Given I click on "Section 3" "link" in the "#toc" "css_element"
+    And I open ucl section "Section 3" edit menu
+    When I click on "Highlight" "link" in the ".section-actions" "css_element"
+    Then I should see "Highlighted" in the "[data-sectionname='Section 3']" "css_element"
+    And I open ucl section "Section 3" edit menu
+    And I click on "Unhighlight" "link" in the ".section-actions" "css_element"
+    And I should not see "Highlighted" in the "[data-sectionname='Section 3']" "css_element"

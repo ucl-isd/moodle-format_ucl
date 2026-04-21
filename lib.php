@@ -128,11 +128,21 @@ class format_ucl extends core_courseformat\base {
         }
 
         if (get_string_manager()->string_exists('sectionname', 'format_' . $this->format)) {
-            return get_string('sectionname', 'format_' . $this->format) . ' ' . $sectionnum;
+            return get_string('sectionname', 'format_' . $this->format);
         }
 
         // Return an empty string if there's no available section name string for the given format.
         return '';
+    }
+
+    /**
+     * Returns the default section using course_format's implementation of get_section_name.
+     *
+     * @param int|stdClass $section Section object from database or just field course_sections section
+     * @return string The default value for the section name based on the given course format.
+     */
+    public function get_default_section_name($section) {
+        return self::get_section_name($section);
     }
 
     /**
@@ -155,9 +165,7 @@ class format_ucl extends core_courseformat\base {
         $course = $this->get_course();
         $url = new moodle_url('/course/view.php', ['id' => $course->id]);
 
-        if (array_key_exists('sr', $options)) {
-            $sectionno = $options['sr'];
-        } else if (is_object($section)) {
+        if (is_object($section)) {
             $sectionno = $section->section;
         } else {
             $sectionno = $section;

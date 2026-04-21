@@ -12,7 +12,7 @@ Feature: Appropriate Tips are shown to user
 
   Scenario: Tips do not appear on section pages
     When I am on the "C1" "Course" page logged in as "admin"
-    And I click on "New section 2" "link" in the "#toc" "css_element"
+    And I click on "New section" "link" in the "#toc" "css_element"
     Then ".behat-ucl-tips" "css_element" should not exist
 
   Scenario: Course image tip is shown for courses without images
@@ -32,7 +32,7 @@ Feature: Appropriate Tips are shown to user
   @javascript
   Scenario: Section name tip is shown for unnamed sections
     Given I log in as "admin"
-    And I am on the "Course 1 > New section 1" "course > section" page
+    And I am on the "Course 1 > New section" "course > section" page
     And I turn editing mode on
     When I set the field "Edit section name" in the ".ucl-section-name" "css_element" to "Stamptown"
     And I am on "Course 1" course homepage

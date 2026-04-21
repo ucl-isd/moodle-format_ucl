@@ -127,8 +127,8 @@ class format_ucl extends core_courseformat\base {
             return get_string('section0name', 'format_ucl');
         }
 
-        if (get_string_manager()->string_exists('sectionname', 'format_' . $this->format)) {
-            return get_string('sectionname', 'format_' . $this->format);
+        if (get_string_manager()->string_exists('sectionname', 'format_ucl')) {
+            return get_string('sectionname', 'format_ucl');
         }
 
         // Return an empty string if there's no available section name string for the given format.
@@ -187,14 +187,18 @@ class format_ucl extends core_courseformat\base {
  * @param string $itemtype
  * @param int $itemid
  * @param mixed $newvalue
- * @return inplace_editable
+ * @return \core\output\inplace_editable
  */
 function format_ucl_inplace_editable($itemtype, $itemid, $newvalue) {
     global $DB, $CFG;
     require_once($CFG->dirroot . '/course/lib.php');
     if ($itemtype === 'sectionname' || $itemtype === 'sectionnamenl') {
         $section = $DB->get_record_sql(
-            'SELECT s.* FROM {course_sections} s JOIN {course} c ON s.course = c.id WHERE s.id = ? AND c.format = ?',
+            'SELECT s.*
+                   FROM {course_sections} s
+                   JOIN {course} c ON s.course = c.id
+                  WHERE s.id = ?
+                    AND c.format = ?',
             [$itemid, 'ucl'],
             MUST_EXIST
         );

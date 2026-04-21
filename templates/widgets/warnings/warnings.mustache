@@ -29,33 +29,37 @@
 <div class="d-none d-lg-block p-3 alert alert-primary behat-ucl-tips">
     <div class="badge badge-primary">Tips</div><br>
     {{courseimage}}
-    {{#noimage}}
+    {{#shownocourseimg}}
         <div class="behat-nocourseimg">
-            <b>No course image</b>
-            <p>Add a <a href="{{{ config.wwwroot }}}/course/edit.php?id={{courseid}}#fitem_id_overviewfiles_filemanager">course image</a> to make your course more identifiable, and add personality.</p>
+            <b>{{#str}}nocourseimg, format_ucl{{/str}}</b>
+            <p>{{#str}}nocourseimg:desc, format_ucl, {{url}}{{/str}}</p>
         </div>
-    {{/noimage}}
+    {{/shownocourseimg}}
 
-    {{#namecount}}
+    {{#shownunnamedsections}}
         <div class="behat-unnamedsections">
-            <b><span class="behat-namecount">{{namecount}}</span> unnamed sections</b>
-            <p>All course sections should have meaningful names. <a href="">How to structure content guide</a></p>
+            <b><span class="behat-namecount">{{namecount}}</span> {{#str}}unnamedsections, format_ucl{{/str}}</b>
+            <p>{{#str}}unnamedsections:desc, format_ucl{{/str}}</p>
         </div>
-    {{/namecount}}
+    {{/shownunnamedsections}}
 
-    {{#sectioncount}}
+    {{#showtoomanysections}}
         <div class="behat-toomanysections">
-            <b>{{sectioncount}} sections</b>
-            <p>Courses should have a maximum of <span class="behat-sectioncount">{{recommendedmaxsections}}</span> sections. Consider combining related materials into a single section. <a href="">How to structure content guide</a></p>
+            <b>{{#str}}toomanysections, format_ucl, {{visiblecount}}{{/str}}</b>
+            <p>
+                {{#str}}toomanysections:pre:desc, format_ucl{{/str}}
+                <span class="behat-sectioncount">{{recommendedmaxsections}}</span>
+                {{#str}}toomanysections:post:desc, format_ucl, {{recommendedmaxsections}}{{/str}}
+            </p>
         </div>
-    {{/sectioncount}}
+    {{/showtoomanysections}}
 
-    {{#modcount}}
+    {{#showtoofewmods}}
         <div class="behat-toofewmods">
-            <b><span class="behat-modcount">{{modcount}}</span> sections have one or less activities/resources</b>
-            <p>Consider combining related materials into a single section. <a href="">How to structure content guide</a></p>
+            <b><span class="behat-modcount">{{modcount}}</span> {{#str}}toofewmods, format_ucl{{/str}}</b>
+            <p>{{#str}}toofewmods:desc, format_ucl{{/str}}</p>
         </div>
-    {{/modcount}}
+    {{/showtoofewmods}}
 </div>
 {{/showwarning}}
 {{/toc}}

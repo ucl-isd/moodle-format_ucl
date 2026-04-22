@@ -213,14 +213,4 @@ class content extends content_base {
         }
         return new stdClass();
     }
-
-    // TODO - best practice - build into format.
-
-    // phpcs:disable moodle.Commenting.InlineComment.InvalidEndChar
-    // phpcs:disable moodle.Files.LineLength.TooLong
-    // More than 16 sections - not display well on laptops.
-    // This course contains unnamed sections - you can improve your course by giving each section a meanigful title.
-    // This course contains sections with one or less visbible actitivites - you can imporve your course by re-organising these.
-    // This section contains lots of activites without any structure - you can improve this by using lables to structure the content.
-    // etc
 }

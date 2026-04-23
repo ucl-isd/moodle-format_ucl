@@ -150,7 +150,7 @@ class toc implements renderable, templatable {
             $data->showwarning = true;
             $data->showtoomanysections = true;
             $data->visiblecount = $visiblecount;
-            $data->recommendedmaxsections = $recommendedmaxsections;
+            $data->recommendedmaxsections = '<span class="behat-sectioncount">' . $recommendedmaxsections . '</span>';
         }
 
         // Activites per section in check.

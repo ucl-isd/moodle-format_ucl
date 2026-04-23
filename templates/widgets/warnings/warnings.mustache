@@ -46,11 +46,7 @@
     {{#showtoomanysections}}
         <div class="behat-toomanysections">
             <b>{{#str}}toomanysections, format_ucl, {{visiblecount}}{{/str}}</b>
-            <p>
-                {{#str}}toomanysections:pre:desc, format_ucl{{/str}}
-                <span class="behat-sectioncount">{{recommendedmaxsections}}</span>
-                {{#str}}toomanysections:post:desc, format_ucl, {{recommendedmaxsections}}{{/str}}
-            </p>
+            <p>{{#str}}toomanysections:desc, format_ucl, {{{recommendedmaxsections}}}{{/str}}</p>
         </div>
     {{/showtoomanysections}}
 

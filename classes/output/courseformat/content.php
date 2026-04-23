@@ -118,8 +118,6 @@ class content extends content_base {
      */
     public function get_ucl_initialsection(stdClass $data, \renderer_base $output): stdClass {
         $section = $data->singlesection;
-        // TODO - does this actually improve speed? - This will be an empty array.
-        $data->sections = ''; // Remove the rest of the data, not needed.
         if ($section->num == '0') {
             $section->displayonesection = true; // Magic to stop accordians.
 

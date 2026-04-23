@@ -54,7 +54,7 @@ class toc implements renderable, templatable {
      * @param renderer_base $output
      */
     public function export_for_template(renderer_base $output) {
-        global $PAGE, $USER;
+        global $PAGE, $USER, $CFG;
         if (!$course = $this->format->get_course()) {
             return [];
         }
@@ -140,6 +140,7 @@ class toc implements renderable, templatable {
         // Sections names check.
         if ($namecount > 1) {
             $data->showwarning = true;
+            $data->shownunnamedsections = true;
             $data->namecount = $namecount;
         }
 
@@ -147,20 +148,25 @@ class toc implements renderable, templatable {
         $recommendedmaxsections = format_ucl\config::instance()->get_recommended_max_sections();
         if ($visiblecount > $recommendedmaxsections) {
             $data->showwarning = true;
-            $data->sectioncount = $visiblecount;
-            $data->recommendedmaxsections = $recommendedmaxsections;
+            $data->showtoomanysections = true;
+            $data->visiblecount = $visiblecount;
+            $data->recommendedmaxsections = '<span class="behat-sectioncount">' . $recommendedmaxsections . '</span>';
         }
 
         // Activites per section in check.
         if ($modcount > 1) {
             $data->showwarning = true;
+            $data->showtoofewmods = true;
             $data->modcount = $modcount;
         }
 
         // Course image check.
         if (!course_summary_exporter::get_course_image($course)) {
             $data->showwarning = true;
-            $data->noimage = true;
+            $data->shownocourseimg = true;
+            $url = new moodle_url($CFG->wwwroot . '/course/edit.php', ['id' => $course->id]);
+            $url->set_anchor('fitem_id_overviewfiles_filemanager');
+            $data->url = $url;
         }
 
         if (has_any_capability(['moodle/course:manageactivities'], $PAGE->context)) {

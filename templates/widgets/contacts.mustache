@@ -1,0 +1,51 @@
+
+{{#hascontacts}}
+<h3 class="mt-3">
+    <a class="foo" data-toggle="collapse" href="#ucl-format-contacts" role="button" aria-expanded="false" aria-controls="ucl-format-contacts">
+        <i class="fa-solid fa-circle-chevron-down mr-2"></i>{{#str}} coursecontacts, format_ucl {{/str}}
+    </a>
+</h3>
+
+<div class="collapse mt-3" id="ucl-format-contacts">
+    {{#contacts}}
+    {{! Contact. }}
+    <div class="d-flex align-items-start">
+        {{! Image. }}
+        <div class="mr-3 bg-cover bg-light rounded-circle flex-shrink-0" 
+        style="background-image: url('{{picture}}'); 
+        height: 3rem; width: 3rem;">
+        </div>
+        
+        {{! Details. }}
+        <div>
+            <span class="badge badge-secondary badge-pill">{{{role}}}</span>
+            <a href="{{{url}}}">{{{name}}}</a> · 
+            <a href="mailto:{{{email}}}"><i class="fa-solid fa-envelope mr-1"></i>{{{email}}}</a>
+            
+            <div class="small pt-1">{{{description}}}</div>
+        </div>
+
+    </div>
+    <hr>
+    {{/contacts}}
+
+    {{#caneditroles}}
+    <a class="btn btn-sm btn-primary" href="{{{ config.wwwroot }}}/enrol/users.php?id={{courseid}}">
+        {{#str}} editcourseroles, format_ucl {{/str}}
+    </a>
+   {{/caneditroles}}
+</div>
+
+
+<style>
+.fa-solid  {
+    transition: transform 0.5s ease;
+}
+.foo[aria-expanded="true"] {
+    .fa-circle-chevron-down {
+        transform: rotate(180deg);
+    }
+}
+</style>
+
+{{/hascontacts}}

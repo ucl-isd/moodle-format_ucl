@@ -18,6 +18,12 @@ body.format-ucl {
         padding-left: 0;
     }
 
+    /* Remove borders. */
+    .section-item {
+        border: none;
+        padding: 0;
+    }
+
     /* Remove "current" border. */
     .course-content .current::before {
         border-left: none !important; /* stylelint-disable-line declaration-no-important */

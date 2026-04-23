@@ -176,7 +176,9 @@
             }}
             {{#initialsection}}
                 {{> format_ucl/local/content/initialsection }}
-                {{> format_ucl/local/content/section }}
+                {{$ core_courseformat/local/content/section }}
+                    {{> format_ucl/local/content/section }}
+                {{/ core_courseformat/local/content/section }}
             {{/initialsection}}
 
             {{^initialsection}}

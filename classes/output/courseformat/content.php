@@ -119,8 +119,6 @@ class content extends content_base {
      * @return stdClass
      */
     public function get_ucl_initialsection(stdClass $data, \renderer_base $output): stdClass {
-        global $PAGE;
-
         $section = $data->singlesection;
         // TODO - does this actually improve speed? - This will be an empty array.
         $data->sections = ''; // Remove the rest of the data, not needed.
@@ -154,59 +152,79 @@ class content extends content_base {
             // Course contacts.
             // TODO - make better!
             $course = $this->format->get_course();
-            $course = new core_course_list_element($course);
-            $contacts = $course->get_course_contacts();
+            $courselement = new core_course_list_element($course);
+            $contacts = $courselement->get_course_contacts();
             $template = new stdClass();
             $template->contacts = [];
-            // Buckets for sorting by role.
-            $admins = [];
-            $leaders = [];
-            $tutors = [];
-            $teachers = [];
+            $allcontacts = [];
 
             if (!empty($contacts)) {
                 foreach ($contacts as $c) {
                     $contact = new stdClass();
-                    $contact->id = $c['user']->id;
-                    $contact->name = $c['username'];
-                    $contact->role = $c['rolename'];
-                    $contact->url = new moodle_url('/user/view.php', [ 'id' => $contact->id, 'course' => $course->id]);
-
-                    // Description.
                     $userobj = $c['user'];
                     $user = \core_user::get_user($userobj->id, '*', MUST_EXIST);
+
+                    $contact->id = $user->id;
+                    $contact->name = $c['username'];
+                    $contact->role = $c['rolename'];
+                    $contact->email = $user->email;
+
+                    // URL.
+                    $contacturl = new moodle_url('/user/view.php', ['id' => $user->id, 'course' => $course->id]);
+                    $contact->url = $contacturl->out(false);
+
+                    // Description.
                     $contact->description = format_text(
                         $user->description,
                         $user->descriptionformat,
                         ['context' => \context_course::instance($course->id)]
                     );
 
-                    // Image.
+                    // Image / Initials.
                     $userpicture = new \user_picture($user);
-                    $contact->picture = $userpicture->get_url($PAGE)->out(false);
+                    $userpicture->link = false;
+                    $userpicture->alttext = false;
+                    $userpicture->size = 50;
+                    $contact->picture = $output->render($userpicture);
 
-                    // Email.
-                    $contact->email = $user->email;
+                    // Last name for a-z sorting.
+                    $contact->lastname = $user->lastname;
 
-                    // Check UCL specific roles.
-                    $rolename = strtolower($contact->role);
+                    $allcontacts[] = $contact;
+                }
+
+                // Sort the users A-Z by lastname.
+                usort($allcontacts, function ($a, $b) {
+                    return strcasecmp($a->lastname, $b->lastname);
+                });
+
+                // Contact roles.
+                $admins = [];
+                $leaders = [];
+                $tutors = [];
+                $teachers = [];
+
+                foreach ($allcontacts as $c) {
+                    $rolename = strtolower($c->role);
                     if ($rolename === 'course administrator') {
-                        $admins[] = $contact;
+                        $admins[] = $c;
                     } else if ($rolename === 'leader') {
-                        $leaders[] = $contact;
+                        $leaders[] = $c;
                     } else if ($rolename === 'tutor') {
-                        $tutors[] = $contact;
+                        $tutors[] = $c;
                     } else if ($rolename === 'teacher') {
-                        $teachers[] = $contact;
+                        $teachers[] = $c;
                     }
                 }
-            }
 
-            $data->contacts = array_merge($admins, $leaders, $tutors, $teachers);
-            if (!empty($data->contacts)) {
-                $data->hascontacts = true;
-                $context = context_course::instance($course->id);
-                $data->caneditroles = has_capability('moodle/role:assign', $context);
+                // Merge roles.
+                $data->contacts = array_merge($admins, $leaders, $tutors, $teachers);
+
+                if (!empty($data->contacts)) {
+                    $data->hascontacts = true;
+                    $context = context_course::instance($course->id);
+                    $data->caneditroles = has_capability('moodle/role:assign', $context);
+                }
             }
             // Set first section to enable adding ucl metadata.
             $data->initialsection = $section;

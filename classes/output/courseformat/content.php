@@ -123,14 +123,8 @@ class content extends content_base {
 
             // Section title.
             $data->sectionname = $section->header->name;
-            // Summary.
-            $data->initialsectionsummary = $this->get_ucl_initialsection_summary_text($section);
-            $section->summary = ""; // We output this as initialsectionsummary in a different place.
-
-            // Add next section for next/previous section template.
-            if ($next = $this->get_ucl_next_section()) {
-                $data->sectionselector = $next;
-            }
+            // Section summary.
+            $section->summarytext = $section->summary->summarytext;
 
             // Single section editing.
             if ($data->isediting) {
@@ -149,32 +143,6 @@ class content extends content_base {
             $data->initialsection = $section;
         }
         return $data;
-    }
-
-    /**
-     * SHAME - copied from
-     * moodle/course/format/classes/output/local/content/section/summary.php
-     * Generate html for first section summary.
-     *
-     * @param stdClass $section
-     *
-     */
-    public function get_ucl_initialsection_summary_text(stdClass $section): string {
-        global $COURSE;
-        $context = context_course::instance($COURSE->id);
-        $summarytext = file_rewrite_pluginfile_urls(
-            $section->summary->summarytext,
-            'pluginfile.php',
-            $context->id,
-            'course',
-            'section',
-            $section->id
-        );
-
-        $options = new stdClass();
-        $options->noclean = true;
-        $options->overflowdiv = true;
-        return format_text($summarytext, FORMAT_HTML, $options);
     }
 
     /**

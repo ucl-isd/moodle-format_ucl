@@ -78,6 +78,12 @@ class content extends content_base {
 
             if ($data->isediting) {
                 $data->sectionactions = parent::get_page_header_action($output);
+                $data->hassummary = $data->singlesection->summary->summarytext !== '';
+                $data->addsectiondescurl = new moodle_url(
+                    '/course/editsection.php',
+                    ['id' => $sectioninfo->id, 'sr' => $singlesectionnum]
+                );
+                $data->addsectiondescurl->set_anchor('id_summary_editor');
             }
         }
 

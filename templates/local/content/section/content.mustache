@@ -98,7 +98,14 @@
     {{$ core_courseformat/local/content/section/summary }}
         {{! We output this in a different place for initial section }}
         {{^initialsection}}
-            {{> core_courseformat/local/content/section/summary }}
+            {{#hassummary}}
+                {{> core_courseformat/local/content/section/summary }}
+            {{/hassummary}}
+        {{^hassummary}}
+            <div>
+                <a href="{{{addsectiondescurl}}}">{{#str}}addsectiondescription, format_ucl{{/str}}</a>
+            </div>
+        {{/hassummary}}
         {{/initialsection}}
     {{/ core_courseformat/local/content/section/summary }}
     {{$ core_courseformat/local/content/section/cmlist }}

@@ -190,6 +190,14 @@ class content extends content_base {
                     // Last name for a-z sorting.
                     $contact->lastname = $user->lastname;
 
+                    // TODO - demo code
+                    // Using the mail dispay to hide/show contacts.
+                    $contact->hidden = ($user->maildisplay == 0);
+                    // If hidden and not editing, don't show.
+                    if ($contact->hidden && !$data->isediting) {
+                        continue;
+                    }
+
                     $allcontacts[] = $contact;
                 }
 
@@ -218,11 +226,12 @@ class content extends content_base {
                 }
 
                 // Merge roles.
-                $data->contacts = array_merge($admins, $leaders, $tutors, $teachers);
+                $data->contacts = array_merge($leaders, $tutors, $teachers, $admins);
 
                 if (!empty($data->contacts)) {
                     $data->hascontacts = true;
                     $context = context_course::instance($course->id);
+                    // TODO - only allow if course admin or leader.
                     $data->caneditroles = has_capability('moodle/role:assign', $context);
                 }
             }

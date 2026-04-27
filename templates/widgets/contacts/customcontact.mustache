@@ -1,0 +1,41 @@
+<div class="collapse pt-3" id="ucl-format-customcontact-form">
+    
+    <form action="foo.php" method="post" class="p-3 border">
+    <legend>Custom contact</legend>
+    <p class="small">A custom contact is not linked to a Moodle user, and not listed in participants, or elsewhere in a course.</p>
+    <div class="d-flex align-items-center w-100"> 
+        {{! Image. }}
+        <div class="flex-0">
+            <div class="rounded-circle mr-2 bg-dark d-flex align-items-center justify-content-center" style="width: 3rem; height: 3rem;">
+                <i class="fa-regular fa-envelope text-white"></i>
+            </div>
+        </div>
+
+        <div class="m-3 flex-fill">
+            <label for="role" class="form-label">Role</label>
+            <input required type="text" class="form-control" id="role" placeholder="e.g. Course office">
+        </div>
+
+        <div class="m-3 flex-fill">
+            <label for="name" class="form-label">Name</label>
+            <input required type="text" class="form-control" id="name" placeholder="e.g. Support enquires">
+        </div>
+        
+        <div class="m-3 flex-fill">
+            <label for="email" class="form-label">Email address</label>
+            <input required type="email" class="form-control" id="email" placeholder="name@example.com">
+        </div> 
+    </div>
+
+    <div class="mb-3 mr-3">
+        <label for="description" class="form-label">Description</label>
+        <input type="text" class="form-control" id="description" placeholder="e.g. Course support enquires">
+    </div>
+
+
+    <button type="submit" class="btn btn-primary mr-2">Save</button>
+    <a data-toggle="collapse" href="#ucl-format-customcontact-form" 
+        role="button" aria-expanded="false" 
+        aria-controls="ucl-format-customcontact-form">Cancel</a>
+    </form>
+</div>

@@ -1,0 +1,89 @@
+{{! Contact. }}
+<div class="ucl-format-coursecontact d-flex align-items-start my-3">
+    
+    {{! Image. }}
+    <div class="flex-0 ucl-format-coursecontact-picture">{{{picture}}}</div>
+    
+    {{! Details. }}
+    <div class="ml-2">
+        <span class="badge badge-warning badge-pill {{^hidden}} d-none {{/hidden}}">
+            <i class="fa-solid fa-eye-slash mr-1"></i>
+            <span class="sr-only">Hidden from students</span>
+            {{{role}}}
+        </span>
+
+        <span class="badge badge-secondary badge-pill {{#hidden}} d-none {{/hidden}}">
+            {{{role}}}
+        </span>
+        
+        <a href="{{{url}}}">{{{name}}}</a> · 
+        {{! TODO - can we add subject =  course code, student number? }}
+        <a href="mailto:{{{email}}}?subject=course code" target="_blank"><i class="fa-solid fa-envelope mr-1"></i>{{{email}}}</a>
+        
+        {{#description}}
+        <div class="small pt-1">{{{.}}}</div>
+        {{/description}}
+
+        {{^description}}
+        {{#isediting}}
+            <div class="small pt-1">
+                {{! TODO - add return to course? e.g. return=. }}
+                <a  href="{{{ config.wwwroot }}}/user/editadvanced.php?id={{id}}&course={{courseid}}#id_description_editor_label">
+                    <i class="fa-solid fa-circle-plus mr-1"></i>
+                    Add description
+                </a>
+            </div>
+        {{/isediting}}
+        {{/description}}
+        
+    </div>
+
+    {{! Hide/show contact. }}
+    {{#isediting}}
+    {{#caneditroles}}
+    <div class="ml-auto">
+        <div class="custom-control custom-switch">
+            <input type="checkbox" id="switch-{{id}}" 
+            class="contact-hide-toggle custom-control-input" 
+             {{#hidden}} checked {{/hidden}}
+             >
+            <label class="custom-control-label" for="switch-{{id}}" 
+            title="Hide {{{name}}} from students" >
+            <span class="sr-only">Hide {{{name}}} from students</span>
+            </label>
+        </div>
+    </div>
+    {{/caneditroles}}
+    {{/isediting}}
+
+</div>
+{{#isediting}}
+<hr>
+{{/isediting}}
+
+{{! // SHAME - Example css for demo only. }}
+<style>
+.ucl-format-coursecontact-picture {
+    transition: all .5s ease;
+}
+/* Checked. */
+.ucl-format-coursecontact:has(.contact-hide-toggle:checked) {
+    .badge-warning {
+        display: inline-block !important;
+    }
+    .badge-secondary {
+        display: none !important;
+    }
+    .ucl-format-coursecontact-picture {
+        opacity: .5;
+    }
+}
+/* Not checked. */
+.ucl-format-coursecontact:has(.contact-hide-toggle:not(:checked)) {
+    .badge-warning {
+        display: none !important;
+    }
+    .badge-secondary {
+        display: inline-block !important;
+    }
+</style>

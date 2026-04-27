@@ -44,49 +44,67 @@
 }}
 
 {{#hascontacts}}
-<h3 class="mt-3">
-    <a class="foo" data-toggle="collapse" href="#ucl-format-contacts" role="button" aria-expanded="false" aria-controls="ucl-format-contacts">
-        <i class="fa-solid fa-circle-chevron-down mr-2"></i>{{#str}} coursecontacts, format_ucl {{/str}}
+<hr>
+<h3>
+    <a class="foo d-flex" data-toggle="collapse" href="#ucl-format-contacts" role="button" aria-controls="ucl-format-contacts"
+    {{#isediting}} aria-expanded="true" {{/isediting}}
+    {{^isediting}} aria-expanded="false" {{/isediting}}>
+        {{#str}} coursecontacts, format_ucl {{/str}}
+        <span class="ml-auto"><i class="fa-solid fa-circle-arrow-down"></i></span>
     </a>
 </h3>
 
-<div class="collapse pt-3" id="ucl-format-contacts">
-    {{#contacts}}
-    {{! Contact. }}
-    <div class="d-flex align-items-start role-{{{role}}}">
-        {{! Image. }}
-        {{{picture}}}
-        
-        {{! Details. }}
-        <div class="ml-2">
-            <span class="badge badge-secondary badge-pill">{{{role}}}</span>
-            <a href="{{{url}}}">{{{name}}}</a> · 
-            <a href="mailto:{{{email}}}"><i class="fa-solid fa-envelope mr-1"></i>{{{email}}}</a>
-            
-            <div class="small pt-1">{{{description}}}</div>
+<div class="collapse {{#isediting}} show {{/isediting}}" id="ucl-format-contacts">
+    {{! Hide contact col label. }}
+    {{! TODO - single var for isediting & caneditroles as used a lot... }}
+    {{#isediting}}
+    {{#caneditroles}}
+    <div class="d-flex align-items-end small">
+        <div>Course contacts are based on course roles.
+        <br>You can hide a contact from displaying here, but they will still be visible elsewhere.
         </div>
-
+        <div class="ml-auto">
+            Hide contact
+        </div>
     </div>
-    <hr>
+    {{/caneditroles}}
+    {{/isediting}}
+    
+    {{#contacts}}
+    {{> format_ucl/widgets/contacts/contact }}
     {{/contacts}}
 
+    {{#isediting}}
     {{#caneditroles}}
-    <a class="btn btn-sm btn-primary" href="{{{ config.wwwroot }}}/user/index.php?id={{courseid}}">
-        {{#str}} editcourseroles, format_ucl {{/str}}
-    </a>
-   {{/caneditroles}}
+    <div>
+        <a href="{{{ config.wwwroot }}}/user/index.php?id={{courseid}}" class="btn add-section bg-white mr-3">
+            <i class="fa-solid fa-circle-user mr-2"></i>
+            {{#str}} editcourseroles, format_ucl {{/str}}
+        </a>
+
+        <a class="btn add-section bg-white"data-toggle="collapse" href="#ucl-format-customcontact-form" 
+        role="button" aria-expanded="false" 
+        aria-controls="ucl-format-customcontact-form">
+            <i class="fa-solid fa-circle-plus mr-2"></i>Add custom contact
+        </a>
+    </div>
+    {{/caneditroles}}
+    {{/isediting}}
+
 </div>
 
+{{> format_ucl/widgets/contacts/customcontact }}
 
 <style>
 .fa-solid  {
     transition: transform 0.5s ease;
 }
 .foo[aria-expanded="true"] {
-    .fa-circle-chevron-down {
+    .fa-circle-arrow-down {
         transform: rotate(-180deg);
     }
 }
-</style>
 
+</style>
+<hr>
 {{/hascontacts}}

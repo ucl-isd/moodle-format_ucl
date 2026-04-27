@@ -18,4 +18,3 @@ Feature: A prompt appears if a section has no description
     And I press "Save changes"
     And "Add section description" "link" should not exist
     And "Welcome to Stamptown" "text" should exist in the ".summarytext" "css_element"
-

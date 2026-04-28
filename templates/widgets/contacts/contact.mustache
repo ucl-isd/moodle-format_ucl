@@ -12,13 +12,15 @@
             {{{role}}}
         </span>
 
-        <span class="badge badge-secondary badge-pill {{#hidden}} d-none {{/hidden}}">
+        <span class="badge badge-dark badge-pill {{#hidden}} d-none {{/hidden}}">
             {{{role}}}
         </span>
         
-        <a href="{{{url}}}">{{{name}}}</a> · 
-        {{! TODO - can we add subject =  course code, student number? }}
-        <a href="mailto:{{{email}}}?subject=course code" target="_blank"><i class="fa-solid fa-envelope mr-1"></i>{{{email}}}</a>
+        <a class="mx-1" href="{{{url}}}">{{{name}}}</a>
+        {{! TODO - can we add subject or body =  course code, student number? }}
+        <a href="mailto:{{{email}}}?subject=course code" target="_blank">
+            <i class="fa-regular fa-envelope mr-1"></i>{{{email}}}
+        </a>
         
         {{#description}}
         <div class="small pt-1">{{{.}}}</div>
@@ -27,6 +29,7 @@
         {{^description}}
         {{#isediting}}
             <div class="small pt-1">
+                {{! TODO - only output if you can edit this persons course profile.}}
                 {{! TODO - add return to course? e.g. return=. }}
                 <a  href="{{{ config.wwwroot }}}/user/editadvanced.php?id={{id}}&course={{courseid}}#id_description_editor_label">
                     <i class="fa-solid fa-circle-plus mr-1"></i>
@@ -71,7 +74,7 @@
     .badge-warning {
         display: inline-block !important;
     }
-    .badge-secondary {
+    .badge-dark {
         display: none !important;
     }
     .ucl-format-coursecontact-picture {
@@ -83,7 +86,7 @@
     .badge-warning {
         display: none !important;
     }
-    .badge-secondary {
+    .badge-dark {
         display: inline-block !important;
     }
 </style>

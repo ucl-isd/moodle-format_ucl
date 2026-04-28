@@ -103,7 +103,10 @@
             {{/hassummary}}
         {{^hassummary}}
             <div>
-                <a href="{{{addsectiondescurl}}}">{{#str}}addsectiondescription, format_ucl{{/str}}</a>
+                <a class="btn add-section" href="{{{addsectiondescurl}}}">
+                    <i class="fa-solid fa-circle-plus mr-2"></i>
+                    {{#str}}addsectiondescription, format_ucl{{/str}}
+                </a>
             </div>
         {{/hassummary}}
         {{/initialsection}}

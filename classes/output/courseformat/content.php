@@ -231,7 +231,7 @@ class content extends content_base {
                 if (!empty($data->contacts)) {
                     $data->hascontacts = true;
                     $context = context_course::instance($course->id);
-                    // TODO - only allow if course admin or leader.
+                    // TODO - only allow if course admin or leader for ucl, teacher for open source.
                     $data->caneditroles = has_capability('moodle/role:assign', $context);
                 }
             }

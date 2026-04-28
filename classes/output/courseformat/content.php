@@ -17,6 +17,7 @@
 namespace format_ucl\output\courseformat;
 
 use context_course;
+use core\exception\moodle_exception;
 use core_courseformat\output\local\content as content_base;
 use format_ucl;
 use format_ucl\output\widgets\toc;
@@ -56,20 +57,33 @@ class content extends content_base {
         $PAGE->requires->js_call_amd('format_ucl/section', 'init');
 
         $data = parent::export_for_template($output);
+        if (!$data->singlesection) {
+            // Something is wrong.
+            debugging(
+                "UCL Format requires a single section per page layout",
+                DEBUG_DEVELOPER
+            );
+        }
 
         // We want to use both section navigation and course index.
-        $singlesectionnum = $this->format->get_sectionnum();
+        $singlesectionnum = $data->sectionreturn;
 
         /** @var format_ucl $format */
         $format = $this->format;
         $data->courseid = $format->get_course()->id;
+        $sectioninfo = $format->get_modinfo()->get_section_info($singlesectionnum);
 
         // Am i editing?
         $data->isediting = $USER->editing;
+        $data->hassummary = (bool)$data->singlesection?->summary?->summarytext;
+        $data->addsectiondescurl = new moodle_url(
+            '/course/editsection.php',
+            ['id' => $sectioninfo->id, 'sr' => $singlesectionnum]
+        );
+        $data->addsectiondescurl->set_anchor('id_summary_editor');
 
         // Single section specific data.
         if (isset($data->singlesection) && $singlesectionnum > 0) {
-            $sectioninfo = $format->get_modinfo()->get_section_info($singlesectionnum);
             $data->id = $sectioninfo->id;
             $data->sectionname = $output->container(
                 $output->render($format->inplace_editable_render_section_name($sectioninfo, false)),
@@ -78,12 +92,6 @@ class content extends content_base {
 
             if ($data->isediting) {
                 $data->sectionactions = parent::get_page_header_action($output);
-                $data->hassummary = $data->singlesection->summary->summarytext !== '';
-                $data->addsectiondescurl = new moodle_url(
-                    '/course/editsection.php',
-                    ['id' => $sectioninfo->id, 'sr' => $singlesectionnum]
-                );
-                $data->addsectiondescurl->set_anchor('id_summary_editor');
             }
         }
 

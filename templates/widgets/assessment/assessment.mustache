@@ -37,13 +37,13 @@
                 <div class="text-right">
                     {{#hasmark}}
                         <span class="text-muted d-md-none">Mark: </span>
-                        <span class="h5">{{mark}}</span>
+                        <span class="h5"><a href="{{{url}}}">{{mark}}</a></span>
                         <small>{{#max}} of {{.}}{{/max}}</small>
                     {{/hasmark}}
                     
                     {{! Overdue.}}
                     {{#overdue}}
-                        <div class="badge badge-danger badge-pill mt-1">Overdue</div>
+                        <div class="badge badge-danger badge-pill mt-1">Overdue - not submitted</div>
                     {{/overdue}}
                     
                     {{! Submitted.}}

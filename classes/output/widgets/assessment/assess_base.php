@@ -58,11 +58,6 @@ abstract class assess_base {
                 }
             }
         }
-
-        // TODO - is this needed?
-        // Final fallback to the raw customdata in the course cache.
-        // $customdata = (array) $this->cm->customdata;
-        // return (int) ($customdata['duedate'] ?? $customdata['deadline'] ?? $customdata['timeclose'] ?? 0);
     }
 
     /**

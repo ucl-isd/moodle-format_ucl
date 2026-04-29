@@ -83,15 +83,4 @@ class coursework extends assess_base {
 
         return $result;
     }
-
-    /**
-     * Override to fetch from coursework table.
-     * @return int
-     */
-    public function get_activity_duedate(): int {
-        global $DB;
-
-        $deadline = $DB->get_field('coursework', 'deadline', ['id' => $this->cm->instance]);
-        return $deadline ? (int) $deadline : parent::get_activity_duedate();
-    }
 }

@@ -123,7 +123,7 @@ final class format_ucl_test extends \advanced_testcase {
                 $sectionname = get_string('section0name', 'format_ucl');
                 $this->assertEquals($sectionname, $courseformat->get_default_section_name($section));
             } else {
-                $sectionname = get_string('sectionname', 'format_ucl', $section->section);
+                $sectionname = get_string('sectiondefaultname', 'format_ucl', $section->section);
                 $this->assertEquals($sectionname, $courseformat->get_default_section_name($section));
             }
         }

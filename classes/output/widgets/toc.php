@@ -102,6 +102,7 @@ class toc implements renderable, templatable {
             if ($section->visible || $canviewhidden) {
                 $s = new stdClass();
                 $s->id = $section->id;
+                $s->section = $section->section;
                 $s->name = $format->get_section_name($section);
                 $s->url = $format->get_view_url($section, ['sr' => $section->section]);
                 $s->visible = $section->visible;

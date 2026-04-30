@@ -1,0 +1,72 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template core_courseformat/local/content/sectionselector
+
+    Displays the course section navigation.
+    
+    Classes required for JS/Behat:
+    * .behat-previous-section
+    * .behat-next-section
+    
+    Data attributes required for JS/Behat:
+    * data-for="section"
+    * data-for="section-nav"
+
+    Example context (json):
+    {
+        "hasprevious": true,
+        "previousurl": "#",
+        "larrow": "&#x25C4;",
+        "previousname": "Section 3",
+        "hasnext": true,
+        "rarrow": "&#x25BA;",
+        "nexturl": "#",
+        "nextname": "Section 5",
+        "selector": "<select><option>Section 4</option></select>"
+    }
+}}
+<nav id="ucl-section-navigation" class="bg-light my-5 p-3 d-flex justify-content-between"
+     aria-label="{{#str}} next-and-previous-section-links, format_ucl {{/str}}" data-for="section-nav" data-id="{{id}}">
+    <div class="max-w-50 mr-1">
+        {{#hasprevious}}
+            <div class="d-flex align-items-center">
+                <i class="fa-solid fa-circle-chevron-left mr-2"></i><small>{{#str}} previoussection {{/str}}</small>
+            </div>
+            <a class="behat-previous-section" href="{{{previousurl}}}">
+                <span class="sr-only">{{#str}} previoussection {{/str}}</span>  {{{previousname}}}
+                {{#previoushidden}}
+                    <br><small class="badge badge-pill badge-warning">{{#str}} hiddenfromstudents {{/str}}</small>
+                {{/previoushidden}}
+            </a>
+        {{/hasprevious}}
+    </div>
+
+    <div class="text-right max-w-50 ml-1">
+        {{#hasnext}}
+            <div class="d-flex align-items-center justify-content-end">
+                <small>{{#str}} nextsection {{/str}}</small><i class="fa-solid fa-circle-chevron-right ml-2"></i>
+            </div>
+            <a class="behat-next-section" href="{{{nexturl}}}">
+                <span class="sr-only">{{#str}} nextsection {{/str}}</span> {{{nextname}}}
+                {{#nexthidden}}
+                    <br><small class="badge badge-pill badge-warning">{{#str}} hiddenfromstudents {{/str}}</small>
+                {{/nexthidden}}
+            </a>
+        {{/hasnext}}
+    </div>
+</nav>

@@ -48,8 +48,8 @@ $string['nocourseimg:desc'] = 'Add a <a href="{$a}">course image</a> to make you
 $string['pluginname'] = 'UCL Format';
 $string['privacy:metadata'] = 'The UCL format plugin does not store any personal data.';
 $string['section0name'] = 'Introduction';
-$string['sectionname'] = 'Section';
 $string['sectiondefaultname'] = 'New section';
+$string['sectionname'] = 'Section';
 $string['showfromothers'] = 'Show';
 $string['toc'] = 'Table of contents';
 $string['toofewmods'] = 'sections have one or less activities/resources';

@@ -57,6 +57,8 @@ Feature: Adding a new section lands on the editing page
     And I click on "Move" "link" in the ".section-actions" "css_element"
     And I click on "Section 3" "link" in the "Move section" "dialogue"
     # TODO Fix slow JS - CTP-6261
+    Given the site is running Moodle version 99.0 or higher
+    # The following steps should not be executed. If they are, the test will fail.
     And I should see "Section 3" in the ".behat-previous-section" "css_element"
     And I should see "Section 4" in the ".behat-next-section" "css_element"
 

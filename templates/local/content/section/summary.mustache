@@ -15,17 +15,28 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template format_ucl/local/initialsection
+    @template format_ucl/local/content/section/summary
 
-    Displays the complete course format.
+    Displays the course section summary.
 
     Example context (json):
     {
-
+        "hassummary": false,
+        "isediting": true,
+        "addsectiondescurl": "/course/editsection.php?id=555555&sr=5#id_summary_editor"
     }
 }}
-<div class="behat-ucl-section-description">
-    <div>
-        {{> format_ucl/local/content/section/summary }}
-    </div>
-</div>
+{{#hassummary}}
+    {{> core_courseformat/local/content/section/summary }}
+{{/hassummary}}
+
+{{^hassummary}}
+    {{#isediting}}
+        <div>
+            <a class="btn add-section" href="{{{addsectiondescurl}}}">
+                <i class="fa-solid fa-circle-plus mr-2"></i>
+                {{#str}}addsectiondescription, format_ucl{{/str}}
+            </a>
+        </div>
+    {{/isediting}}
+{{/hassummary}}

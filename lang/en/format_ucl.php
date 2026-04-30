@@ -26,6 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['addactivity'] = 'Add activity or resource';
+$string['addsectiondescription'] = 'Add section description';
 $string['addsections'] = 'Add section';
 $string['addtextmedia'] = 'Add text and media';
 $string['config:recommendedmaxsections'] = 'Number of sections to suggest as Tip';

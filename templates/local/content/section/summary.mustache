@@ -15,14 +15,15 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template core_courseformat/local/content/section/summary
+    @template format_ucl/local/content/section/summary
 
     Displays the course section summary.
 
     Example context (json):
     {
-        "summarytext": "Summary text!",
-        "addsectiondescurl": "Section edit (summary) url"
+        "hassummary": false
+        "isediting": true
+        "addsectiondescurl": "/course/editsection.php?id=555555&sr=5#id_summary_editor"
     }
 }}
 {{#hassummary}}

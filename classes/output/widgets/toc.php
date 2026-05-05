@@ -107,13 +107,8 @@ class toc implements renderable, templatable {
                 $s->url = $format->get_view_url($section, ['sr' => $section->section]);
                 $s->visible = $section->visible;
 
-                // Current url.
-                if ($activesection == $section->id) {
-                    $s->active = true;
-                }
-
-                // Course home page.
-                if ($currentsectionnum === 0 && $section->section === 0) {
+                // Active section - either the section in the URL, or section 0 if on the course home page.
+                if ($activesection == $section->id || ($currentsectionnum === 0 && $section->section === 0)) {
                     $s->active = true;
                 }
 

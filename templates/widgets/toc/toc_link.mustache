@@ -26,14 +26,14 @@
 }}
 <li
     id="tocsection-{{id}}"
-    class="d-flex align-items-center py-1 
-    {{#active}} active {{/active}}
+    class="d-flex align-items-center py-1
     {{#highlight}} current {{/highlight}}
     {{^visible}} dimmed {{/visible}}"
     data-id="{{id}}"
     data-for="tocsection"
 >
     <div>
+        {{! Highlighted section. }}
         <div class="flag-current">
             <span class="badge badge-info badge-pill">
                 {{#str}} currentsection, format_ucl {{/str}}
@@ -46,7 +46,7 @@
         </a>
         {{/active}}
 
-        {{! Current section, so not a link. }}
+        {{! Current section you are on, so not a link. }}
         {{#active}}
         <span data-for="section_title" class="line-clamp-2 text-break font-weight-bold">
             {{{name}}}
@@ -54,6 +54,7 @@
         {{/active}}
     </div>
 
+    {{! Hidden from students. }}
     <div class="flag-hidden ml-auto">
         <div class="badge badge-warning rounded-circle p-2 m-1"
             data-toggle="tooltip" data-html="true" data-placement="right"

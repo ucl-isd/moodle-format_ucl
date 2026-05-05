@@ -36,19 +36,28 @@
     <div>
         <div class="flag-current">
             <span class="badge badge-info badge-pill">
-                Highlighted
+                {{#str}} currentsection, format_ucl {{/str}}
             </span>
         </div>
 
-        <a data-for="section_title" href="{{{url}}}" class="line-clamp-2 {{{class}}}">
+        {{^active}}
+        <a data-for="section_title" href="{{{url}}}" class="line-clamp-2 text-break">
             {{{name}}}
         </a>
+        {{/active}}
+
+        {{! Current section, so not a link. }}
+        {{#active}}
+        <span data-for="section_title" class="line-clamp-2 text-break font-weight-bold">
+            {{{name}}}
+        </span>
+        {{/active}}
     </div>
 
     <div class="flag-hidden ml-auto">
         <div class="badge badge-warning rounded-circle p-2 m-1"
             data-toggle="tooltip" data-html="true" data-placement="right"
-            title="{{#str}} hiddenfromstudents {{/str}}">
+            title="{{#str}} hiddenfromstudents {{/str}}" aria-hidden="true">
             <i class="fa-solid fa-eye-slash"
             ></i>
         </div>

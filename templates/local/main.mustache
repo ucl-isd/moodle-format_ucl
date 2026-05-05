@@ -48,9 +48,13 @@
         </div>
     {{/toc}}
 
-    <div id="ucl-course-content" class="col">
+    <div id="ucl-course-content" class="col-lg-9">
         <div class="d-flex align-items-center">
-            {{#sectionname}}<h2 data-region="ucl-section-name" class="ucl-section-name">{{{sectionname}}}</h2>{{/sectionname}}
+            {{#sectionname}}
+            <h2 data-region="ucl-section-name" class="ucl-section-name text-break">
+            {{{.}}}
+            </h2>
+            {{/sectionname}}
 
             {{#sectionactions}}
                 <div class="ml-auto" data-for="section-controlmenu" data-id="{{id}}">

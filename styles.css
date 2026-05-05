@@ -49,12 +49,6 @@ body.format-ucl {
         }
     }
 
-    /* Active or coursehome links. */
-    #toc .active a,
-    &#page-course-view-ucl .course-home {
-        color: var(--dark);
-    }
-
     #toc li {
         a {
             display: -webkit-box;

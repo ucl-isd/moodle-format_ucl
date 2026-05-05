@@ -61,3 +61,4 @@ $string['ucl:view'] = 'View test';
 $string['unhighlight'] = 'Unhighlight';
 $string['unnamedsections'] = 'unnamed sections';
 $string['unnamedsections:desc'] = 'All course sections should have meaningful names.';
+$string['xofycomplete'] = '{$a->complete} of {$a->total} complete';

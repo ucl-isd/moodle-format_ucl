@@ -24,8 +24,6 @@ use format_ucl;
 use format_ucl\output\widgets\toc;
 use moodle_url;
 use stdClass;
-use core_course_list_element;
-use core_user;
 
 /**
  * UCL content class.
@@ -136,6 +134,7 @@ class content extends content_base {
      * @return stdClass
      */
     public function get_ucl_initialsection(stdClass $data, \renderer_base $output): stdClass {
+        $course = $this->format->get_course();
         $section = $data->singlesection;
         if ($section->num == '0') {
             $section->displayonesection = true; // Magic to stop accordians.
@@ -158,92 +157,13 @@ class content extends content_base {
                 $data->singleedit = true;
             }
 
-            // Course contacts.
-            // TODO - make better!
-            $course = $this->format->get_course();
-            $courselement = new core_course_list_element($course);
-            $contacts = $courselement->get_course_contacts();
-            $template = new stdClass();
-            $template->contacts = [];
-            $allcontacts = [];
-
-            if (!empty($contacts)) {
-                foreach ($contacts as $c) {
-                    $contact = new stdClass();
-                    $userobj = $c['user'];
-                    $user = \core_user::get_user($userobj->id, '*', MUST_EXIST);
-
-                    $contact->id = $user->id;
-                    $contact->name = $c['username'];
-                    $contact->role = $c['rolename'];
-                    $contact->email = $user->email;
-
-                    // URL.
-                    $contacturl = new moodle_url('/user/view.php', ['id' => $user->id, 'course' => $course->id]);
-                    $contact->url = $contacturl->out(false);
-
-                    // Description.
-                    $contact->description = format_text(
-                        $user->description,
-                        $user->descriptionformat,
-                        ['context' => \context_course::instance($course->id)]
-                    );
-
-                    // Image / Initials.
-                    $userpicture = new \user_picture($user);
-                    $userpicture->link = false;
-                    $userpicture->alttext = false;
-                    $userpicture->size = 50;
-                    $contact->picture = $output->render($userpicture);
-
-                    // Last name for a-z sorting.
-                    $contact->lastname = $user->lastname;
-
-                    // TODO - demo code
-                    // Using the mail dispay to hide/show contacts.
-                    $contact->hidden = ($user->maildisplay == 0);
-                    // If hidden and not editing, don't show.
-                    if ($contact->hidden && !$data->isediting) {
-                        continue;
-                    }
-
-                    $allcontacts[] = $contact;
-                }
-
-                // Sort the users A-Z by lastname.
-                usort($allcontacts, function ($a, $b) {
-                    return strcasecmp($a->lastname, $b->lastname);
-                });
-
-                // Contact roles.
-                $admins = [];
-                $leaders = [];
-                $tutors = [];
-                $teachers = [];
-
-                foreach ($allcontacts as $c) {
-                    $rolename = strtolower($c->role);
-                    if ($rolename === 'course administrator') {
-                        $admins[] = $c;
-                    } else if ($rolename === 'leader') {
-                        $leaders[] = $c;
-                    } else if ($rolename === 'tutor') {
-                        $tutors[] = $c;
-                    } else if ($rolename === 'teacher') {
-                        $teachers[] = $c;
-                    }
-                }
-
-                // Merge roles.
-                $data->contacts = array_merge($leaders, $tutors, $teachers, $admins);
-
-                if (!empty($data->contacts)) {
-                    $data->hascontacts = true;
-                    $context = context_course::instance($course->id);
-                    // TODO - only allow if course admin or leader for ucl, teacher for open source.
-                    $data->caneditroles = has_capability('moodle/role:assign', $context);
-                }
+            $data->contacts = $this->get_course_contacts($output, $data);
+            if (!empty($data->contacts)) {
+                $data->hascontacts = true;
+                $context = context_course::instance($course->id);
+                $data->caneditroles = has_capability('format/ucl:editcoursecontacts', $context);
             }
+
             // Set first section to enable adding ucl metadata.
             $data->initialsection = $section;
             $data->beforefirstsectionhtml = $this->get_before_first_section_html($output, $data);
@@ -317,13 +237,20 @@ class content extends content_base {
         return $hook->get_output();
     }
 
-    // TODO - best practice - build into format.
+    /**
+     * Dispatch hook to allow other plugins to add content before the first section html.
+     *
+     * @param \renderer_base $output
+     * @param array|stdClass $data
+     * @return array
+     */
+    public function get_course_contacts(\renderer_base $output, array|stdClass $data): array {
+        $widget = new format_ucl\output\widgets\contacts($this->format);
+        $contacts = $widget->export_for_template($output);
+        // Dispatch hook to retrieve extra content to add at the start of the section.
+        $hook = new \format_ucl\hook\after_course_contacts($output, $data, $contacts, '');
+        \core\di::get(\core\hook\manager::class)->dispatch($hook);
 
-    // phpcs:disable moodle.Commenting.InlineComment.InvalidEndChar
-    // phpcs:disable moodle.Files.LineLength.TooLong
-    // More than 16 sections - not display well on laptops.
-    // This course contains unnamed sections - you can improve your course by giving each section a meanigful title.
-    // This course contains sections with one or less visbible actitivites - you can imporve your course by re-organising these.
-    // This section contains lots of activites without any structure - you can improve this by using lables to structure the content.
-    // etc
+        return $hook->get_course_contacts();
+    }
 }

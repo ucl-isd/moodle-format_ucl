@@ -23,8 +23,6 @@ use format_ucl;
 use format_ucl\output\widgets\toc;
 use moodle_url;
 use stdClass;
-use core_course_list_element;
-use core_user;
 
 /**
  * UCL content class.
@@ -156,9 +154,7 @@ class content extends content_base {
                 $data->singleedit = true;
             }
 
-            $contacts = new format_ucl\output\widgets\contacts($this->format);
-            $data->contacts = $contacts->export_for_template($output);
-
+            $data->contacts = $this->get_course_contacts($output, $data);
             if (!empty($data->contacts)) {
                 $data->hascontacts = true;
                 $context = context_course::instance($course->id);
@@ -239,13 +235,20 @@ class content extends content_base {
         return $hook->get_output();
     }
 
-    // TODO - best practice - build into format.
+    /**
+     * Dispatch hook to allow other plugins to add content before the first section html.
+     *
+     * @param \renderer_base $output
+     * @param array|stdClass $data
+     * @return array
+     */
+    public function get_course_contacts(\renderer_base $output, array|stdClass $data): array {
+        $widget = new format_ucl\output\widgets\contacts($this->format);
+        $contacts = $widget->export_for_template($output);
+        // Dispatch hook to retrieve extra content to add at the start of the section.
+        $hook = new \format_ucl\hook\after_course_contacts($output, $data, $contacts, '');
+        \core\di::get(\core\hook\manager::class)->dispatch($hook);
 
-    // phpcs:disable moodle.Commenting.InlineComment.InvalidEndChar
-    // phpcs:disable moodle.Files.LineLength.TooLong
-    // More than 16 sections - not display well on laptops.
-    // This course contains unnamed sections - you can improve your course by giving each section a meanigful title.
-    // This course contains sections with one or less visbible actitivites - you can imporve your course by re-organising these.
-    // This section contains lots of activites without any structure - you can improve this by using lables to structure the content.
-    // etc
+        return $hook->get_course_contacts();
+    }
 }

@@ -166,9 +166,14 @@ body.format-ucl {
     }
 
     #mobile-toc-fab {
+        position: fixed;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        /* SHAME - magic number to work with ucl theme. */
+        z-index: 6666;
         bottom: 30px;
-        left: 0;
-        right: 0;
-        z-index: 1050;
+        left: 20%;
+        right: 20%;
     }
 }

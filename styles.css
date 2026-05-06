@@ -168,42 +168,7 @@ body.format-ucl {
     #mobile-toc-fab {
         bottom: 30px;
         left: 0;
-        z-index: 6666;
-
-        a {
-            font-weight: bold;
-            box-shadow: 0.3em 0.3em 0 0 var(--dark);
-            border: 2px solid var(--dark);
-        }
-    }
-}
-
-/* Mobile toc. */
-@media (max-width: 1200px) {
-    #ucl-course-toc:target {
-        display: block !important; /* stylelint-disable-line declaration-no-important */
-        position: fixed !important; /* stylelint-disable-line declaration-no-important */
-        inset: 0;
-        z-index: 6666;
-        background: white;
-        padding: 2rem;
-        overflow-y: auto;
-    }
-
-    #ucl-course-toc:target + #ucl-course-content {
-        display: none;
-    }
-
-    /* TODO - make better. */
-    /* Can we reverse, so anything not this is display none? */
-    .format-ucl:has(#ucl-course-toc:target) {
-        #ucl-footer,
-        #course-header-bg,
-        #ucl-navbar,
-        #ucl-mobile-menu,
-        #mobile-toc-fab,
-        .drawer-toggles {
-            display: none !important; /* stylelint-disable-line declaration-no-important */
-        }
+        right: 0;
+        z-index: 1050;
     }
 }

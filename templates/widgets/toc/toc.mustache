@@ -24,27 +24,29 @@
     {
     }
 }}
-<nav class="sticky-top" style="top: 2rem;" aria-label="{{#str}} toc, format_ucl {{/str}}">
-    <h2 class="h4">{{#str}} toc, format_ucl {{/str}}</h2>
+<div class="sticky-top" style="top: 2rem;">
+  <nav id="ucl-format-toc" aria-label="{{#str}} toc, format_ucl {{/str}}">
+      <h2 class="h4">{{#str}} toc, format_ucl {{/str}}</h2>
 
-    <ol id="toc" class="list-unstyled pb-2">
-    {{#coursesection}}
-        {{> format_ucl/widgets/toc/toc_link }}
-    {{/coursesection}}
-    </ol>
+      <ol id="toc" class="list-unstyled pb-2">
+      {{#coursesection}}
+          {{> format_ucl/widgets/toc/toc_link }}
+      {{/coursesection}}
+      </ol>
 
-    {{#isediting}}
-      {{#addsections}}
-      <div class="p-2 bg-primary-light text-center">
-        <a class="btn add-section bg-white" href="{{{url}}}">
-          <i class="fa-solid fa-circle-plus mr-2"></i>
-          {{#str}} addnewsection, format_ucl {{/str}}
-        </a>
-      </div>
-      {{/addsections}}
-    {{/isediting}}
+      {{#isediting}}
+        {{#addsections}}
+        <div class="p-2 bg-primary-light text-center">
+          <a class="btn add-section bg-white" href="{{{url}}}">
+            <i class="fa-solid fa-circle-plus mr-2"></i>
+            {{#str}} addnewsection, format_ucl {{/str}}
+          </a>
+        </div>
+        {{/addsections}}
+      {{/isediting}}
 
-</nav>
+  </nav>
+</div>
 {{#js}}
   require(['format_ucl/local/toc'], function(component) {
         component.init('toc');

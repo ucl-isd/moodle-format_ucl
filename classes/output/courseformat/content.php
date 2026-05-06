@@ -133,6 +133,7 @@ class content extends content_base {
      * @return stdClass
      */
     public function get_ucl_initialsection(stdClass $data, \renderer_base $output): stdClass {
+        $course = $this->format->get_course();
         $section = $data->singlesection;
         if ($section->num == '0') {
             $section->displayonesection = true; // Magic to stop accordians.
@@ -155,92 +156,16 @@ class content extends content_base {
                 $data->singleedit = true;
             }
 
-            // Course contacts.
-            // TODO - make better!
-            $course = $this->format->get_course();
-            $courselement = new core_course_list_element($course);
-            $contacts = $courselement->get_course_contacts();
-            $template = new stdClass();
-            $template->contacts = [];
-            $allcontacts = [];
+            $contacts = new format_ucl\output\widgets\contacts($this->format);
+            $data->contacts = $contacts->export_for_template($output);
 
-            if (!empty($contacts)) {
-                foreach ($contacts as $c) {
-                    $contact = new stdClass();
-                    $userobj = $c['user'];
-                    $user = \core_user::get_user($userobj->id, '*', MUST_EXIST);
-
-                    $contact->id = $user->id;
-                    $contact->name = $c['username'];
-                    $contact->role = $c['rolename'];
-                    $contact->email = $user->email;
-
-                    // URL.
-                    $contacturl = new moodle_url('/user/view.php', ['id' => $user->id, 'course' => $course->id]);
-                    $contact->url = $contacturl->out(false);
-
-                    // Description.
-                    $contact->description = format_text(
-                        $user->description,
-                        $user->descriptionformat,
-                        ['context' => \context_course::instance($course->id)]
-                    );
-
-                    // Image / Initials.
-                    $userpicture = new \user_picture($user);
-                    $userpicture->link = false;
-                    $userpicture->alttext = false;
-                    $userpicture->size = 50;
-                    $contact->picture = $output->render($userpicture);
-
-                    // Last name for a-z sorting.
-                    $contact->lastname = $user->lastname;
-
-                    // TODO - demo code
-                    // Using the mail dispay to hide/show contacts.
-                    $contact->hidden = ($user->maildisplay == 0);
-                    // If hidden and not editing, don't show.
-                    if ($contact->hidden && !$data->isediting) {
-                        continue;
-                    }
-
-                    $allcontacts[] = $contact;
-                }
-
-                // Sort the users A-Z by lastname.
-                usort($allcontacts, function ($a, $b) {
-                    return strcasecmp($a->lastname, $b->lastname);
-                });
-
-                // Contact roles.
-                $admins = [];
-                $leaders = [];
-                $tutors = [];
-                $teachers = [];
-
-                foreach ($allcontacts as $c) {
-                    $rolename = strtolower($c->role);
-                    if ($rolename === 'course administrator') {
-                        $admins[] = $c;
-                    } else if ($rolename === 'leader') {
-                        $leaders[] = $c;
-                    } else if ($rolename === 'tutor') {
-                        $tutors[] = $c;
-                    } else if ($rolename === 'teacher') {
-                        $teachers[] = $c;
-                    }
-                }
-
-                // Merge roles.
-                $data->contacts = array_merge($leaders, $tutors, $teachers, $admins);
-
-                if (!empty($data->contacts)) {
-                    $data->hascontacts = true;
-                    $context = context_course::instance($course->id);
-                    // TODO - only allow if course admin or leader for ucl, teacher for open source.
-                    $data->caneditroles = has_capability('moodle/role:assign', $context);
-                }
+            if (!empty($data->contacts)) {
+                $data->hascontacts = true;
+                $context = context_course::instance($course->id);
+                // TODO - only allow if course admin or leader for ucl, teacher for open source.
+                $data->caneditroles = has_capability('moodle/role:assign', $context);
             }
+
             // Set first section to enable adding ucl metadata.
             $data->initialsection = $section;
             $data->beforefirstsectionhtml = $this->get_before_first_section_html($output, $data);

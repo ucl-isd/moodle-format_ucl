@@ -43,6 +43,7 @@ $string['highlight'] = 'Highlight';
 $string['messageprovider:expiry'] = 'Expiry message';
 $string['messageprovider:submission'] = 'Submission message';
 $string['newsectionname'] = 'New name for section {$a}';
+$string['next-and-previous-section-links'] = "Next and previous section links";
 $string['nocourseimg'] = 'No course image';
 $string['nocourseimg:desc'] = 'Add a <a href="{$a}">course image</a> to make your course more identifiable, and add personality.';
 $string['pluginname'] = 'UCL Format';

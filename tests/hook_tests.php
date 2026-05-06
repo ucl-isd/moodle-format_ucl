@@ -76,7 +76,6 @@ final class hook_tests extends \advanced_testcase {
         $widget = new $outputclass($format);
 
         $html = $widget->get_before_first_section_html($renderer, []);
-        $this->assertIsString($html);
         $this->assertStringContainsString('Some before content', $html);
     }
 
@@ -101,7 +100,6 @@ final class hook_tests extends \advanced_testcase {
         $widget = new $outputclass($format);
 
         $html = $widget->get_after_first_section_html($renderer, []);
-        $this->assertIsString($html);
         $this->assertStringContainsString('Some after content', $html);
     }
 }

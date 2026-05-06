@@ -72,6 +72,7 @@ class content extends content_base {
         $format = $this->format;
         $data->courseid = $format->get_course()->id;
         $sectioninfo = $format->get_modinfo()->get_section_info($singlesectionnum);
+        $data->coursename = $format->get_course()->fullname;
 
         // Am i editing?
         $data->isediting = $USER->editing;

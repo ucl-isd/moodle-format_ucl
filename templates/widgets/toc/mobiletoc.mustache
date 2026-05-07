@@ -27,22 +27,30 @@
 }}
 <div class="d-lg-none">
     {{! Toc button. }}
-    <div id="mobile-toc-fab">
-        <button type="button" class="fadeInUp btn btn-primary shadow" data-toggle="modal" data-target="#ucl-format-mobile-toc">
-        <i class="fa-solid fa-bars mr-2"></i>{{#str}} toc, format_ucl {{/str}}
-        </button>
+    <div id="ucl-format-mobile-toc-fab">
+        <a role="button" class="fadeInUp btn btn-primary shadow" data-toggle="modal" data-target="#ucl-format-mobile-toc">
+        <i class="fa-solid fa-bars mr-2"></i>
+        {{#str}} toc, format_ucl {{/str}}
+        </a>
     </div>
 
     {{! Toc modal. }}
     <div class="modal fade" id="ucl-format-mobile-toc" tabindex="-1" role="dialog" aria-labelledby="ucl-format-mobile-toc-label" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
+            {{#courseimg}}
+            <div class="modal-image mt-3 mx-3">
+                <div class="bg-cover w-100" style="background-image: url({{{.}}}); height: 12rem;"></div>
+            </div>
+            {{/courseimg}}
+
             <div class="modal-header">
-                <h2 class="modal-title h3" id="ucl-format-mobile-toc-label">
+                
+                <h2 class="modal-title h4 text-break" id="ucl-format-mobile-toc-label">
                     {{{coursename}}}
                 </h2>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
+                <button type="button" class="close" data-dismiss="modal" title="{{#str}} closebuttontitle {{/str}}">
+                    <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div id="ucl-format-mobile-toc-body" class="modal-body">
@@ -56,7 +64,7 @@
 {{#js}}
 require(['jquery'], function($) {
     var modalElement = $('#ucl-format-mobile-toc');
-    var tocFab = document.getElementById('mobile-toc-fab');
+    var tocFab = document.getElementById('ucl-format-mobile-toc-fab');
     var tocBody = document.getElementById('ucl-format-mobile-toc-body');
     var tocNav = document.getElementById('ucl-format-toc');
     var tocParent = tocNav.parentElement;

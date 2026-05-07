@@ -44,12 +44,13 @@
 
     <div id="ucl-course-content" class="col-lg-9">
         
+        {{! Mobile toc. }}
         {{> format_ucl/widgets/toc/mobiletoc }}
 
         <div class="d-flex align-items-center">
             {{#sectionname}}
             <h2 data-region="ucl-section-name" class="ucl-section-name text-break">
-            {{{.}}}
+                {{{.}}}
             </h2>
             {{/sectionname}}
 

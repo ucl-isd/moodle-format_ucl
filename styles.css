@@ -49,10 +49,13 @@ body.format-ucl {
     }
 
     /* Toc. */
-    /* Sticky top gutter when navbar is fixed top - e.g. boost theme. */
+    /* Sticky top and toc fab when navbar is fixed top - e.g. boost theme. */
     &:has(.navbar.fixed-top) {
         .sticky-top {
             top: 5rem !important; /* stylelint-disable-line declaration-no-important */
+        }
+        #ucl-format-mobile-toc-fab {
+            bottom: 2rem;
         }
     }
 
@@ -64,7 +67,7 @@ body.format-ucl {
         justify-content: center;
         /* SHAME - magic numbers to work with ucl theme. */
         z-index: 6666;
-        bottom: 30px;
+        bottom: 4.5rem;
         left: 20%;
         right: 20%;
     }

@@ -1,4 +1,4 @@
-@format @format_ucl @wip @TODO
+@format @format_ucl
 Feature: Adding a new section lands on the editing page
   In order to add a new section
   As a user

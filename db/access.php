@@ -26,20 +26,11 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = [
-
-    'format/ucl:view' => [
-        'captype' => 'view',
-        'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => [
-            'student' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW,
-        ],
-    ],
-
-    'format/ucl:edit' => [
+    'format/ucl:editcoursecontacts' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => [
+            'editingteacher' => CAP_ALLOW,
         ],
     ],
 ];

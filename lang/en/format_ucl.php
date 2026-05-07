@@ -60,6 +60,7 @@ $string['toofewmods:desc'] = 'Consider combining related materials into a single
 $string['toomanysections'] = '{$a} sections';
 $string['toomanysections:desc'] = 'Courses should have a maximum of {$a} sections. Consider combining related materials into a single section.';
 $string['ucl:edit'] = 'Edit test';
+$string['ucl:editcoursecontacts'] = 'Edit course contacts';
 $string['ucl:view'] = 'View test';
 $string['unhighlight'] = 'Unhighlight';
 $string['unnamedsections'] = 'unnamed sections';

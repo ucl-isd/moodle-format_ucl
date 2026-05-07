@@ -56,23 +56,33 @@
 {{#js}}
 require(['jquery'], function($) {
     var modalElement = $('#ucl-format-mobile-toc');
-    var tocNav = document.getElementById('ucl-format-toc');
+    var tocFab = document.getElementById('mobile-toc-fab');
     var tocBody = document.getElementById('ucl-format-mobile-toc-body');
+    var tocNav = document.getElementById('ucl-format-toc');
     var tocParent = tocNav.parentElement;
 
     // Move Nav to modal when it starts to open.
     modalElement.on('show.bs.modal', function() {
         tocBody.appendChild(tocNav);
+        tocFab.classList.add('d-none');
     });
 
     // Move the Nav back when the modal is hidden.
     modalElement.on('hidden.bs.modal', function() {
         tocParent.appendChild(tocNav);
+        tocFab.classList.remove('d-none');
     });
 
     // Close modal when a section is selected.
     $(tocNav).on('click', 'a', function() {
         modalElement.modal('hide');
+    });
+
+    // Close modal when screen is large.
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 991) {
+            modalElement.modal('hide');
+        }
     });
 });
 {{/js}}

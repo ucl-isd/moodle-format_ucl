@@ -39,5 +39,11 @@ Feature: Initial section has custom layout
     And "Welcome to Stamptown" "text" should not exist in the ".section-item .content" "css_element"
 
   Scenario: Course contacts appear in initial section
-    Given I log in as "admin"
+    When I log in as "admin"
     And I am on "Course 1" course homepage
+    Then "Contacts" "text" should exist
+    And "Teacher 1" "link" should exist
+    And "Teacher 2" "link" should appear after "Teacher 1" "link"
+    And "Teacher 5" "link" should appear after "Teacher 2" "link"
+    And "Teacher 3" "link" should not exist
+    And "Teacher 4" "link" should not exist

@@ -155,6 +155,8 @@ class content extends content_base {
 
             // Set first section to enable adding ucl metadata.
             $data->initialsection = $section;
+            $data->beforefirstsectionhtml = $this->get_before_first_section_html($output, $data);
+            $data->afterfirstsectionhtml = $this->get_after_first_section_html($output, $data);
         }
         return $data;
     }
@@ -193,4 +195,44 @@ class content extends content_base {
         }
         return new stdClass();
     }
+
+    /**
+     * Dispatch hook to allow other plugins to add content before the first section html.
+     *
+     * @param \renderer_base $output
+     * @param array|stdClass $data
+     * @return string
+     */
+    public function get_before_first_section_html(\renderer_base $output, array|stdClass $data): string {
+        $course = $this->format->get_course();
+        // Dispatch hook to retrieve extra content to add at the start of the section.
+        $hook = new \format_ucl\hook\before_first_section_html($output, $data, $course, '');
+        \core\di::get(\core\hook\manager::class)->dispatch($hook);
+        return $hook->get_output();
+    }
+
+    /**
+     * Dispatch hook to allow other plugins to add content after the first section html.
+     *
+     * @param \renderer_base $output
+     * @param array|stdClass $data
+     * @return string
+     */
+    public function get_after_first_section_html(\renderer_base $output, array|stdClass $data): string {
+        $course = $this->format->get_course();
+        // Dispatch hook to retrieve extra content to add at the end of the section.
+        $hook = new \format_ucl\hook\after_first_section_html($output, $data, $course, '');
+        \core\di::get(\core\hook\manager::class)->dispatch($hook);
+        return $hook->get_output();
+    }
+
+    // TODO - best practice - build into format.
+
+    // phpcs:disable moodle.Commenting.InlineComment.InvalidEndChar
+    // phpcs:disable moodle.Files.LineLength.TooLong
+    // More than 16 sections - not display well on laptops.
+    // This course contains unnamed sections - you can improve your course by giving each section a meanigful title.
+    // This course contains sections with one or less visbible actitivites - you can imporve your course by re-organising these.
+    // This section contains lots of activites without any structure - you can improve this by using lables to structure the content.
+    // etc
 }

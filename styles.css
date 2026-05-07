@@ -5,7 +5,7 @@ body.format-ucl {
         background-size: cover;
         background-position: center;
     }
-    
+
     /* Page width. */
     #page-header,
     .main-inner,
@@ -16,6 +16,7 @@ body.format-ucl {
     #page-navbar {
         position: relative !important; /* stylelint-disable-line declaration-no-important */
     }
+
     &.path-course-view #page.drawers {
         overflow: unset;
     }
@@ -101,7 +102,6 @@ body.format-ucl {
             }
         }
     }
-
 
     /* Progress cicle. */
     @property --p {

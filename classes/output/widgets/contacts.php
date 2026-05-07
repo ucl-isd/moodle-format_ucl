@@ -55,9 +55,9 @@ class contacts implements renderable, templatable {
      * Return data for course table of contents.
      *
      * @param renderer_base $output
-     * @return array|void
+     * @return array
      */
-    public function export_for_template(renderer_base $output) {
+    public function export_for_template(renderer_base $output): array {
         global $USER, $CFG;
 
         if (empty($CFG->coursecontact)) {
@@ -129,8 +129,7 @@ class contacts implements renderable, templatable {
                 }
                 return $a->roleid <=> $b->roleid;
             });
-
-            return $allcontacts;
         }
+        return $allcontacts;
     }
 }

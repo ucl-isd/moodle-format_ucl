@@ -66,8 +66,9 @@ final class after_course_contacts implements \core\hook\described_hook {
     /**
      * Allows subscribers to edit the course contacts
      *
+     * @param array $coursecontacts
      */
-    public function set_course_contacts($coursecontacts) {
+    public function set_course_contacts(array $coursecontacts) {
         $this->coursecontacts = $coursecontacts;
     }
 

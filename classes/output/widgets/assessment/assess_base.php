@@ -58,6 +58,8 @@ abstract class assess_base {
                 }
             }
         }
+
+        return 0;
     }
 
     /**

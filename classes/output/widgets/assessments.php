@@ -121,10 +121,20 @@ class assessments implements renderable, templatable {
                                 $isgroupmode = (bool) groups_get_activity_groupmode($mod);
                                 $hasrestrictions = (!empty($mod->groupingid) || !empty($mod->availability));
 
-                                if ($isgroupmode || $hasrestrictions) {
+                                // Turnitin multi-part check.
+                                $ismultipart = false;
+                                if ($mod->modname === 'turnitintooltwo') {
+                                    $handler = \format_ucl\output\widgets\assessment\assess_base::instance($mod);
+                                    if (!$handler->is_valid()) {
+                                        $ismultipart = true;
+                                    }
+                                }
+
+                                if ($isgroupmode || $hasrestrictions || $ismultipart) {
                                     // Set flags to message user that stats are not available.
                                     $assess->groupmode = $isgroupmode;
                                     $assess->hasrestrictions = $hasrestrictions;
+                                    $assess->turnitinmultipart = $ismultipart;
                                 } else {
                                     // Marking stats.
                                     $markingdata = $handler->get_staff_marking();

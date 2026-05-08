@@ -26,6 +26,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['addactivity'] = 'Add activity or resource';
+$string['addcustomcontact'] = 'Add custom contact';
+$string['adddescription'] = 'Add description';
 $string['addnewsection'] = 'Add a new section';
 $string['addsectiondescription'] = 'Add section description';
 $string['addsections'] = 'Add section';
@@ -42,6 +44,7 @@ $string['editcourseroles'] = 'Edit course roles';
 $string['editsection'] = 'Edit section';
 $string['editsectionname'] = 'Edit section name';
 $string['hidefromothers'] = 'Hide';
+$string['hidefromstudents'] = 'Hide {$a} from students';
 $string['highlight'] = 'Highlight';
 $string['messageprovider:expiry'] = 'Expiry message';
 $string['messageprovider:submission'] = 'Submission message';
@@ -54,8 +57,14 @@ $string['privacy:metadata'] = 'The UCL format plugin does not store any personal
 $string['section0name'] = 'Introduction';
 $string['sectiondefaultname'] = 'New section';
 $string['sectionname'] = 'Section';
+$string['showcontact'] = 'Show contact';
+$string['showcontact:desc'] = 'You can hide user with a contact role you don\'t want to show here, but they will still be visible elsewhere in Moodle.';
+$string['showcontact:title'] = 'Course contacts for students.';
+$string['showcontacttostudents'] = 'show to students';
 $string['showfromothers'] = 'Show';
+$string['showtostudents'] = 'Show {$a} to students';
 $string['toc'] = 'Table of contents';
+$string['togglevisibilityfailed'] = 'Failed to save contact visibility';
 $string['toofewmods'] = 'sections have one or less activities/resources';
 $string['toofewmods:desc'] = 'Consider combining related materials into a single section.';
 $string['toomanysections'] = '{$a} sections';

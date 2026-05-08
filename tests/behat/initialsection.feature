@@ -38,12 +38,46 @@ Feature: Initial section has custom layout
     And "Welcome to Stamptown" "text" should exist in the ".behat-ucl-section-description" "css_element"
     And "Welcome to Stamptown" "text" should not exist in the ".section-item .content" "css_element"
 
-  Scenario: Course contacts appear in initial section
+  Scenario: Course contacts appear in initial section when editing is on
     When I log in as "admin"
-    And I am on "Course 1" course homepage
+    And I am on "Course 1" course homepage with editing mode on
     Then "Contacts" "text" should exist
     And "Teacher 1" "link" should exist
     And "Teacher 2" "link" should appear after "Teacher 1" "link"
     And "Teacher 5" "link" should appear after "Teacher 2" "link"
     And "Teacher 3" "link" should not exist
     And "Teacher 4" "link" should not exist
+
+  Scenario: Course contacts do not appear in initial section when editing is off
+    When I log in as "admin"
+    And I am on "Course 1" course homepage
+    Then "Contacts" "link" should not exist in the "#ucl-course-content" "css_element"
+    And "Teacher 1" "link" should not exist
+    And "Teacher 2" "link" should not exist
+    And "Teacher 5" "link" should not exist
+    And "Teacher 3" "link" should not exist
+    And "Teacher 4" "link" should not exist
+
+  @javascript
+  Scenario: Course contacts appear in initial section when editing is off and contact is checked
+    When I log in as "admin"
+    And I am on "Course 1" course homepage with editing mode on
+    And I click on "Show Teacher 1 to students" "checkbox"
+    And I turn editing mode off
+    Then "Teacher 1" "link" should exist
+    And "Teacher 2" "link" should not exist
+    And "Teacher 5" "link" should not exist
+    And "Teacher 3" "link" should not exist
+    And "Teacher 4" "link" should not exist
+    And I reload the page
+    And "Teacher 1" "link" should exist
+
+  Scenario: User without permission format/ucl:editcoursecontacts cannot show/hide contacts
+    When I log in as "Teacher4"
+    And I am on "Course 1" course homepage with editing mode on
+    Then "Show Teacher 1 to students" "checkbox" should not exist
+
+  Scenario: User with permission format/ucl:editcoursecontacts can show/hide contacts
+    When I log in as "Teacher1"
+    And I am on "Course 1" course homepage with editing mode on
+    Then "Show Teacher 1 to students" "checkbox" should not exist

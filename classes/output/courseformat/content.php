@@ -21,6 +21,7 @@ use core_courseformat\output\local\content as content_base;
 use core_course\external\course_summary_exporter;
 use format_ucl;
 use format_ucl\config;
+use format_ucl\output\widgets\assessments;
 use format_ucl\output\widgets\toc;
 use moodle_url;
 use stdClass;

@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 namespace format_ucl\external;
 
 defined('MOODLE_INTERNAL') || die();
@@ -22,7 +23,7 @@ use core_external\external_function_parameters;
 use core_external\external_value;
 use format_ucl\course_contacts;
 
-require_once($CFG->dirroot.'/group/lib.php');
+require_once($CFG->dirroot . '/group/lib.php');
 
 /**
  * Adds/removes a contact from a group that controls which course contacts are visible
@@ -37,8 +38,7 @@ class toggle_contact_visibility extends external_api {
      *
      * @return external_function_parameters
      */
-    public static function execute_parameters(): external_function_parameters
-    {
+    public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
             'courseid' => new external_value(PARAM_INT, 'the course the contact is enrolled on'),
             'userid' => new external_value(PARAM_INT, 'the user to update'),

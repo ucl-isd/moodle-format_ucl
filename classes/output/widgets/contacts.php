@@ -61,7 +61,7 @@ class contacts implements renderable, templatable {
     public function export_for_template(renderer_base $output): array {
         global $USER, $CFG;
 
-        require_once($CFG->dirroot.'/group/lib.php');
+        require_once($CFG->dirroot . '/group/lib.php');
 
         if (empty($CFG->coursecontact)) {
             // There are no course contact roles.

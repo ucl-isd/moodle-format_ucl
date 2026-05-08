@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 namespace format_ucl;
 
 
@@ -24,14 +25,18 @@ namespace format_ucl;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_contacts {
+    /** ID number to use for course contacts group */
     public const GROUP_IDNUMBER = 'format_ucl_course_contacts';
 
+    /** Name to use for course contacts group */
     private const GROUP_NAME = 'Course contacts';
+
     /**
      * Constructor
      *
      * @param int $courseid
      * @param int $userid
+     * @param string $action
      */
     public function __construct(
         /** @var  int courseid */
@@ -43,15 +48,27 @@ class course_contacts {
     ) {
     }
 
-    public function toggle_contact_visibility() {
+    /**
+     * Toggle the course contact visibility
+
+     * @return bool
+     */
+    public function toggle_contact_visibility(): bool {
         switch ($this->action) {
             case 'show':
                 return $this->add_to_group();
             case 'hide':
                 return $this->remove_from_group();
         }
+
+        return false;
     }
 
+    /**
+     * Remove a user from the course contacts group
+     *
+     * @return bool
+     */
     protected function remove_from_group(): bool {
         // If no group exists do nothing.
         if (!$groupid = $this->get_group_id()) {
@@ -61,6 +78,12 @@ class course_contacts {
         return groups_remove_member($groupid, $this->userid);
     }
 
+    /**
+     * Add a user to the course contacts group
+     *
+     * @return bool
+     * @throws \coding_exception
+     */
     protected function add_to_group(): bool {
         if (!$groupid = $this->get_group_id()) {
             return false;
@@ -69,6 +92,12 @@ class course_contacts {
         return groups_add_member($groupid, $this->userid);
     }
 
+    /**
+     * Create the course contacts group
+     *
+     * @return int
+     * @throws \moodle_exception
+     */
     protected function create_group(): int {
         $group = new \stdClass();
         $group->name = self::GROUP_NAME;
@@ -79,6 +108,12 @@ class course_contacts {
         return groups_create_group($group);
     }
 
+    /**
+     * Get the ID of the course contacts group
+     *
+     * @return int
+     * @throws \moodle_exception
+     */
     protected function get_group_id(): int {
         // If there is no existing group then create one.
         $groupid = groups_get_group_by_idnumber($this->courseid, self::GROUP_IDNUMBER)?->id;

@@ -115,13 +115,13 @@ class contacts implements renderable, templatable {
                 $contact->lastname = $user->lastname;
 
                 if (!$group = groups_get_group_by_idnumber($course->id, course_contacts::GROUP_IDNUMBER)) {
-                    $contact->hidden = true;
+                    $contact->show = false;
                 } else {
-                    $contact->hidden = !groups_is_member($group->id, $contact->id);
+                    $contact->show = groups_is_member($group->id, $contact->id);
                 }
 
                 // If hidden and not editing, don't show.
-                if ($contact->hidden && !$USER->editing) {
+                if (!$contact->show && !$USER->editing) {
                     continue;
                 }
 

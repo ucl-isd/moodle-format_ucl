@@ -116,7 +116,8 @@ class course_contacts {
      */
     protected function get_group_id(): int {
         // If there is no existing group then create one.
-        $groupid = groups_get_group_by_idnumber($this->courseid, self::GROUP_IDNUMBER)?->id;
+        $group = groups_get_group_by_idnumber($this->courseid, self::GROUP_IDNUMBER);
+        $groupid = $group ? $group->id : null;
 
         if (!$groupid) {
             $groupid = $this->create_group();

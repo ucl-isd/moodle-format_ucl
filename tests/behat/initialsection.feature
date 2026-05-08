@@ -81,3 +81,4 @@ Feature: Initial section has custom layout
     When I log in as "Teacher1"
     And I am on "Course 1" course homepage with editing mode on
     Then "Show Teacher 1 to students" "checkbox" should not exist
+    

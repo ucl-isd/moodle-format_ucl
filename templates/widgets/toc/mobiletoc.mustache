@@ -14,7 +14,10 @@
 }}
 {{!
     @template format_ucl/widgets/toc/mobiletoc
-    Template purpose and description.
+    Small screen navigation for the format.
+    A bootstrap modal and button.
+    The toc is toggled in/out of #ucl-format-modal-toc-body by js when the modal is shown/hidden.
+
     Classes required for JS:
     * none
     Data attributes required for JS:
@@ -31,8 +34,8 @@
     {{! Toc button. }}
     <div id="ucl-format-mobile-toc-fab">
         <a role="button" class="fadeInUp btn btn-primary shadow" data-toggle="modal" data-target="#ucl-format-mobile-toc">
-        <i class="fa-solid fa-bars mr-2"></i>
-        {{#str}} toc, format_ucl {{/str}}
+            <i class="fa-solid fa-bars mr-2"></i>
+            {{#str}} toc, format_ucl {{/str}}
         </a>
     </div>
 

@@ -47,3 +47,7 @@ Feature: Initial section has custom layout
     And "Teacher 5" "link" should appear after "Teacher 2" "link"
     And "Teacher 3" "link" should not exist
     And "Teacher 4" "link" should not exist
+
+  Scenario: User without permission format/ucl:editcoursecontacts cannot show/hide contacts
+
+  Scenario: User with permission format/ucl:editcoursecontacts can show/hide contacts

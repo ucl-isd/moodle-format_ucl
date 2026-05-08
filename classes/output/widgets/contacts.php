@@ -27,6 +27,7 @@ use core_course\external\course_summary_exporter;
 use core_course_list_element;
 use core_courseformat\base;
 use format_ucl;
+use format_ucl\course_contacts;
 use moodle_url;
 use section_info;
 use stdClass;
@@ -60,6 +61,8 @@ class contacts implements renderable, templatable {
     public function export_for_template(renderer_base $output): array {
         global $USER, $CFG;
 
+        require_once($CFG->dirroot.'/group/lib.php');
+
         if (empty($CFG->coursecontact)) {
             // There are no course contact roles.
             return [];
@@ -88,7 +91,7 @@ class contacts implements renderable, templatable {
                 $contact->roleid = $c['role']->id;
                 $contact->role = $c['rolename'];
                 $contact->roleshortname = $c['role']->shortname;
-                $contact->email = $user->email;
+                $contact->email = $user->maildisplay == 0 ? null : $user->email;
 
                 // URL.
                 $contacturl = new moodle_url('/user/view.php', ['id' => $user->id, 'course' => $course->id]);
@@ -111,9 +114,12 @@ class contacts implements renderable, templatable {
                 // Last name for a-z sorting.
                 $contact->lastname = $user->lastname;
 
-                // TODO - demo code
-                // Using the mail dispay to hide/show contacts.
-                $contact->hidden = ($user->maildisplay == 0);
+                if (!$group = groups_get_group_by_idnumber($course->id, course_contacts::GROUP_IDNUMBER)) {
+                    $contact->hidden = true;
+                } else {
+                    $contact->hidden = !groups_is_member($group->id, $contact->id);
+                }
+
                 // If hidden and not editing, don't show.
                 if ($contact->hidden && !$USER->editing) {
                     continue;

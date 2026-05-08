@@ -15,10 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 namespace format_ucl\external;
 
+defined('MOODLE_INTERNAL') || die();
+
 use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_value;
 use format_ucl\course_contacts;
+
+require_once($CFG->dirroot.'/group/lib.php');
 
 /**
  * Adds/removes a contact from a group that controls which course contacts are visible
@@ -62,7 +66,7 @@ class toggle_contact_visibility extends external_api {
         self::validate_context($context);
 
         // Verify course contacts can be edited.
-        require_capability('format/ucl:editcoursecontact', $context);
+        require_capability('format/ucl:editcoursecontacts', $context);
 
         // Update the course contact.
         $coursecontacts = new course_contacts($courseid, $userid, $action);

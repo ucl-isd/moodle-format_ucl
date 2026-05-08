@@ -96,6 +96,16 @@
 
 {{> format_ucl/widgets/contacts/customcontact }}
 
+{{#isediting}}
+{{#caneditroles}}
+    {{#js}}
+        require(['format_ucl/local/contacts'], function(component) {
+        component.init({{courseid}});
+        });
+    {{/js}}
+{{/caneditroles}}
+{{/isediting}}
+
 <style>
 .fa-solid  {
     transition: transform 0.5s ease;

@@ -18,9 +18,8 @@
  *
  * This component is used to control specific course section interactions like drag and drop.
  *
- * @module     core_courseformat/local/toc/section
- * @class      core_courseformat/local/toc/section
- * @copyright  2021 Ferran Recio <ferran@moodle.com>
+ * @module     format_ucl/local/toc/section
+ * @copyright  2026 Amanda Doughty <m.doughty@ucl.ac.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

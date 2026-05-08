@@ -26,7 +26,7 @@
 }}
 
 {{! Contact. }}
-<div class="ucl-format-coursecontact d-flex align-items-start my-3">
+<div class="ucl-format-coursecontact d-flex align-items-start my-3" data-userid="{{id}}">
     
     {{! Image. }}
     <div class="flex-0 ucl-format-coursecontact-picture">{{{picture}}}</div>
@@ -58,7 +58,7 @@
             <div class="small pt-1">
                 {{! TODO - only output if you can edit this persons course profile.}}
                 {{! TODO - add return to course? e.g. return=. }}
-                <a  href="{{{ config.wwwroot }}}/user/editadvanced.php?id={{id}}&course={{courseid}}#id_description_editor_label">
+                <a href="{{{ config.wwwroot }}}/user/editadvanced.php?id={{id}}&course={{courseid}}#id_description_editor_label">
                     <i class="fa-solid fa-circle-plus mr-1"></i>
                     Add description
                 </a>
@@ -73,10 +73,12 @@
     {{#caneditroles}}
     <div class="ml-auto">
         <div class="custom-control custom-switch">
-            <input type="checkbox" id="switch-{{id}}" 
-            class="contact-hide-toggle custom-control-input" 
-             {{#hidden}} checked {{/hidden}}
-             >
+            <input
+                type="checkbox" id="switch-{{id}}"
+                class="contact-hide-toggle custom-control-input"
+                data-action="{{#hidden}}show{{/hidden}}{{^hidden}}hide{{/hidden}}"
+                {{#hidden}} checked {{/hidden}}
+            >
             <label class="custom-control-label" for="switch-{{id}}" 
             title="Hide {{{name}}} from students" >
             <span class="sr-only">Hide {{{name}}} from students</span>

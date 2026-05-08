@@ -55,6 +55,7 @@ $string['sectiondefaultname'] = 'New section';
 $string['sectionname'] = 'Section';
 $string['showfromothers'] = 'Show';
 $string['toc'] = 'Table of contents';
+$string['togglevisibilityfailed'] = 'Failed to save contact visibility';
 $string['toofewmods'] = 'sections have one or less activities/resources';
 $string['toofewmods:desc'] = 'Consider combining related materials into a single section.';
 $string['toomanysections'] = '{$a} sections';

@@ -24,7 +24,7 @@ namespace format_ucl;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_contacts {
-    private const GROUP_IDNUMBER = 'format_ucl_course_contacts';
+    public const GROUP_IDNUMBER = 'format_ucl_course_contacts';
 
     private const GROUP_NAME = 'Course contacts';
     /**
@@ -81,10 +81,10 @@ class course_contacts {
 
     protected function get_group_id(): int {
         // If there is no existing group then create one.
-        $groupid = groups_get_group_by_idnumber($this->courseid, self::GROUP_IDNUMBER);
+        $groupid = groups_get_group_by_idnumber($this->courseid, self::GROUP_IDNUMBER)?->id;
 
         if (!$groupid) {
-            $this->create_group();
+            $groupid = $this->create_group();
         }
 
         return $groupid;

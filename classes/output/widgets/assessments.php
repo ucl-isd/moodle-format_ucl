@@ -140,19 +140,19 @@ class assessments implements renderable, templatable {
                                     $markingdata = $handler->get_staff_marking();
                                     $assess->hasstats = true;
                                     $assess->expectedcount = $studentcount;
-                                    $assess->submittedcount = $markingdata->submitted;
+                                    $assess->submittedcount = $markingdata->submitted ?? 0;
                                     // Calculate the raw percentage.
-                                    $rawpercent = ($studentcount > 0) ? ($markingdata->submitted / $studentcount) * 100 : 0;
+                                    $rawpercent = ($studentcount > 0) ? ($assess->submittedcount / $studentcount) * 100 : 0;
                                     // Remove trailing .0 or only show 2 decimal places.
                                     $assess->percent = floatval(round($rawpercent, 2));
-                                    $assess->requiremarking = $markingdata->requiremarking;
+                                    $assess->requiremarking = $markingdata->requiremarking ?? 0;
                                 }
                             }
 
                             // Student data.
                             if (!$canedit) {
                                 $markdata = $handler->get_learner_mark();
-                                $assess->submitted = $markdata->submitted;
+                                $assess->submitted = $markdata->submitted ?? 0;
 
                                 // Overdue flag.
                                 if (!$markdata->mark && !$assess->submitted) {
@@ -172,7 +172,7 @@ class assessments implements renderable, templatable {
                                         }
                                     } else {
                                         // Non-numeric mark (e.g., "Pass").
-                                        $assess->mark = $markdata->mark;
+                                        $assess->mark = $markdata->mark ?? 0;
                                     }
                                 }
                             }
@@ -200,8 +200,6 @@ class assessments implements renderable, templatable {
         // No summative assessments.
         return [];
     }
-
-
 
     protected static function get_student_count(int $courseid): int {
         global $DB;

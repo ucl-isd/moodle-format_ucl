@@ -1,5 +1,11 @@
 /* UCL course format. */
 body.format-ucl {
+    /* Utility from theme. */
+    .bg-cover {
+        background-size: cover;
+        background-position: center;
+    }
+
     /* Page width. */
     #page-header,
     .main-inner,
@@ -10,6 +16,7 @@ body.format-ucl {
     #page-navbar {
         position: relative !important; /* stylelint-disable-line declaration-no-important */
     }
+
     &.path-course-view #page.drawers {
         overflow: unset;
     }
@@ -42,17 +49,27 @@ body.format-ucl {
     }
 
     /* Toc. */
-    /* Sticky top gutter when navbar is fixed top - e.g. boost theme. */
+    /* Sticky top and toc fab when navbar is fixed top - e.g. boost theme. */
     &:has(.navbar.fixed-top) {
         .sticky-top {
             top: 5rem !important; /* stylelint-disable-line declaration-no-important */
         }
+        #ucl-format-mobile-toc-fab {
+            bottom: 2rem;
+        }
     }
 
-    /* Active or coursehome links. */
-    #toc .active a,
-    &#page-course-view-ucl .course-home {
-        color: var(--dark);
+    /* Toc mobile trigger. */
+    #ucl-format-mobile-toc-fab {
+        position: fixed;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        /* SHAME - magic numbers to work with ucl theme. */
+        z-index: 6666;
+        bottom: 4.5rem;
+        left: 20%;
+        right: 20%;
     }
 
     #toc li {
@@ -88,7 +105,6 @@ body.format-ucl {
             }
         }
     }
-
 
     /* Progress cicle. */
     @property --p {
@@ -168,48 +184,6 @@ body.format-ucl {
     @keyframes p {
         from {
             --p: 0;
-        }
-    }
-
-    #mobile-toc-fab {
-        bottom: 30px;
-        left: 0;
-        z-index: 6666;
-
-        a {
-            font-weight: bold;
-            box-shadow: 0.3em 0.3em 0 0 var(--dark);
-            border: 2px solid var(--dark);
-        }
-    }
-}
-
-/* Mobile toc. */
-@media (max-width: 1200px) {
-    #ucl-course-toc:target {
-        display: block !important; /* stylelint-disable-line declaration-no-important */
-        position: fixed !important; /* stylelint-disable-line declaration-no-important */
-        inset: 0;
-        z-index: 6666;
-        background: white;
-        padding: 2rem;
-        overflow-y: auto;
-    }
-
-    #ucl-course-toc:target + #ucl-course-content {
-        display: none;
-    }
-
-    /* TODO - make better. */
-    /* Can we reverse, so anything not this is display none? */
-    .format-ucl:has(#ucl-course-toc:target) {
-        #ucl-footer,
-        #course-header-bg,
-        #ucl-navbar,
-        #ucl-mobile-menu,
-        #mobile-toc-fab,
-        .drawer-toggles {
-            display: none !important; /* stylelint-disable-line declaration-no-important */
         }
     }
 }

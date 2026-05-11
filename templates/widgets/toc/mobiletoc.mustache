@@ -1,0 +1,73 @@
+
+{{!
+    This file is part of Moodle - https://moodle.org/
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template format_ucl/widgets/toc/mobiletoc
+    Small screen navigation for the format.
+    A bootstrap modal and button.
+    The toc is toggled in/out of #ucl-format-modal-toc-body by js when the modal is shown/hidden.
+
+    Classes required for JS:
+    * none
+    Data attributes required for JS:
+    * none
+    Context variables required for this template:
+    * attributes Array of name / value pairs.
+    Example context (json):
+    {
+        "coursename": "Introduction to Pokémon",
+        "courseimg": "https://www.example.com/course-image.jpg"
+    }
+}}
+<div class="d-lg-none">
+    {{! Toc button. }}
+    <div id="ucl-format-mobile-toc-fab">
+        <a role="button" class="fadeInUp btn btn-primary shadow" data-toggle="modal" data-target="#ucl-format-mobile-toc">
+            <i class="fa-solid fa-bars mr-2"></i>
+            {{#str}} toc, format_ucl {{/str}}
+        </a>
+    </div>
+
+    {{! Toc modal. }}
+    <div class="modal fade" id="ucl-format-mobile-toc" tabindex="-1" role="dialog" aria-labelledby="ucl-format-mobile-toc-label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+            {{#courseimg}}
+            <div class="modal-image mt-3 mx-3">
+                <div class="bg-cover w-100" style="background-image: url({{{.}}}); height: 12rem;"></div>
+            </div>
+            {{/courseimg}}
+
+            <div class="modal-header">
+                
+                <h2 class="modal-title h4 text-break" id="ucl-format-mobile-toc-label">
+                    {{{coursename}}}
+                </h2>
+                <button type="button" class="close" data-dismiss="modal" title="{{#str}} closebuttontitle {{/str}}">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="ucl-format-modal-toc-body" class="modal-body">
+                {{! Content gets here by js. }}
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{#js}}
+require(['format_ucl/local/toc/mobiletoc'], function(MobileToc) {
+    MobileToc.init();
+});
+{{/js}}

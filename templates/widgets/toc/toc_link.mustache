@@ -22,12 +22,24 @@
     * attributes Array of name / value pairs.
     Example context (json):
     {
+        "id": 3,
+        "name": "Week 1: Introduction",
+        "url": "https://www.example.com/moodle/course/view.php?id=2&section=1",
+        "highlight": false,
+        "visible": true,
+        "active": false,
+        "progress": {
+            "id": 3,
+            "total": 10,
+            "complete": 7,
+            "percentage": 70,
+            "done": false
+        }
     }
 }}
 <li
     id="tocsection-{{id}}"
-    class="d-flex align-items-center py-1 
-    {{#active}} active {{/active}}
+    class="d-flex align-items-center py-1
     {{#highlight}} current {{/highlight}}
     {{^visible}} dimmed {{/visible}}"
     data-id="{{id}}"
@@ -35,21 +47,32 @@
     data-for="tocsection"
 >
     <div>
+        {{! Highlighted section. }}
         <div class="flag-current">
             <span class="badge badge-info badge-pill">
-                Highlighted
+                {{#str}} currentsection, format_ucl {{/str}}
             </span>
         </div>
 
-        <a data-for="section_title" href="{{{url}}}" class="line-clamp-2 {{{class}}}">
+        {{^active}}
+        <a data-for="section_title" href="{{{url}}}" class="line-clamp-2 text-break">
             {{{name}}}
         </a>
+        {{/active}}
+
+        {{! Current section you are on, so not a link. }}
+        {{#active}}
+        <span data-for="section_title" class="line-clamp-2 text-break font-weight-bold">
+            {{{name}}}
+        </span>
+        {{/active}}
     </div>
 
+    {{! Hidden from students. }}
     <div class="flag-hidden ml-auto">
         <div class="badge badge-warning rounded-circle p-2 m-1"
             data-toggle="tooltip" data-html="true" data-placement="right"
-            title="{{#str}} hiddenfromstudents {{/str}}">
+            title="{{#str}} hiddenfromstudents {{/str}}" aria-hidden="true">
             <i class="fa-solid fa-eye-slash"
             ></i>
         </div>

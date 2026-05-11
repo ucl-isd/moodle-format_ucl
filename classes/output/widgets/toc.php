@@ -65,6 +65,7 @@ class toc implements renderable, templatable {
         $numsections = $format->get_last_section_number();
         $canviewhidden = has_capability('moodle/course:update', $context);
         $coursesections = $format->get_sections();
+        $currentsectionnum = $this->format->get_sectionnum();
 
         $visiblecount = 0;
         $namecount = 0;
@@ -107,13 +108,9 @@ class toc implements renderable, templatable {
                 $s->url = $format->get_view_url($section, ['sr' => $section->section]);
                 $s->visible = $section->visible;
 
-                // Current url.
-                if ($activesection == $section->id) {
+                // Active section - either the section in the URL, or section 0 if on the course home page.
+                if ($activesection == $section->id || ($currentsectionnum === 0 && $section->section === 0)) {
                     $s->active = true;
-                }
-
-                if ($section->section === 0) {
-                    $s->class = "course-home";
                 }
 
                 // Highlighted.

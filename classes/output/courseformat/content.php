@@ -71,7 +71,8 @@ class content extends content_base {
 
         /** @var format_ucl $format */
         $format = $this->format;
-        $data->courseid = $format->get_course()->id;
+        $data->course = $format->get_course();
+        $data->courseid = $data->course->id;
         $sectioninfo = $format->get_modinfo()->get_section_info($singlesectionnum);
         $data->coursename = $format->get_course()->fullname;
         $data->courseimg = course_summary_exporter::get_course_image($format->get_course());
@@ -112,6 +113,8 @@ class content extends content_base {
                 $data = $this->get_ucl_initialsection($data, $output);
             }
         }
+
+        $this->after_export_for_template($output, $data);
 
         return $data;
     }
@@ -157,7 +160,8 @@ class content extends content_base {
                 $data->singleedit = true;
             }
 
-            $data->contacts = $this->get_course_contacts($output, $data);
+            $widget = new format_ucl\output\widgets\contacts($this->format);
+            $data->contacts = $widget->export_for_template($output);
             if (!empty($data->contacts)) {
                 $data->hascontacts = true;
                 $context = context_course::instance($course->id);
@@ -166,8 +170,7 @@ class content extends content_base {
 
             // Set first section to enable adding ucl metadata.
             $data->initialsection = $section;
-            $data->beforefirstsectionhtml = $this->get_before_first_section_html($output, $data);
-            $data->afterfirstsectionhtml = $this->get_after_first_section_html($output, $data);
+            $data->afterfirstsectionhtml = '';
         }
         return $data;
     }
@@ -211,46 +214,10 @@ class content extends content_base {
      * Dispatch hook to allow other plugins to add content before the first section html.
      *
      * @param \renderer_base $output
-     * @param array|stdClass $data
-     * @return string
+     * @param stdClass $data
      */
-    public function get_before_first_section_html(\renderer_base $output, array|stdClass $data): string {
-        $course = $this->format->get_course();
-        // Dispatch hook to retrieve extra content to add at the start of the section.
-        $hook = new \format_ucl\hook\before_first_section_html($output, $data, $course, '');
+    public function after_export_for_template(\renderer_base $output, stdClass $data) {
+        $hook = new \format_ucl\hook\after_export_for_template($output, $data);
         \core\di::get(\core\hook\manager::class)->dispatch($hook);
-        return $hook->get_output();
-    }
-
-    /**
-     * Dispatch hook to allow other plugins to add content after the first section html.
-     *
-     * @param \renderer_base $output
-     * @param array|stdClass $data
-     * @return string
-     */
-    public function get_after_first_section_html(\renderer_base $output, array|stdClass $data): string {
-        $course = $this->format->get_course();
-        // Dispatch hook to retrieve extra content to add at the end of the section.
-        $hook = new \format_ucl\hook\after_first_section_html($output, $data, $course, '');
-        \core\di::get(\core\hook\manager::class)->dispatch($hook);
-        return $hook->get_output();
-    }
-
-    /**
-     * Dispatch hook to allow other plugins to add content before the first section html.
-     *
-     * @param \renderer_base $output
-     * @param array|stdClass $data
-     * @return array
-     */
-    public function get_course_contacts(\renderer_base $output, array|stdClass $data): array {
-        $widget = new format_ucl\output\widgets\contacts($this->format);
-        $contacts = $widget->export_for_template($output);
-        // Dispatch hook to retrieve extra content to add at the start of the section.
-        $hook = new \format_ucl\hook\after_course_contacts($output, $data, $contacts, '');
-        \core\di::get(\core\hook\manager::class)->dispatch($hook);
-
-        return $hook->get_course_contacts();
     }
 }

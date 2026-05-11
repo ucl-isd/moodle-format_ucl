@@ -25,7 +25,6 @@ namespace format_ucl\hook;
  * @author    Amanda Doughty <m.doughty@ucl.ac.uk>
  */
 final class after_export_for_template implements \core\hook\described_hook {
-
     /** @var array|string[] template variables which can be edited */
     private array $editableproperties = ['contacts', 'assessments'];
 

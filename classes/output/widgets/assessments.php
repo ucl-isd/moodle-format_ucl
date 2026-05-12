@@ -66,6 +66,10 @@ class assessments implements renderable, templatable {
         // Check we have summative assessments.
         if ($summative = assess_type::get_assess_type_records_by_courseid($COURSE->id, "1")) {
             $modinfo = get_fast_modinfo($COURSE->id, $USER->id);
+
+            // TODO - turnitin test.
+            $summative = $this->expand_turnitin_parts($summative, $modinfo);
+
             $mods = $modinfo->get_cms();
             // Mod ids array to check cmid exists.
             $cmids = [];
@@ -84,31 +88,41 @@ class assessments implements renderable, templatable {
             $template->staff = $canedit;
             $template->learner = !$canedit;
 
-            foreach ($summative as $assess) {
+            foreach ($summative as $s) {
                 // Check this is a course mod.
-                if ($assess->cmid != 0) {
+                if ($s->cmid != 0) {
                     // Skip mods where cmid is not in the course.
-                    if (!in_array($assess->cmid, $cmids)) {
+                    if (!in_array($s->cmid, $cmids)) {
                         continue;
                     }
 
-                    $cmid = $assess->cmid;
-                    $mod = $modinfo->get_cm($cmid);
+                    $mod = $modinfo->get_cm($s->cmid);
 
                     // Check mod is visible.
                     if ($mod->uservisible && $mod->visible) {
-                        // Due date field.
-                        $handler = \format_ucl\output\widgets\assessment\assess_base::instance($mod);
+                        // Turnitin.
+                        if ($mod->modname === 'turnitintooltwo' && !empty($s->turnitinpartno)) {
+                            $handler = new \format_ucl\output\widgets\assessment\turnitintooltwo(
+                                $mod,
+                                $s->turnitinpartno
+                            );
+                        } else {
+                            // Standard Moodle things.
+                            $handler = \format_ucl\output\widgets\assessment\assess_base::instance($mod);
+                        }
+
+                        // Duedate.
                         $duedate = $handler->get_activity_duedate();
 
-                        // Check mod has a due date.
                         if ($duedate) {
                             $assess = new stdClass();
                             $assess->duedate = $duedate;
                             $modname = 'mod' . $mod->modname;
                             $assess->$modname = true;
-                            $assess->url = new moodle_url('/mod/' . $mod->modname . '/view.php', [ 'id' => $cmid]);
-                            $assess->name = $mod->name;
+                            $assess->url = new moodle_url('/mod/' . $mod->modname . '/view.php', ['id' => $mod->id]);
+
+                            // Turnitin part name or default.
+                            $assess->name = $s->displayname ?? $mod->name;
                             $assess->icon = $mod->get_icon_url()->out(false);
 
                             // Section name.
@@ -121,29 +135,17 @@ class assessments implements renderable, templatable {
                                 $isgroupmode = (bool) groups_get_activity_groupmode($mod);
                                 $hasrestrictions = (!empty($mod->groupingid) || !empty($mod->availability));
 
-                                // Turnitin multi-part check.
-                                $ismultipart = false;
-                                if ($mod->modname === 'turnitintooltwo') {
-                                    $handler = \format_ucl\output\widgets\assessment\assess_base::instance($mod);
-                                    if (!$handler->is_valid()) {
-                                        $ismultipart = true;
-                                    }
-                                }
-
-                                if ($isgroupmode || $hasrestrictions || $ismultipart) {
-                                    // Set flags to message user that stats are not available.
+                                // Set flags to message user that stats are not available.
+                                if ($isgroupmode || $hasrestrictions) {
                                     $assess->groupmode = $isgroupmode;
                                     $assess->hasrestrictions = $hasrestrictions;
-                                    $assess->turnitinmultipart = $ismultipart;
                                 } else {
-                                    // Marking stats.
                                     $markingdata = $handler->get_staff_marking();
                                     $assess->hasstats = true;
                                     $assess->expectedcount = $studentcount;
                                     $assess->submittedcount = $markingdata->submitted ?? 0;
-                                    // Calculate the raw percentage.
+
                                     $rawpercent = ($studentcount > 0) ? ($assess->submittedcount / $studentcount) * 100 : 0;
-                                    // Remove trailing .0 or only show 2 decimal places.
                                     $assess->percent = floatval(round($rawpercent, 2));
                                     $assess->requiremarking = $markingdata->requiremarking ?? 0;
                                 }
@@ -152,17 +154,14 @@ class assessments implements renderable, templatable {
                             // Student data.
                             if (!$canedit) {
                                 $markdata = $handler->get_learner_mark();
-                                $assess->submitted = $markdata->submitted ?? 0;
+                                $assess->submitted = $markdata->submitted ?? false;
 
-                                // Overdue flag.
-                                if (!$markdata->mark && !$assess->submitted) {
-                                    $now = time();
-                                    if (!empty($assess->duedate) && $now > $assess->duedate) {
+                                if (empty($markdata->mark) && !$assess->submitted) {
+                                    if (time() > $assess->duedate) {
                                         $assess->overdue = true;
                                     }
                                 }
 
-                                // Mark.
                                 if ($markdata->mark !== null) {
                                     $assess->hasmark = true;
                                     if (is_numeric($markdata->mark)) {
@@ -171,8 +170,7 @@ class assessments implements renderable, templatable {
                                             $assess->max = floatval(round($markdata->max, 2));
                                         }
                                     } else {
-                                        // Non-numeric mark (e.g., "Pass").
-                                        $assess->mark = $markdata->mark ?? 0;
+                                        $assess->mark = $markdata->mark;
                                     }
                                 }
                             }
@@ -222,5 +220,76 @@ class assessments implements renderable, templatable {
         ]);
 
         return $counts[$courseid];
+    }
+
+    /**
+     * Expand Turnitin assignments into separate parts.
+     *
+     * @param array $summative The original assessment records.
+     * @param \course_modinfo $modinfo The course modinfo.
+     * @return array The expanded list of records.
+     */
+    protected function expand_turnitin_parts(array $summative, \course_modinfo $modinfo): array {
+        global $DB;
+
+        $expanded = [];
+        $tiiinstances = [];
+
+        // 1. First pass: Collect all Turnitin Instance IDs.
+        foreach ($summative as $s) {
+            $mod = $modinfo->get_cm($s->cmid);
+            if ($mod->modname === 'turnitintooltwo') {
+                $tiiinstances[] = $mod->instance;
+            }
+        }
+
+        // 2. Bulk Fetch all parts for all these assignments in ONE query.
+        $allparts = [];
+        if (!empty($tiiinstances)) {
+            [$insql, $inparams] = $DB->get_in_or_equal($tiiinstances);
+            $partsrecords = $DB->get_records_select(
+                'turnitintooltwo_parts',
+                "turnitintooltwoid $insql",
+                $inparams,
+                'turnitintooltwoid ASC, partorder ASC'
+            );
+
+            // Group them by assignment ID so we can access them easily.
+            foreach ($partsrecords as $part) {
+                $allparts[$part->turnitintooltwoid][] = $part;
+            }
+        }
+
+        // 3. Second pass: Build the expanded list using the data we already fetched.
+        foreach ($summative as $s) {
+            $mod = $modinfo->get_cm($s->cmid);
+
+            if ($mod->modname !== 'turnitintooltwo' || !isset($allparts[$mod->instance])) {
+                $expanded[] = $s;
+                continue;
+            }
+
+            $parts = $allparts[$mod->instance];
+            $numparts = count($parts);
+
+            foreach ($parts as $index => $part) {
+                $partrecord = clone $s;
+                $partno = $index + 1;
+                $partrecord->turnitinpartno = $partno;
+                $partrecord->partdtdue = (int) $part->dtdue;
+
+                // Handle naming: Only add "Part X" if there is more than one part.
+                if ($numparts > 1) {
+                    $partname = !empty($part->partname) ? $part->partname : get_string('part', 'mod_turnitintooltwo') . ' ' . $partno;
+                    $partrecord->displayname = $mod->name . ' ' . $partname;
+                } else {
+                    $partrecord->displayname = $mod->name;
+                }
+
+                $expanded[] = $partrecord;
+            }
+        }
+
+        return $expanded;
     }
 }

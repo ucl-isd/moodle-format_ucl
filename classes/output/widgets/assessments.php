@@ -247,6 +247,7 @@ class assessments implements renderable, templatable {
         $allparts = [];
         if (!empty($tiiinstances)) {
             [$insql, $inparams] = $DB->get_in_or_equal($tiiinstances);
+            // Valid columns: turnitintooltwoid, partorder.
             $partsrecords = $DB->get_records_select(
                 'turnitintooltwo_parts',
                 "turnitintooltwoid $insql",
@@ -254,7 +255,7 @@ class assessments implements renderable, templatable {
                 'turnitintooltwoid ASC, partorder ASC'
             );
 
-            // Group them by assignment ID so we can access them easily.
+            // Group by assignment ID.
             foreach ($partsrecords as $part) {
                 $allparts[$part->turnitintooltwoid][] = $part;
             }
@@ -278,7 +279,6 @@ class assessments implements renderable, templatable {
                 $partrecord->turnitinpartno = $partno;
                 $partrecord->partdtdue = (int) $part->dtdue;
 
-                // Handle naming: Only add "Part X" if there is more than one part.
                 if ($numparts > 1) {
                     $partname = !empty($part->partname) ? $part->partname : get_string('part', 'mod_turnitintooltwo') . ' ' . $partno;
                     $partrecord->displayname = $mod->name . ' ' . $partname;

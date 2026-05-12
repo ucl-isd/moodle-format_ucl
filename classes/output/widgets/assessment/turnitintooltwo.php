@@ -55,7 +55,7 @@ class turnitintooltwo extends assess_base {
             $partscache[$this->cm->instance] = $DB->get_records(
                 'turnitintooltwo_parts',
                 ['turnitintooltwoid' => $this->cm->instance],
-                'partorder ASC'
+                'id ASC'
             );
         }
 

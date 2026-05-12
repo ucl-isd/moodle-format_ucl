@@ -187,66 +187,49 @@ class assessments implements renderable, templatable {
      */
     protected function expand_turnitin_parts(array $summative, \course_modinfo $modinfo): array {
         global $DB;
-        $expanded = [];
-        $tiiinstances = [];
+
         $cms = $modinfo->get_cms();
 
-        foreach ($summative as $s) {
-            // Internal safety: skip if CMID is missing in modinfo.
-            if (!isset($cms[$s->cmid])) {
-                continue;
-            }
-            $mod = $cms[$s->cmid];
-            if ($mod->modname === 'turnitintooltwo') {
-                $tiiinstances[] = $mod->instance;
-            }
-        }
+        // Get IDs.
+        $turnitinids = array_filter(array_map(fn($s) => $cms[$s->cmid]->modname === 'turnitintooltwo' ? $cms[$s->cmid]->instance : null, $summative));
 
         $allparts = [];
-        if (!empty($tiiinstances)) {
-            [$insql, $inparams] = $DB->get_in_or_equal($tiiinstances);
-            $partsrecords = $DB->get_records_select(
-                'turnitintooltwo_parts',
-                "turnitintooltwoid $insql",
-                $inparams,
-                'turnitintooltwoid ASC, partorder ASC'
-            );
-            foreach ($partsrecords as $part) {
+        if ($turnitinids) {
+            [$insql, $params] = $DB->get_in_or_equal($turnitinids);
+            $records = $DB->get_records_select('turnitintooltwo_parts', "turnitintooltwoid $insql", $params, 'turnitintooltwoid, id');
+
+            // Group parts by assignment ID.
+            foreach ($records as $part) {
                 $allparts[$part->turnitintooltwoid][] = $part;
             }
         }
 
+        $expanded = [];
         foreach ($summative as $s) {
-            if (!isset($cms[$s->cmid])) {
+            $mod = $cms[$s->cmid] ?? null;
+            $parts = ($mod && $mod->modname === 'turnitintooltwo') ? ($allparts[$mod->instance] ?? []) : [];
+
+            // If no parts to expand, just keep the original and move on.
+            if (empty($parts)) {
                 $expanded[] = $s;
                 continue;
             }
 
-            $mod = $cms[$s->cmid];
-
-            if ($mod->modname !== 'turnitintooltwo' || !isset($allparts[$mod->instance])) {
-                $expanded[] = $s;
-                continue;
-            }
-
-            $parts = $allparts[$mod->instance];
-            $numparts = count($parts);
-
+            // Expand multi-part assignments.
             foreach ($parts as $index => $part) {
-                $partrecord = clone $s;
+                $newpart = clone $s;
                 $partno = $index + 1;
-                $partrecord->turnitinpartno = $partno;
-                $partrecord->partdtdue = (int) $part->dtdue;
 
-                if ($numparts > 1) {
-                    $partname = !empty($part->partname) ? $part->partname : get_string('part', 'mod_turnitintooltwo') . ' ' . $partno;
-                    $partrecord->displayname = $mod->name . ' ' . $partname;
-                } else {
-                    $partrecord->displayname = $mod->name;
-                }
-                $expanded[] = $partrecord;
+                $newpart->turnitinpartno = $partno;
+                $newpart->partdtdue = (int) $part->dtdue;
+                $newpart->displayname = (count($parts) > 1)
+                ? ($mod->name . ' ' . ($part->partname ?: get_string('part', 'mod_turnitintooltwo') . " $partno"))
+                : $mod->name;
+
+                $expanded[] = $newpart;
             }
         }
+
         return $expanded;
     }
 

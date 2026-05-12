@@ -26,8 +26,6 @@ use local_assess_type\assess_type;
 use moodle_url;
 use stdClass;
 
-
-
 require_once($CFG->libdir . '/gradelib.php');
 require_once($CFG->dirroot . '/grade/querylib.php');
 
@@ -41,20 +39,20 @@ require_once($CFG->dirroot . '/grade/querylib.php');
  */
 class assessments implements renderable, templatable {
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param format_ucl $format
+     * @param format_ucl $format The course format instance.
      */
     public function __construct(
-        /** @var  format_ucl format */
         protected format_ucl $format,
     ) {
     }
 
     /**
-     * Return data for assessments.
+     * Export data for the template.
      *
-     * @return stdClass|array the assessment data
+     * @param renderer_base $output The renderer.
+     * @return array|stdClass The template data.
      */
     public function export_for_template(renderer_base $output) {
         global $USER, $COURSE;
@@ -63,22 +61,23 @@ class assessments implements renderable, templatable {
             return [];
         }
 
-        // Check we have summative assessments.
         if ($summative = assess_type::get_assess_type_records_by_courseid($COURSE->id, "1")) {
             $modinfo = get_fast_modinfo($COURSE->id, $USER->id);
+            $mods = $modinfo->get_cms(); // This is our safety map.
 
-            // TODO - turnitin test.
+            // Check mods exists.
+            $summative = array_filter($summative, function ($s) use ($mods) {
+                return $s->cmid != 0 && isset($mods[$s->cmid]);
+            });
+
+            if (empty($summative)) {
+                return [];
+            }
+
+            // Expand Turnitin assignments into individual parts.
             $summative = $this->expand_turnitin_parts($summative, $modinfo);
 
-            $mods = $modinfo->get_cms();
-            // Mod ids array to check cmid exists.
-            $cmids = [];
-            foreach ($mods as $mod) {
-                $cmids[] = $mod->id;
-            }
-            // Number of students on the course.
             $studentcount = self::get_student_count($COURSE->id);
-
             $template = new stdClass();
             $template->assessments = [];
 
@@ -89,137 +88,94 @@ class assessments implements renderable, templatable {
             $template->learner = !$canedit;
 
             foreach ($summative as $s) {
-                // Check this is a course mod.
-                if ($s->cmid != 0) {
-                    // Skip mods where cmid is not in the course.
-                    if (!in_array($s->cmid, $cmids)) {
-                        continue;
+                // We use isset again just in case turnitin added something weird.
+                if (!isset($mods[$s->cmid])) {
+                    continue;
+                }
+
+                $mod = $mods[$s->cmid];
+
+                if ($mod->uservisible && $mod->visible) {
+                    if ($mod->modname === 'turnitintooltwo' && !empty($s->turnitinpartno)) {
+                        $handler = new \format_ucl\output\widgets\assessment\turnitintooltwo(
+                            $mod,
+                            $s->turnitinpartno
+                        );
+                    } else {
+                        $handler = \format_ucl\output\widgets\assessment\assess_base::instance($mod);
                     }
 
-                    $mod = $modinfo->get_cm($s->cmid);
+                    $duedate = $handler->get_activity_duedate();
 
-                    // Check mod is visible.
-                    if ($mod->uservisible && $mod->visible) {
-                        // Turnitin.
-                        if ($mod->modname === 'turnitintooltwo' && !empty($s->turnitinpartno)) {
-                            $handler = new \format_ucl\output\widgets\assessment\turnitintooltwo(
-                                $mod,
-                                $s->turnitinpartno
-                            );
-                        } else {
-                            // Standard Moodle things.
-                            $handler = \format_ucl\output\widgets\assessment\assess_base::instance($mod);
+                    if ($duedate) {
+                        $assess = new stdClass();
+                        $assess->duedate = $duedate;
+                        $modname = 'mod' . $mod->modname;
+                        $assess->$modname = true;
+                        $assess->url = new moodle_url('/mod/' . $mod->modname . '/view.php', ['id' => $mod->id]);
+                        $assess->name = $s->displayname ?? $mod->name;
+                        $assess->icon = $mod->get_icon_url()->out(false);
+
+                        $sectioninfo = $mod->get_section_info();
+                        $assess->section = get_section_name($COURSE, $sectioninfo);
+
+                        if ($canedit) {
+                            $isgroupmode = (bool) groups_get_activity_groupmode($mod);
+                            $hasrestrictions = (!empty($mod->groupingid) || !empty($mod->availability));
+
+                            if ($isgroupmode || $hasrestrictions) {
+                                $assess->groupmode = $isgroupmode;
+                                $assess->hasrestrictions = $hasrestrictions;
+                            } else {
+                                $markingdata = $handler->get_staff_marking();
+                                $assess->hasstats = true;
+                                $assess->expectedcount = $studentcount;
+                                $assess->submittedcount = $markingdata->submitted ?? 0;
+                                $rawpercent = ($studentcount > 0) ? ($assess->submittedcount / $studentcount) * 100 : 0;
+                                $assess->percent = floatval(round($rawpercent, 2));
+                                $assess->requiremarking = $markingdata->requiremarking ?? 0;
+                            }
                         }
 
-                        // Duedate.
-                        $duedate = $handler->get_activity_duedate();
+                        if (!$canedit) {
+                            $markdata = $handler->get_learner_mark();
+                            $assess->submitted = $markdata->submitted ?? false;
 
-                        if ($duedate) {
-                            $assess = new stdClass();
-                            $assess->duedate = $duedate;
-                            $modname = 'mod' . $mod->modname;
-                            $assess->$modname = true;
-                            $assess->url = new moodle_url('/mod/' . $mod->modname . '/view.php', ['id' => $mod->id]);
+                            if (empty($markdata->mark) && !$assess->submitted) {
+                                if (time() > $assess->duedate) {
+                                    $assess->overdue = true;
+                                }
+                            }
 
-                            // Turnitin part name or default.
-                            $assess->name = $s->displayname ?? $mod->name;
-                            $assess->icon = $mod->get_icon_url()->out(false);
-
-                            // Section name.
-                            $sectioninfo = $mod->get_section_info();
-                            $assess->section = get_section_name($COURSE, $sectioninfo);
-
-                            // Staff data.
-                            if ($canedit) {
-                                // Check if we can get accurate stats, or bail.
-                                $isgroupmode = (bool) groups_get_activity_groupmode($mod);
-                                $hasrestrictions = (!empty($mod->groupingid) || !empty($mod->availability));
-
-                                // Set flags to message user that stats are not available.
-                                if ($isgroupmode || $hasrestrictions) {
-                                    $assess->groupmode = $isgroupmode;
-                                    $assess->hasrestrictions = $hasrestrictions;
+                            if ($markdata->mark !== null) {
+                                $assess->hasmark = true;
+                                if (is_numeric($markdata->mark)) {
+                                    $assess->mark = floatval(round($markdata->mark, 2));
+                                    if (!empty($markdata->max)) {
+                                        $assess->max = floatval(round($markdata->max, 2));
+                                    }
                                 } else {
-                                    $markingdata = $handler->get_staff_marking();
-                                    $assess->hasstats = true;
-                                    $assess->expectedcount = $studentcount;
-                                    $assess->submittedcount = $markingdata->submitted ?? 0;
-
-                                    $rawpercent = ($studentcount > 0) ? ($assess->submittedcount / $studentcount) * 100 : 0;
-                                    $assess->percent = floatval(round($rawpercent, 2));
-                                    $assess->requiremarking = $markingdata->requiremarking ?? 0;
+                                    $assess->mark = $markdata->mark;
                                 }
                             }
-
-                            // Student data.
-                            if (!$canedit) {
-                                $markdata = $handler->get_learner_mark();
-                                $assess->submitted = $markdata->submitted ?? false;
-
-                                if (empty($markdata->mark) && !$assess->submitted) {
-                                    if (time() > $assess->duedate) {
-                                        $assess->overdue = true;
-                                    }
-                                }
-
-                                if ($markdata->mark !== null) {
-                                    $assess->hasmark = true;
-                                    if (is_numeric($markdata->mark)) {
-                                        $assess->mark = floatval(round($markdata->mark, 2));
-                                        if (!empty($markdata->max)) {
-                                            $assess->max = floatval(round($markdata->max, 2));
-                                        }
-                                    } else {
-                                        $assess->mark = $markdata->mark;
-                                    }
-                                }
-                            }
-
-                            $template->assessments[] = $assess;
                         }
+                        $template->assessments[] = $assess;
                     }
                 }
             }
 
-            // Sort.
             usort($template->assessments, function ($a, $b) {
                 return $a->duedate <=> $b->duedate;
             });
 
-            // Format dates.
             foreach ($template->assessments as $assess) {
-                $assess->duedatedate = date('jS M', $assess->duedate); // Leon will not like this.
+                $assess->duedatedate = date('jS M', $assess->duedate);
                 $assess->duedatetime = userdate($assess->duedate, '%I:%M%P');
             }
 
-            // Return data.
             return $template;
         }
-        // No summative assessments.
         return [];
-    }
-
-    protected static function get_student_count(int $courseid): int {
-        global $DB;
-        static $counts = [];
-
-        if (isset($counts[$courseid])) {
-            return $counts[$courseid];
-        }
-
-        $context = \context_course::instance($courseid);
-        $sql = "SELECT COUNT(DISTINCT ra.userid)
-                  FROM {role_assignments} ra
-                  JOIN {role} r ON r.id = ra.roleid
-                 WHERE r.archetype = :archetype
-                   AND ra.contextid = :ctxid";
-
-        $counts[$courseid] = (int) $DB->count_records_sql($sql, [
-            'archetype' => 'student',
-            'ctxid'     => $context->id,
-        ]);
-
-        return $counts[$courseid];
     }
 
     /**
@@ -231,39 +187,42 @@ class assessments implements renderable, templatable {
      */
     protected function expand_turnitin_parts(array $summative, \course_modinfo $modinfo): array {
         global $DB;
-
         $expanded = [];
         $tiiinstances = [];
+        $cms = $modinfo->get_cms();
 
-        // 1. First pass: Collect all Turnitin Instance IDs.
         foreach ($summative as $s) {
-            $mod = $modinfo->get_cm($s->cmid);
+            // Internal safety: skip if CMID is missing in modinfo.
+            if (!isset($cms[$s->cmid])) {
+                continue;
+            }
+            $mod = $cms[$s->cmid];
             if ($mod->modname === 'turnitintooltwo') {
                 $tiiinstances[] = $mod->instance;
             }
         }
 
-        // 2. Bulk Fetch all parts for all these assignments in ONE query.
         $allparts = [];
         if (!empty($tiiinstances)) {
             [$insql, $inparams] = $DB->get_in_or_equal($tiiinstances);
-            // Valid columns: turnitintooltwoid, partorder.
             $partsrecords = $DB->get_records_select(
                 'turnitintooltwo_parts',
                 "turnitintooltwoid $insql",
                 $inparams,
                 'turnitintooltwoid ASC, partorder ASC'
             );
-
-            // Group by assignment ID.
             foreach ($partsrecords as $part) {
                 $allparts[$part->turnitintooltwoid][] = $part;
             }
         }
 
-        // 3. Second pass: Build the expanded list using the data we already fetched.
         foreach ($summative as $s) {
-            $mod = $modinfo->get_cm($s->cmid);
+            if (!isset($cms[$s->cmid])) {
+                $expanded[] = $s;
+                continue;
+            }
+
+            $mod = $cms[$s->cmid];
 
             if ($mod->modname !== 'turnitintooltwo' || !isset($allparts[$mod->instance])) {
                 $expanded[] = $s;
@@ -285,11 +244,34 @@ class assessments implements renderable, templatable {
                 } else {
                     $partrecord->displayname = $mod->name;
                 }
-
                 $expanded[] = $partrecord;
             }
         }
-
         return $expanded;
+    }
+
+    /**
+     * Get the number of students enrolled in the course.
+     *
+     * @param int $courseid The course ID.
+     * @return int The student count.
+     */
+    protected static function get_student_count(int $courseid): int {
+        global $DB;
+        static $counts = [];
+        if (isset($counts[$courseid])) {
+            return $counts[$courseid];
+        }
+        $context = \context_course::instance($courseid);
+        $sql = "SELECT COUNT(DISTINCT ra.userid)
+                  FROM {role_assignments} ra
+                  JOIN {role} r ON r.id = ra.roleid
+                 WHERE r.archetype = :archetype
+                   AND ra.contextid = :ctxid";
+        $counts[$courseid] = (int) $DB->count_records_sql($sql, [
+            'archetype' => 'student',
+            'ctxid'     => $context->id,
+        ]);
+        return $counts[$courseid];
     }
 }

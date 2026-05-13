@@ -78,7 +78,6 @@ class assessments implements renderable, templatable {
             $summative = $this->expand_turnitin_parts($summative, $mods);
 
             $context = context_course::instance($COURSE->id);
-            $studentcount = self::get_student_count($COURSE->id, $context);
             $template = new stdClass();
             $template->assessments = [];
 
@@ -123,17 +122,16 @@ class assessments implements renderable, templatable {
 
                         if ($canedit) {
                             $isgroupmode = (bool) groups_get_activity_groupmode($mod);
-                            $hasrestrictions = (!empty($mod->groupingid) || !empty($mod->availability));
-
-                            if ($isgroupmode || $hasrestrictions) {
+                            $readonly = $context->is_locked();
+                            if ($isgroupmode || $readonly) {
                                 $assess->groupmode = $isgroupmode;
-                                $assess->hasrestrictions = $hasrestrictions;
+                                $assess->readonly = $readonly;
                             } else {
                                 $markingdata = $handler->get_staff_marking();
                                 $assess->hasstats = true;
-                                $assess->expectedcount = $studentcount;
+                                $assess->expectedcount = $handler->get_participant_count();
                                 $assess->submittedcount = $markingdata->submitted ?? 0;
-                                $rawpercent = ($studentcount > 0) ? ($assess->submittedcount / $studentcount) * 100 : 0;
+                                $rawpercent = ($assess->expectedcount > 0) ? ($assess->submittedcount / $assess->expectedcount) * 100 : 0;
                                 $assess->percent = floatval(round($rawpercent, 2));
                                 $assess->requiremarking = $markingdata->requiremarking ?? 0;
                             }
@@ -232,20 +230,5 @@ class assessments implements renderable, templatable {
         }
 
         return $expanded;
-    }
-
-    /**
-     * Get the count of students enrolled in the course.
-     *
-     * @param int $courseid The course ID.
-     * @param \context $context The course context.
-     * @return int The student count.
-     */
-    protected static function get_student_count(int $courseid, \context $context): int {
-        // 1st param: context
-        // 2nd param: capability (mod/assign:submit ensures we count learners, not staff)
-        // 3rd param: groupid (0 for all)
-        // 4th param: onlyactive (true filters out suspended/inactive users)
-        return count_enrolled_users($context, 'mod/assign:submit', 0, true);
     }
 }

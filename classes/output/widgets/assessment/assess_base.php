@@ -63,6 +63,36 @@ abstract class assess_base {
     }
 
     /**
+     * Get the number of participants expected to submit/attempt the activity.
+     * @return int The participant count.
+     */
+    public function get_participant_count(): int {
+        $capabilities = [
+            'assign'          => 'mod/assign:submit',
+            'quiz'            => 'mod/quiz:attempt',
+            'workshop'        => 'mod/workshop:submit',
+            'coursework'      => 'mod/coursework:submit',
+            'turnitintooltwo' => 'mod/turnitintooltwo:submit',
+        ];
+        $capability = $capabilities[$this->cm->modname] ?? 'mod/assign:submit';
+
+        $context = \context_course::instance($this->cm->course);
+        $users = get_enrolled_users(
+            context: $context,
+            withcapability: $capability,
+            onlyactive: true
+        );
+
+        if (empty($users)) {
+            return 0;
+        }
+
+        // Filter users based on moodle availability restrictions.
+        $info = new \core_availability\info_module($this->cm);
+        return count($info->filter_user_list($users));
+    }
+
+    /**
      * Get marking data for staff view.
      * @return \stdClass Object with: submitted, marked, requiremarking, hasstats (bool).
      */

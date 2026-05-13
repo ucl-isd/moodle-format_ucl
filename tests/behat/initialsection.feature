@@ -73,11 +73,53 @@ Feature: Initial section has custom layout
     And "Teacher 1" "link" should exist
 
   Scenario: User without permission format/ucl:editcoursecontacts cannot show/hide contacts
-    When I log in as "Teacher4"
+    When I log in as "teacher4"
     And I am on "Course 1" course homepage with editing mode on
     Then "Show Teacher 1 to students" "checkbox" should not exist
 
   Scenario: User with permission format/ucl:editcoursecontacts can show/hide contacts
-    When I log in as "Teacher1"
+    When I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     Then "Show Teacher 1 to students" "checkbox" should not exist
+
+  @javascript
+  Scenario: User without permission format/ucl:editcoursecontacts cannot add custom contact
+    When I log in as "teacher4"
+    And I am on "Course 1" course homepage with editing mode on
+    Then "Add custom contact" "link" should not exist
+
+  @javascript
+  Scenario: User with permission format/ucl:editcoursecontacts can add and edit custom contacts
+    When I log in as "teacher1"
+    And I am on "Course 1" course homepage with editing mode on
+    And I click on "Add custom contact" "link"
+    Then "Custom contact" "fieldset" should exist
+    And I set the following fields to these values:
+      | Role        | Ring Master           |
+      | Name        | Jack Tucker           |
+      | Email       | zzucker@stamptown.com |
+      | Description | Clown king            |
+    And I press "Save"
+    And I should see "Changes saved"
+    And I switch editing mode off
+    And I click on "Course contacts" "link"
+    And I should see "Ring Master"
+    And I should see "Jack Tucker"
+    And I should see "zzucker@stamptown.com"
+    And I should see "Clown king"
+    And I switch editing mode on
+    And I click on "Edit contact Jack Tucker" "link"
+    And I set the following fields to these values:
+      | Role  | Director               |
+      | Name  | Jonny Woolley          |
+      | Email | jwoolley@stamptown.com |
+    And I press "Save"
+    And I switch editing mode off
+    And I click on "Course contacts" "link"
+    And I should not see "Ring Master"
+    And I should see "Director"
+    And I should see "Jonny Woolley"
+    And I should see "jwoolley@stamptown.com"
+    And I should see "Clown king"
+
+

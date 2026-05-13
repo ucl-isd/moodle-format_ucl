@@ -75,6 +75,10 @@
                 {{> format_ucl/widgets/contacts/contact }}
             {{/contacts}}
 
+            {{#customcontacts}}
+                {{> format_ucl/widgets/contacts/customcontact }}
+            {{/customcontacts}}
+
             {{#isediting}}
                 {{#caneditroles}}
                     <div>
@@ -96,7 +100,7 @@
 
         </div>
 
-        {{> format_ucl/widgets/contacts/customcontact }}
+        {{> format_ucl/widgets/contacts/customcontact_form }}
 
         {{#isediting}}
             {{#caneditroles}}

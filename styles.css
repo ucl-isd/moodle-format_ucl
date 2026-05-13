@@ -184,6 +184,11 @@ body.format-ucl {
     }
 }
 
+/* SHAME */
+#course-contact-form.mform .d-flex .fitem {
+    margin: 1rem !important;
+}
+
 /* Mobile toc. */
 @media (max-width: 1200px) {
     #ucl-course-toc:target {

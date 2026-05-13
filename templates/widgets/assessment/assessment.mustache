@@ -62,6 +62,9 @@
                 {{#hasrestrictions}}
                     <div class="small">Restricted activity, visit the assessment for submissions.</div>
                 {{/hasrestrictions}}
+                {{#readonly}}
+                    <div class="small">This course is read only./div>
+                {{/readonly}}
 
                 {{#hasstats}}
                     {{> format_ucl/widgets/assessment/progress }}

@@ -77,12 +77,12 @@ class assessments implements renderable, templatable {
             // Expand Turnitin assignments into individual parts.
             $summative = $this->expand_turnitin_parts($summative, $modinfo);
 
-            $studentcount = self::get_student_count($COURSE->id);
+            $context = context_course::instance($COURSE->id);
+            $studentcount = self::get_student_count($COURSE->id, $context);
             $template = new stdClass();
             $template->assessments = [];
 
             // Staff of learner display for template.
-            $context = context_course::instance($COURSE->id);
             $canedit = has_capability('moodle/course:update', $context);
             $template->staff = $canedit;
             $template->learner = !$canedit;
@@ -234,27 +234,17 @@ class assessments implements renderable, templatable {
     }
 
     /**
-     * Get the number of students enrolled in the course.
+     * Get the count of students enrolled in the course.
      *
      * @param int $courseid The course ID.
+     * @param \context $context The course context.
      * @return int The student count.
      */
-    protected static function get_student_count(int $courseid): int {
-        global $DB;
-        static $counts = [];
-        if (isset($counts[$courseid])) {
-            return $counts[$courseid];
-        }
-        $context = \context_course::instance($courseid);
-        $sql = "SELECT COUNT(DISTINCT ra.userid)
-                  FROM {role_assignments} ra
-                  JOIN {role} r ON r.id = ra.roleid
-                 WHERE r.archetype = :archetype
-                   AND ra.contextid = :ctxid";
-        $counts[$courseid] = (int) $DB->count_records_sql($sql, [
-            'archetype' => 'student',
-            'ctxid'     => $context->id,
-        ]);
-        return $counts[$courseid];
+    protected static function get_student_count(int $courseid, \context $context): int {
+        // 1st param: context
+        // 2nd param: capability (mod/assign:submit ensures we count learners, not staff)
+        // 3rd param: groupid (0 for all)
+        // 4th param: onlyactive (true filters out suspended/inactive users)
+        return count_enrolled_users($context, 'mod/assign:submit', 0, true);
     }
 }

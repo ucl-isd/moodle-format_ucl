@@ -17,10 +17,10 @@
 namespace format_ucl\output\courseformat;
 
 use context_course;
-use core\exception\moodle_exception;
 use core_courseformat\output\local\content as content_base;
 use core_course\external\course_summary_exporter;
 use format_ucl;
+use format_ucl\output\widgets\custom_contacts;
 use format_ucl\output\widgets\toc;
 use moodle_url;
 use stdClass;
@@ -160,12 +160,16 @@ class content extends content_base {
                 $data->singleedit = true;
             }
 
-            $widget = new format_ucl\output\widgets\contacts($this->format);
-            $data->contacts = $widget->export_for_template($output);
-            if (!empty($data->contacts)) {
-                $data->hascontacts = true;
-                $context = context_course::instance($course->id);
-                $data->caneditroles = has_capability('format/ucl:editcoursecontacts', $context);
+            $contacts = new format_ucl\output\widgets\contacts($this->format);
+            $data->contacts = $contacts->export_for_template($output);
+            $customcontacts = new custom_contacts($this->format);
+            $data->customcontacts = $customcontacts->export_for_template($output);
+            $data->hascontacts = $data->contacts || $data->customcontacts;
+            $context = context_course::instance($course->id);
+            $data->caneditroles = has_capability('format/ucl:editcoursecontacts', $context);
+
+            if ($data->isediting && $data->caneditroles) {
+                $data->customcontactform = custom_contacts::get_custom_contact_form($course, $output);
             }
 
             // Set first section to enable adding ucl metadata.

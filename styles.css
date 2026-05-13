@@ -187,3 +187,8 @@ body.format-ucl {
         }
     }
 }
+
+/* SHAME */
+#course-contact-form.mform .d-flex .fitem {
+    margin: 1rem !important; /* stylelint-disable-line declaration-no-important */
+}

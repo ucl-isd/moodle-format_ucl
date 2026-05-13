@@ -42,7 +42,6 @@
     }
 }}
 
-{{#hascontacts}}
     <div id="format-ucl-contacts-widget">
         <hr>
         <h3>
@@ -54,27 +53,31 @@
                 <span class="ml-auto"><i class="fa-solid fa-circle-arrow-down"></i></span>
             </a>
         </h3>
-
         <div class="collapse {{#isediting}} show {{/isediting}}" id="ucl-format-contacts">
             {{! Hide contact col label. }}
             {{! TODO - single var for isediting & caneditroles as used a lot... }}
-            {{#isediting}}
-                {{#caneditroles}}
-                    <div class="d-flex align-items-end small">
-                        <div>{{#str}}showcontact:title, format_ucl{{/str}}
-                            <br>{{#str}}showcontact:desc, format_ucl{{/str}}
+            {{#hascontacts}}
+                {{#isediting}}
+                    {{#caneditroles}}
+                        <div class="d-flex align-items-end small">
+                            <div>{{#str}}showcontact:title, format_ucl{{/str}}
+                                <br>{{#str}}showcontact:desc, format_ucl{{/str}}
+                            </div>
+                            <div class="ml-auto">
+                                {{#str}}showcontact, format_ucl{{/str}}
+                            </div>
                         </div>
-                        <div class="ml-auto">
-                            {{#str}}showcontact, format_ucl{{/str}}
-                        </div>
-                    </div>
-                {{/caneditroles}}
-            {{/isediting}}
+                    {{/caneditroles}}
+                {{/isediting}}
 
-            {{#contacts}}
-                {{> format_ucl/widgets/contacts/contact }}
-            {{/contacts}}
+                {{#contacts}}
+                    {{> format_ucl/widgets/contacts/contact }}
+                {{/contacts}}
 
+                {{#customcontacts}}
+                    {{> format_ucl/widgets/contacts/customcontact }}
+                {{/customcontacts}}
+            {{/hascontacts}}
             {{#isediting}}
                 {{#caneditroles}}
                     <div>
@@ -93,10 +96,7 @@
                     </div>
                 {{/caneditroles}}
             {{/isediting}}
-
         </div>
-
-        {{> format_ucl/widgets/contacts/customcontact }}
 
         {{#isediting}}
             {{#caneditroles}}
@@ -107,6 +107,14 @@
                 {{/js}}
             {{/caneditroles}}
         {{/isediting}}
+        <hr>
+    </div>
+
+    {{#isediting}}
+        {{#caneditroles}}
+            {{> format_ucl/widgets/contacts/customcontact_form }}
+        {{/caneditroles}}
+    {{/isediting}}
 
         <style>
             .fa-solid {
@@ -120,6 +128,3 @@
             }
 
         </style>
-        <hr>
-    </div>
-{{/hascontacts}}

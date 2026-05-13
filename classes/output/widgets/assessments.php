@@ -196,8 +196,12 @@ class assessments implements renderable, templatable {
         $allparts = [];
         if ($turnitinids) {
             [$insql, $params] = $DB->get_in_or_equal($turnitinids);
-            $records = $DB->get_records_select('turnitintooltwo_parts', "turnitintooltwoid $insql", $params, 'turnitintooltwoid, id, partname, dtdue');
-
+            $records = $DB->get_records_select(
+                table: 'turnitintooltwo_parts',
+                select: "turnitintooltwoid $insql",
+                params: $params,
+                sort: 'id ASC'
+            );
             foreach ($records as $part) {
                 $allparts[$part->turnitintooltwoid][] = $part;
             }

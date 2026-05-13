@@ -12,7 +12,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template format_ucl/widgets/customcontact_header
+    @template format_ucl/widgets/customcontact_flexwrapper
     Template purpose and description.
     Classes required for JS:
     * none
@@ -24,14 +24,11 @@
     {
     }
 }}
-<fieldset>
-    <legend>{{#str}}customcontactformheader, format_ucl{{/str}}</legend>
-    <p class="small">{{#str}}customcontact:desc, format_ucl{{/str}}</p>
-    <div class="d-flex align-items-center w-100">
-        {{! Image. }}
-        <div class="flex-0">
-            <div class="rounded-circle mr-2 bg-dark d-flex align-items-center justify-content-center"
-                 style="width: 3rem; height: 3rem;">
-                <i class="fa-regular fa-envelope text-white"></i>
-            </div>
+<div class="d-flex align-items-center w-100">
+    {{! Image. }}
+    <div class="flex-0">
+        <div class="rounded-circle mr-2 bg-dark d-flex align-items-center justify-content-center"
+             style="width: 3rem; height: 3rem;">
+            <i class="fa-regular fa-envelope text-white"></i>
         </div>
+    </div>

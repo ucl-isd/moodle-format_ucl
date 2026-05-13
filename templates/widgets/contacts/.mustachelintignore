@@ -3,8 +3,10 @@
 # They fail when linted as if directly included in <body> tags.
 contacts.mustache
 contact.mustache
-customcontact_header.mustache
-customcontact_footer.mustache
+customcontact_fieldset.mustache
+customcontact_fieldset_close.mustache
+customcontact_flexwrapper.mustache
+customcontact_flexwrapper_close.mustache
 customcontact_form.mustache
 editcustomcontact_form.mustache
 

@@ -147,28 +147,27 @@ class turnitintooltwo extends assess_base {
 
         $result = parent::get_learner_mark();
 
-        if (!$this->parts) {
+        // Return early if we have a mark, if it's already marked as submitted,
+        // or if there are no parts to check.
+        if ($result->mark || $result->submitted || !$this->parts) {
             return $result;
         }
 
-        if (empty($result->mark)) {
-            $params = [
-                'turnitintooltwoid' => $this->cm->instance,
-                'userid' => $USER->id,
-            ];
+        // Otherwise check for user submission in turnitin.
+        $params = [
+            'turnitintooltwoid' => $this->cm->instance,
+            'userid'            => $USER->id,
+        ];
 
-            if ($this->partno !== null) {
-                $params['submission_part'] = $this->partno;
-            }
+        if ($this->partno !== null) {
+            $params['submission_part'] = $this->partno;
+        }
 
-            $submission = $DB->get_record('turnitintooltwo_submissions', $params, 'submission_grade DESC', IGNORE_MULTIPLE);
+        // Fixed query: no 'DESC', just fetching the ID for existence check.
+        $submission = $DB->get_record('turnitintooltwo_submissions', $params, 'id', IGNORE_MULTIPLE);
 
-            if ($submission) {
-                $result->submitted = true;
-                if ($submission->submission_grade !== null) {
-                    $result->mark = $submission->submission_grade;
-                }
-            }
+        if ($submission) {
+            $result->submitted = true;
         }
 
         return $result;

@@ -1,4 +1,4 @@
-@format @format_ucl
+@format @format_ucl @javascript
 Feature: Initial section has custom layout
   In order to to quickly find important course information
   As a user
@@ -80,15 +80,13 @@ Feature: Initial section has custom layout
   Scenario: User with permission format/ucl:editcoursecontacts can show/hide contacts
     When I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
-    Then "Show Teacher 1 to students" "checkbox" should not exist
+    Then "Show Teacher 1 to students" "checkbox" should exist
 
-  @javascript
   Scenario: User without permission format/ucl:editcoursecontacts cannot add custom contact
     When I log in as "teacher4"
     And I am on "Course 1" course homepage with editing mode on
     Then "Add custom contact" "link" should not exist
 
-  @javascript
   Scenario: User with permission format/ucl:editcoursecontacts can add and edit custom contacts
     When I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
@@ -121,5 +119,3 @@ Feature: Initial section has custom layout
     And I should see "Jonny Woolley"
     And I should see "jwoolley@stamptown.com"
     And I should see "Clown king"
-
-

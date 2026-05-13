@@ -38,7 +38,7 @@ function xmldb_format_ucl_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
-    if ($oldversion < 2026051100) {
+    if ($oldversion < 2026051300) {
         // Define table format_ucl_custom_contacts to be created.
         $table = new xmldb_table('format_ucl_custom_contacts');
 
@@ -62,7 +62,7 @@ function xmldb_format_ucl_upgrade($oldversion) {
         }
 
         // Ucl savepoint reached.
-        upgrade_plugin_savepoint(true, 2026051100, 'format', 'ucl');
+        upgrade_plugin_savepoint(true, 2026051300, 'format', 'ucl');
     }
 
     return true;

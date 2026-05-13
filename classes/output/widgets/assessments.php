@@ -75,7 +75,7 @@ class assessments implements renderable, templatable {
             }
 
             // Expand Turnitin assignments into individual parts.
-            $summative = $this->expand_turnitin_parts($summative, $modinfo);
+            $summative = $this->expand_turnitin_parts($summative, $mods);
 
             $context = context_course::instance($COURSE->id);
             $studentcount = self::get_student_count($COURSE->id, $context);
@@ -97,11 +97,13 @@ class assessments implements renderable, templatable {
 
                 if ($mod->uservisible && $mod->visible) {
                     if ($mod->modname === 'turnitintooltwo' && !empty($s->turnitinpartno)) {
+                        // Turinin specific handler.
                         $handler = new \format_ucl\output\widgets\assessment\turnitintooltwo(
                             $mod,
                             $s->turnitinpartno
                         );
                     } else {
+                        // Other mods.
                         $handler = \format_ucl\output\widgets\assessment\assess_base::instance($mod);
                     }
 
@@ -182,23 +184,22 @@ class assessments implements renderable, templatable {
      * Expand Turnitin assignments into separate parts.
      *
      * @param array $summative The original assessment records.
-     * @param \course_modinfo $modinfo The course modinfo.
+     * @param array $mods The course modules map.
      * @return array The expanded list of records.
      */
-    protected function expand_turnitin_parts(array $summative, \course_modinfo $modinfo): array {
+    protected function expand_turnitin_parts(array $summative, array $mods): array {
         global $DB;
 
-        $cms = $modinfo->get_cms();
-
-        // Get IDs.
-        $turnitinids = array_filter(array_map(fn($s) => $cms[$s->cmid]->modname === 'turnitintooltwo' ? $cms[$s->cmid]->instance : null, $summative));
+        // Get Turnitin instance ids.
+        $turnitinids = array_filter(array_map(function ($s) use ($mods) {
+            return ($mods[$s->cmid]->modname === 'turnitintooltwo') ? $mods[$s->cmid]->instance : null;
+        }, $summative));
 
         $allparts = [];
         if ($turnitinids) {
             [$insql, $params] = $DB->get_in_or_equal($turnitinids);
-            $records = $DB->get_records_select('turnitintooltwo_parts', "turnitintooltwoid $insql", $params, 'turnitintooltwoid, id');
+            $records = $DB->get_records_select('turnitintooltwo_parts', "turnitintooltwoid $insql", $params, 'turnitintooltwoid, id, partname, dtdue');
 
-            // Group parts by assignment ID.
             foreach ($records as $part) {
                 $allparts[$part->turnitintooltwoid][] = $part;
             }
@@ -206,7 +207,7 @@ class assessments implements renderable, templatable {
 
         $expanded = [];
         foreach ($summative as $s) {
-            $mod = $cms[$s->cmid] ?? null;
+            $mod = $mods[$s->cmid] ?? null;
             $parts = ($mod && $mod->modname === 'turnitintooltwo') ? ($allparts[$mod->instance] ?? []) : [];
 
             // If no parts to expand, just keep the original and move on.
@@ -215,7 +216,7 @@ class assessments implements renderable, templatable {
                 continue;
             }
 
-            // Expand multi-part assignments.
+            // Expand multi-part Turnitin things.
             foreach ($parts as $index => $part) {
                 $newpart = clone $s;
                 $partno = $index + 1;

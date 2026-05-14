@@ -45,17 +45,19 @@ abstract class assess_base {
     public function get_activity_duedate(): int {
         global $USER;
 
-        $userid = $USER->id;
-
         // Fetch dates from the Moodle 4.x API (handles overrides and extensions).
-        $dates = \core\activity_dates::get_dates_for_module($this->cm, $userid);
+        $dates = \core\activity_dates::get_dates_for_module($this->cm, $USER->id);
 
-        if (!empty($dates)) {
-            foreach ($dates as $date) {
-                // Return the first timestamp that matches a 'due' type event.
-                if (in_array($date['dataid'], ['duedate', 'timeclose', 'deadline'])) {
-                    return (int) $date['timestamp'];
-                }
+        if (empty($dates)) {
+            return 0;
+        }
+
+        // List of labels Moodle uses for the due date of an activity.
+        $dueevents = ['duedate', 'timeclose', 'deadline'];
+
+        foreach ($dates as $date) {
+            if (in_array($date['dataid'], $dueevents)) {
+                return (int) $date['timestamp'];
             }
         }
 

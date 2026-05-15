@@ -91,6 +91,6 @@ final class after_export_for_template implements \core\hook\described_hook {
      * @return mixed
      */
     public function get_property(string $name): mixed {
-        return $this->data?->$name;
+        return property_exists($this->data, $name) ? $this->data->$name : null;
     }
 }

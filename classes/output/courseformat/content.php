@@ -111,10 +111,9 @@ class content extends content_base {
             // SHAME - Is there a better way to do this?
             if ($singlesectionnum === 0) {
                 $data = $this->get_ucl_initialsection($data, $output);
+                $this->after_export_for_template($output, $data);
             }
         }
-
-        $this->after_export_for_template($output, $data);
 
         return $data;
     }

@@ -136,7 +136,7 @@ class turnitintooltwo extends assess_base {
         $enrolledjoin = get_enrolled_join(
             context: $context,
             useridcolumn: 'tts.userid',
-            useactiveenrolments: true
+            onlyactive: true
         );
 
         $params = array_merge(['instanceid' => (int) $this->cm->instance], $enrolledjoin->params);

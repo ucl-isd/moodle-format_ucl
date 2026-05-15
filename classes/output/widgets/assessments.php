@@ -78,6 +78,7 @@ class assessments implements renderable, templatable {
             $summative = $this->expand_turnitin_parts($summative, $mods);
 
             $context = context_course::instance($COURSE->id);
+            $students = self::get_students($context);
             $template = new stdClass();
             $template->assessments = [];
 
@@ -128,6 +129,7 @@ class assessments implements renderable, templatable {
                                 $assess->readonly = $readonly;
                             } else {
                                 $markingdata = $handler->get_staff_marking();
+                                $handler->set_participants(users: $students);
                                 $assess->hasstats = true;
                                 $assess->expectedcount = $handler->get_participant_count();
                                 $assess->submittedcount = $markingdata->submitted ?? 0;
@@ -176,6 +178,22 @@ class assessments implements renderable, templatable {
             return $template;
         }
         return [];
+    }
+
+    /**
+     * Get the list of students for the course.
+     *
+     * @param context $context
+     * @return array List of user objects (IDs only).
+     */
+    protected static function get_students(\context $context): array {
+        // We fetch the IDs for anyone with the student-level 'submit' capability.
+        return get_enrolled_users(
+            context: $context,
+            withcapability: 'mod/assign:submit',
+            userfields: 'u.id',
+            onlyactive: true
+        );
     }
 
     /**

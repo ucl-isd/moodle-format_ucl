@@ -99,7 +99,7 @@ class toc implements renderable, templatable {
                 }
             }
 
-            if ($section->visible || $canviewhidden) {
+            if ($section->uservisible || $canviewhidden) {
                 $s = new stdClass();
                 $s->id = $section->id;
                 $s->section = $section->section;

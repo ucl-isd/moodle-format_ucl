@@ -30,10 +30,10 @@ use moodle_url;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class turnitintooltwo extends assess_base {
-    /** @var array The different parts of the Turnitin assignment. */
+    /** @var array All the sub-parts for this Turnitin instance. */
     protected array $parts = [];
 
-    /** @var int|null The specific part number we are looking at. */
+    /** @var int|null The specific part we are focusing on, if any. */
     protected ?int $partno = null;
 
     /**
@@ -47,10 +47,9 @@ class turnitintooltwo extends assess_base {
 
         $this->partno = $partno;
 
-        // A static variable persists for the entire life of the page request.
+        // Persist parts so we don't re-query if the same assignment appears multiple times.
         static $partscache = [];
 
-        // Only hit the database if we haven't seen this specific Turnitin ID yet.
         if (!isset($partscache[$this->cm->instance])) {
             $partscache[$this->cm->instance] = $DB->get_records(
                 'turnitintooltwo_parts',
@@ -59,7 +58,6 @@ class turnitintooltwo extends assess_base {
             );
         }
 
-        // Grab the data from the cache (memory) instead of the database.
         $this->parts = $partscache[$this->cm->instance];
     }
 
@@ -68,18 +66,53 @@ class turnitintooltwo extends assess_base {
      * @return int
      */
     public function get_activity_duedate(): int {
-        // If no parts exist, we have no date.
         if (!$this->parts) {
             return 0;
         }
 
-        // Convert to a 0-indexed array to make the partno math easy.
+        // Re-index to 0..N because DB IDs are unpredictable.
         $parts = array_values($this->parts);
-
-        // If a specific part is requested, use it; otherwise, default to the first part.
         $index = ($this->partno !== null) ? ($this->partno - 1) : 0;
 
         return (int) ($parts[$index]->dtdue ?? 0);
+    }
+
+    /**
+     * Get the number of students eligible to submit to this Turnitin activity.
+     * Overridden because Turnitin doesn't have a specific 'submit' capability.
+     *
+     * @return int
+     */
+    public function get_participant_count(): int {
+        $context = context_module::instance(cmid: $this->cm->id);
+
+        // Start with everyone who can see the activity.
+        $users = get_enrolled_users(
+            context: $context,
+            withcapability: 'mod/turnitintooltwo:view',
+            onlyactive: true
+        );
+
+        if (empty($users)) {
+            return 0;
+        }
+
+        // Kick out the Tutors and Course Leads from the student count.
+        $students = array_filter($users, function ($user) use ($context) {
+            return !has_capability(
+                capability: 'mod/turnitintooltwo:grade',
+                context: $context,
+                userid: $user->id
+            );
+        });
+
+        if (empty($students)) {
+            return 0;
+        }
+
+        // Filter students to see if they are hidden by groups or restrictions.
+        $info = new \core_availability\info_module(cm: $this->cm);
+        return count($info->filter_user_list(users: $students));
     }
 
     /**
@@ -99,8 +132,12 @@ class turnitintooltwo extends assess_base {
             return $result;
         }
 
-        $context = context_module::instance($this->cm->id);
-        $enrolledjoin = get_enrolled_join($context, 'tts.userid', true);
+        $context = context_module::instance(cmid: $this->cm->id);
+        $enrolledjoin = get_enrolled_join(
+            context: $context,
+            useridcolumn: 'tts.userid',
+            useactiveenrolments: true
+        );
 
         $params = array_merge(['instanceid' => (int) $this->cm->instance], $enrolledjoin->params);
         $partsql = "";
@@ -110,19 +147,22 @@ class turnitintooltwo extends assess_base {
             $params['partno'] = $this->partno;
         }
 
+        // Count unique users with a non-empty file hash (real papers only).
         $submissionsql = "SELECT COUNT(DISTINCT tts.userid)
                             FROM {turnitintooltwo_submissions} tts
                             {$enrolledjoin->joins}
                            WHERE tts.turnitintooltwoid = :instanceid
                              AND tts.submission_hash IS NOT NULL
+                             AND tts.submission_hash <> ''
                              {$partsql}
                              AND {$enrolledjoin->wheres}";
 
-        $result->submitted = $DB->count_records_sql($submissionsql, $params);
+        $result->submitted = $DB->count_records_sql(sql: $submissionsql, params: $params);
 
         if ($result->submitted > 0) {
             $result->hasstats = true;
 
+            // Count how many of those submissions actually have a grade.
             $gradesql = "SELECT COUNT(DISTINCT tts.userid)
                            FROM {turnitintooltwo_submissions} tts
                            {$enrolledjoin->joins}
@@ -131,7 +171,7 @@ class turnitintooltwo extends assess_base {
                             {$partsql}
                             AND {$enrolledjoin->wheres}";
 
-            $result->marked = $DB->count_records_sql($gradesql, $params);
+            $result->marked = $DB->count_records_sql(sql: $gradesql, params: $params);
             $result->requiremarking = max(0, $result->submitted - $result->marked);
         }
 
@@ -147,26 +187,32 @@ class turnitintooltwo extends assess_base {
 
         $result = parent::get_learner_mark();
 
-        // Return early if we have a mark, if it's already marked as submitted,
-        // or if there are no parts to check.
+        // Return early if the base class already found a grade or status.
         if ($result->mark || $result->submitted || !$this->parts) {
             return $result;
         }
 
-        // Otherwise check for user submission in turnitin.
         $params = [
-            'turnitintooltwoid' => $this->cm->instance,
-            'userid'            => $USER->id,
+            'userid'   => (int) $USER->id,
+            'instance' => (int) $this->cm->instance,
         ];
 
+        $partsql = "";
         if ($this->partno !== null) {
-            $params['submission_part'] = $this->partno;
+            $partsql = " AND submission_part = :part";
+            $params['part'] = $this->partno;
         }
 
-        // Fixed query: no 'DESC', just fetching the ID for existence check.
-        $submission = $DB->get_record('turnitintooltwo_submissions', $params, 'id', IGNORE_MULTIPLE);
+        // Look for any record for this user that has a valid file hash.
+        $sql = "SELECT id 
+                  FROM {turnitintooltwo_submissions} 
+                 WHERE userid = :userid 
+                   AND turnitintooltwoid = :instance 
+                   AND submission_hash IS NOT NULL 
+                   AND submission_hash <> ''
+                   {$partsql}";
 
-        if ($submission) {
+        if ($DB->record_exists_sql(sql: $sql, params: $params)) {
             $result->submitted = true;
         }
 

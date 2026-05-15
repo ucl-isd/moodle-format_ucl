@@ -41,7 +41,7 @@
         ]
     }
 }}
-
+{{#showcontacts}}
     <div id="format-ucl-contacts-widget">
         <hr>
         <h3>
@@ -55,20 +55,17 @@
         </h3>
         <div class="collapse {{#isediting}} show {{/isediting}}" id="ucl-format-contacts">
             {{! Hide contact col label. }}
-            {{! TODO - single var for isediting & caneditroles as used a lot... }}
             {{#hascontacts}}
-                {{#isediting}}
-                    {{#caneditroles}}
-                        <div class="d-flex align-items-end small">
-                            <div>{{#str}}showcontact:title, format_ucl{{/str}}
-                                <br>{{#str}}showcontact:desc, format_ucl{{/str}}
-                            </div>
-                            <div class="ml-auto">
-                                {{#str}}showcontact, format_ucl{{/str}}
-                            </div>
+                {{#caneditroles}}
+                    <div class="d-flex align-items-end small">
+                        <div>{{#str}}showcontact:title, format_ucl{{/str}}
+                            <br>{{#str}}showcontact:desc, format_ucl{{/str}}
                         </div>
-                    {{/caneditroles}}
-                {{/isediting}}
+                        <div class="ml-auto">
+                            {{#str}}showcontact, format_ucl{{/str}}
+                        </div>
+                    </div>
+                {{/caneditroles}}
 
                 {{#contacts}}
                     {{> format_ucl/widgets/contacts/contact }}
@@ -78,44 +75,36 @@
                     {{> format_ucl/widgets/contacts/customcontact }}
                 {{/customcontacts}}
             {{/hascontacts}}
-            {{#isediting}}
-                {{#caneditroles}}
-                    <div>
-                        <a href="{{{ config.wwwroot }}}/user/index.php?id={{courseid}}" class="btn add-section bg-white
-                        mr-3">
-                        <i class="fa-solid fa-circle-user mr-2"></i>
-                        {{#str}} editcourseroles, format_ucl {{/str}}
-                        </a>
-
-                        <a class="btn add-section bg-white" data-toggle="collapse" href="#ucl-format-customcontact-form"
-                           role="button" aria-expanded="false"
-                           aria-controls="ucl-format-customcontact-form">
-                            <i class="fa-solid fa-circle-plus mr-2"></i>
-                            {{#str}} addcustomcontact, format_ucl {{/str}}
-                        </a>
-                    </div>
-                {{/caneditroles}}
-            {{/isediting}}
-        </div>
-
-        {{#isediting}}
             {{#caneditroles}}
-                {{#js}}
-                    require(['format_ucl/local/contacts'], function(component) {
-                    component.init({{courseid}});
-                    });
-                {{/js}}
+                <div>
+                    <a href="{{{ config.wwwroot }}}/user/index.php?id={{courseid}}" class="btn add-section bg-white
+                    mr-3">
+                    <i class="fa-solid fa-circle-user mr-2"></i>
+                    {{#str}} editcourseroles, format_ucl {{/str}}
+                    </a>
+
+                    <a class="btn add-section bg-white" data-toggle="collapse" href="#ucl-format-customcontact-form"
+                       role="button" aria-expanded="false"
+                       aria-controls="ucl-format-customcontact-form">
+                        <i class="fa-solid fa-circle-plus mr-2"></i>
+                        {{#str}} addcustomcontact, format_ucl {{/str}}
+                    </a>
+                </div>
             {{/caneditroles}}
-        {{/isediting}}
+        </div>
+        {{#caneditroles}}
+            {{#js}}
+                require(['format_ucl/local/contacts'], function(component) {
+                component.init({{courseid}});
+                });
+            {{/js}}
+        {{/caneditroles}}
         <hr>
     </div>
-
-    {{#isediting}}
-        {{#caneditroles}}
-            {{> format_ucl/widgets/contacts/customcontact_form }}
-        {{/caneditroles}}
-    {{/isediting}}
-
+    {{#caneditroles}}
+        {{> format_ucl/widgets/contacts/customcontact_form }}
+    {{/caneditroles}}
+{{/showcontacts}}
         <style>
             .fa-solid {
                 transition: transform 0.5s ease;

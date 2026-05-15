@@ -165,9 +165,11 @@ class content extends content_base {
             $data->customcontacts = $customcontacts->export_for_template($output);
             $data->hascontacts = $data->contacts || $data->customcontacts;
             $context = context_course::instance($course->id);
-            $data->caneditroles = has_capability('format/ucl:editcoursecontacts', $context);
+            $data->caneditroles = $data->isediting &&
+                has_capability('format/ucl:editcoursecontacts', $context);
+            $data->showcontacts = $data->hascontacts || $data->caneditroles;
 
-            if ($data->isediting && $data->caneditroles) {
+            if ($data->caneditroles) {
                 $data->customcontactform = custom_contacts::get_custom_contact_form($course, $output);
             }
 

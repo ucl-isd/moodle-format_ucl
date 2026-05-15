@@ -30,16 +30,17 @@ use moodle_url;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class turnitintooltwo extends assess_base {
-    /** @var array All the sub-parts for this Turnitin instance. */
+    /** @var array All sub-parts for this Turnitin instance. */
     protected array $parts = [];
 
-    /** @var int|null The specific part we are focusing on, if any. */
+    /** @var int|null Specific part number filter. */
     protected ?int $partno = null;
 
     /**
      * Constructor override to preload Turnitin parts.
+     *
      * @param \cm_info $cm
-     * @param int|null $partno Optional specific part number to filter by.
+     * @param int|null $partno
      */
     public function __construct(\cm_info $cm, ?int $partno = null) {
         global $DB;
@@ -47,7 +48,7 @@ class turnitintooltwo extends assess_base {
 
         $this->partno = $partno;
 
-        // Persist parts so we don't re-query if the same assignment appears multiple times.
+        // Simple request-level memoization.
         static $partscache = [];
 
         if (!isset($partscache[$this->cm->instance])) {
@@ -62,7 +63,8 @@ class turnitintooltwo extends assess_base {
     }
 
     /**
-     * Get the due date. Defaults to the first part's date.
+     * Get the due date for the activity.
+     *
      * @return int
      */
     public function get_activity_duedate(): int {
@@ -78,45 +80,36 @@ class turnitintooltwo extends assess_base {
     }
 
     /**
-     * Get the number of students eligible to submit to this Turnitin activity.
-     * Overridden because Turnitin doesn't have a specific 'submit' capability.
+     * Get the count of students eligible to submit.
      *
      * @return int
      */
     public function get_participant_count(): int {
-        $context = context_module::instance(cmid: $this->cm->id);
+        $context = context_module::instance($this->cm->id);
 
-        // Start with everyone who can see the activity.
-        $users = get_enrolled_users(
-            context: $context,
-            withcapability: 'mod/turnitintooltwo:view',
-            onlyactive: true
-        );
+        // Core calls use positional arguments to avoid PHP 8 named parameter mismatches.
+        $users = get_enrolled_users($context, 'mod/turnitintooltwo:view', 0, 'u.id', null, 0, 0, true);
 
         if (empty($users)) {
             return 0;
         }
 
-        // Kick out the Tutors and Course Leads from the student count.
+        // Filter for students by excluding those with grading capabilities.
         $students = array_filter($users, function ($user) use ($context) {
-            return !has_capability(
-                capability: 'mod/turnitintooltwo:grade',
-                context: $context,
-                userid: $user->id
-            );
+            return !has_capability('mod/turnitintooltwo:grade', $context, $user->id);
         });
 
         if (empty($students)) {
             return 0;
         }
 
-        // Filter students to see if they are hidden by groups or restrictions.
-        $info = new \core_availability\info_module(cm: $this->cm);
-        return count($info->filter_user_list(users: $students));
+        $info = new \core_availability\info_module($this->cm);
+        return count($info->filter_user_list($students));
     }
 
     /**
-     * Get marking data for staff view.
+     * Get marking statistics for staff view.
+     *
      * @return stdClass
      */
     public function get_staff_marking(): stdClass {
@@ -132,12 +125,8 @@ class turnitintooltwo extends assess_base {
             return $result;
         }
 
-        $context = context_module::instance(cmid: $this->cm->id);
-        $enrolledjoin = get_enrolled_join(
-            context: $context,
-            useridcolumn: 'tts.userid',
-            onlyactive: true
-        );
+        $context = context_module::instance($this->cm->id);
+        $enrolledjoin = get_enrolled_join($context, 'tts.userid', '', null, 0, 0, 0, true);
 
         $params = array_merge(['instanceid' => (int) $this->cm->instance], $enrolledjoin->params);
         $partsql = "";
@@ -157,12 +146,11 @@ class turnitintooltwo extends assess_base {
                              {$partsql}
                              AND {$enrolledjoin->wheres}";
 
-        $result->submitted = $DB->count_records_sql(sql: $submissionsql, params: $params);
+        $result->submitted = $DB->count_records_sql($submissionsql, $params);
 
         if ($result->submitted > 0) {
             $result->hasstats = true;
 
-            // Count how many of those submissions actually have a grade.
             $gradesql = "SELECT COUNT(DISTINCT tts.userid)
                            FROM {turnitintooltwo_submissions} tts
                            {$enrolledjoin->joins}
@@ -171,7 +159,7 @@ class turnitintooltwo extends assess_base {
                             {$partsql}
                             AND {$enrolledjoin->wheres}";
 
-            $result->marked = $DB->count_records_sql(sql: $gradesql, params: $params);
+            $result->marked = $DB->count_records_sql($gradesql, $params);
             $result->requiremarking = max(0, $result->submitted - $result->marked);
         }
 
@@ -179,7 +167,8 @@ class turnitintooltwo extends assess_base {
     }
 
     /**
-     * Get learner status.
+     * Get grade/submission status for the current learner.
+     *
      * @return stdClass
      */
     public function get_learner_mark(): stdClass {
@@ -212,7 +201,7 @@ class turnitintooltwo extends assess_base {
                    AND submission_hash <> ''
                    {$partsql}";
 
-        if ($DB->record_exists_sql(sql: $sql, params: $params)) {
+        if ($DB->record_exists_sql($sql, $params)) {
             $result->submitted = true;
         }
 

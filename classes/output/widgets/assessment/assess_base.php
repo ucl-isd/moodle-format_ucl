@@ -30,6 +30,9 @@ abstract class assess_base {
     /** @var \cm_info The course module info object */
     protected $cm;
 
+    /** @var array Pre - loaded list of student IDs for the course . */
+    protected array $students = [];
+
     /**
      * Constructor
      * @param \cm_info $cm
@@ -38,6 +41,7 @@ abstract class assess_base {
         $this->cm = $cm;
     }
 
+
     /**
      * Helper to get the final duedate for the current user, including overrides.
      * @return int Unix timestamp or 0 if no date is found.
@@ -45,7 +49,7 @@ abstract class assess_base {
     public function get_activity_duedate(): int {
         global $USER;
 
-        // Fetch dates from the Moodle 4.x API (handles overrides and extensions).
+        // Fetch user specific dates for a mod (handles overrides and extensions).
         $dates = \core\activity_dates::get_dates_for_module($this->cm, $USER->id);
 
         if (empty($dates)) {
@@ -65,33 +69,27 @@ abstract class assess_base {
     }
 
     /**
-     * Get the number of participants expected to submit/attempt the activity.
-     * @return int The participant count.
+     * Set the student list used for marker stats.
+     * @param array $users
+     */
+    public function set_participants(array $users): void {
+        $this->students = $users;
+    }
+
+    /**
+     * Get the number of expected participants.
+     * @return int
      */
     public function get_participant_count(): int {
-        $capabilities = [
-            'assign'          => 'mod/assign:submit',
-            'quiz'            => 'mod/quiz:attempt',
-            'workshop'        => 'mod/workshop:submit',
-            'coursework'      => 'mod/coursework:submit',
-            'turnitintooltwo' => 'mod/turnitintooltwo:submit',
-        ];
-        $capability = $capabilities[$this->cm->modname] ?? 'mod/assign:submit';
-
-        $context = \context_course::instance($this->cm->course);
-        $users = get_enrolled_users(
-            context: $context,
-            withcapability: $capability,
-            onlyactive: true
-        );
-
-        if (empty($users)) {
+        if (empty($this->students)) {
             return 0;
         }
 
-        // Filter users based on moodle availability restrictions.
-        $info = new \core_availability\info_module($this->cm);
-        return count($info->filter_user_list($users));
+        // Filter the students based on activity restrictions or groups.
+        $info = new \core_availability\info_module(cm: $this->cm);
+        $filtered = $info->filter_user_list(users: $this->students);
+
+        return count($filtered);
     }
 
     /**

@@ -20,7 +20,6 @@ use context_course;
 use core_courseformat\output\local\content as content_base;
 use core_course\external\course_summary_exporter;
 use format_ucl;
-use format_ucl\output\widgets\custom_contacts;
 use format_ucl\output\widgets\toc;
 use moodle_url;
 use stdClass;

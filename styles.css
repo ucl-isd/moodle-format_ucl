@@ -216,6 +216,16 @@ body.format-ucl {
 
 }
 
+#format-ucl-contacts-widget {
+    .fa-solid {
+        transition: transform 0.5s ease;
+    }
+
+    .foo[aria-expanded="true"] .fa-circle-arrow-down {
+        transform: rotate(-180deg);
+    }
+}
+
 /* SHAME */
 #course-contact-form.mform .d-flex .fitem {
     margin: 1rem !important; /* stylelint-disable-line declaration-no-important */

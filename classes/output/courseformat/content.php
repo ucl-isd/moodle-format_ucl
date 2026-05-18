@@ -175,7 +175,7 @@ class content extends content_base {
 
             // Set first section to enable adding ucl metadata.
             $data->initialsection = $section;
-            $data->afterfirstsectionhtml = '';
+            $data->hookdataintrohtml = '';
         }
         return $data;
     }

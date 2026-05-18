@@ -29,7 +29,7 @@ final class after_export_for_template implements \core\hook\described_hook {
     private array $editableproperties = ['contacts', 'assessments'];
 
     /** @var array|string[] template variables which can be augmented */
-    private array $augmentableproperties = ['afterfirstsectionhtml'];
+    private array $augmentableproperties = ['hookdataintrohtml'];
 
     /**
      * Allows subscribers to edit a subset of template variables.

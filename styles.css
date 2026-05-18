@@ -186,6 +186,34 @@ body.format-ucl {
             --p: 0;
         }
     }
+
+    /* Course contacts. */
+    /* Checked. */
+    .ucl-format-coursecontact:has(.contact-hide-toggle:checked) {
+        .badge-warning {
+            display: none !important;
+        }
+
+        .badge-dark {
+            display: inline-block !important;
+        }
+    }
+
+    /* Not checked. */
+    .ucl-format-coursecontact:has(.contact-hide-toggle:not(:checked)) {
+        .badge-warning {
+            display: inline-block !important;
+        }
+
+        .badge-dark {
+            display: none !important;
+        }
+
+        .ucl-format-coursecontact-picture {
+            opacity: .5;
+        }
+    }
+
 }
 
 /* SHAME */

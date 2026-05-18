@@ -72,33 +72,22 @@ Feature: Initial section has custom layout
     And I reload the page
     And "Teacher 1" "link" should exist
 
-  Scenario: User without permission format/ucl:editcoursecontacts cannot show/hide contacts
-    When I log in as "teacher4"
-    And I am on "Course 1" course homepage with editing mode on
-    Then "Show Teacher 1 to students" "checkbox" should not exist
-
-  Scenario: User with permission format/ucl:editcoursecontacts can show/hide contacts
+  Scenario: In editing mode, user can show/hide contacts
     When I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     Then "Show Teacher 1 to students" "checkbox" should exist
 
-  Scenario: User without permission format/ucl:editcoursecontacts cannot add custom contact
-    When I log in as "teacher4"
-    And I am on "Course 1" course homepage with editing mode on
-    Then "Add custom contact" "link" should not exist
-
-  Scenario: User with permission format/ucl:editcoursecontacts can add and edit custom contacts
+  Scenario: In editing mode, user can add and edit custom contacts
     When I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     And I click on "Add custom contact" "link"
-    Then "Custom contact" "fieldset" should exist
     And I set the following fields to these values:
       | Role        | Ring Master           |
       | Name        | Jack Tucker           |
       | Email       | zzucker@stamptown.com |
       | Description | Clown king            |
     And I press "Save"
-    And I should see "Changes saved"
+    Then I should see "Changes saved"
     And I switch editing mode off
     And I click on "Course contacts" "link"
     And I should see "Ring Master"

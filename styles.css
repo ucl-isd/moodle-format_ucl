@@ -191,22 +191,22 @@ body.format-ucl {
     /* Checked. */
     .ucl-format-coursecontact:has(.contact-hide-toggle:checked) {
         .badge-warning {
-            display: none !important;
+            display: none !important; /* stylelint-disable-line declaration-no-important */
         }
 
         .badge-dark {
-            display: inline-block !important;
+            display: inline-block !important; /* stylelint-disable-line declaration-no-important */
         }
     }
 
     /* Not checked. */
     .ucl-format-coursecontact:has(.contact-hide-toggle:not(:checked)) {
         .badge-warning {
-            display: inline-block !important;
+            display: inline-block !important; /* stylelint-disable-line declaration-no-important */
         }
 
         .badge-dark {
-            display: none !important;
+            display: none !important; /* stylelint-disable-line declaration-no-important */
         }
 
         .ucl-format-coursecontact-picture {

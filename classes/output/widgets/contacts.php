@@ -79,7 +79,7 @@ class contacts implements renderable, templatable {
         ];
 
         if ($data['caneditroles']) {
-            $data['customcontactform'] = custom_contacts::get_custom_contact_form($course, $output);
+            $data['customcontactform'] = self::get_custom_contact_form($course, $output);
         }
 
         return $data;

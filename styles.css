@@ -186,4 +186,47 @@ body.format-ucl {
             --p: 0;
         }
     }
+
+    /* Course contacts. */
+    /* Checked. */
+    .ucl-format-coursecontact:has(.contact-hide-toggle:checked) {
+        .badge-warning {
+            display: none !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .badge-dark {
+            display: inline-block !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+
+    /* Not checked. */
+    .ucl-format-coursecontact:has(.contact-hide-toggle:not(:checked)) {
+        .badge-warning {
+            display: inline-block !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .badge-dark {
+            display: none !important; /* stylelint-disable-line declaration-no-important */
+        }
+
+        .ucl-format-coursecontact-picture {
+            opacity: .5;
+        }
+    }
+
+}
+
+#format-ucl-contacts-widget {
+    .fa-solid {
+        transition: transform 0.5s ease;
+    }
+
+    .foo[aria-expanded="true"] .fa-circle-arrow-down {
+        transform: rotate(-180deg);
+    }
+}
+
+/* SHAME */
+#course-contact-form.mform .d-flex .fitem {
+    margin: 1rem !important; /* stylelint-disable-line declaration-no-important */
 }

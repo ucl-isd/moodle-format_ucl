@@ -1,0 +1,13 @@
+# Exclude all the templates here from HTML validity checks
+# Partials are linted with the main template.
+# They fail when linted as if directly included in <body> tags.
+contacts.mustache
+contact.mustache
+customcontact_fieldset.mustache
+customcontact_fieldset_close.mustache
+customcontact_flexwrapper.mustache
+customcontact_flexwrapper_close.mustache
+customcontact_form.mustache
+editcustomcontact_form.mustache
+
+# TODO - remove this file after Stuart moves styling

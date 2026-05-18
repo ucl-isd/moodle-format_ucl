@@ -16,9 +16,8 @@
 /**
  * Course TOC main component.
  *
- * @module     core_courseformat/local/courseindex/courseindex
- * @class     core_courseformat/local/courseindex/courseindex
- * @copyright  2021 Ferran Recio <ferran@moodle.com>
+ * @module     format_ucl/local/courseindex/courseindex
+ * @copyright  2026 Amanda Doughty <m.doughty@ucl.ac.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

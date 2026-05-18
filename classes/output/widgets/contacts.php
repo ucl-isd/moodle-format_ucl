@@ -23,13 +23,12 @@ use core\exception\moodle_exception;
 use core\output\renderable;
 use core\output\renderer_base;
 use core\output\templatable;
-use core_course\external\course_summary_exporter;
 use core_course_list_element;
-use core_courseformat\base;
 use format_ucl;
 use format_ucl\course_contacts;
+use format_ucl\form\custom_contact_form;
+use format_ucl\local\data\custom_contact;
 use moodle_url;
-use section_info;
 use stdClass;
 
 /**
@@ -67,6 +66,33 @@ class contacts implements renderable, templatable {
             // There are no course contact roles.
             return [];
         }
+
+        $course = $this->format->get_course();
+        $contacts = $this->get_course_contacts($output);
+        $customcontacts = $this->get_course_custom_contacts($output);
+        $data = [
+            'contacts' => $contacts,
+            'customcontacts' => $customcontacts,
+            'caneditroles' => $USER->editing,
+            'hascontacts' => $contacts || $customcontacts,
+            'showcontacts' => $contacts || $customcontacts || $USER->editing,
+        ];
+
+        if ($data['caneditroles']) {
+            $data['customcontactform'] = custom_contacts::get_custom_contact_form($course, $output);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Get the enrolled course contacts
+     *
+     * @param renderer_base $output
+     * @return array
+     */
+    public function get_course_contacts(renderer_base $output): array {
+        global $USER, $CFG;
 
         // Course contacts.
         $course = $this->format->get_course();
@@ -137,5 +163,55 @@ class contacts implements renderable, templatable {
             });
         }
         return $allcontacts;
+    }
+
+    /**
+     * Get the custom course contacts
+     *
+     * @param renderer_base $output
+     * @return array
+     */
+    public function get_course_custom_contacts(renderer_base $output): array {
+        global $USER;
+
+        $course = $this->format->get_course();
+        $context = context_course::instance($course->id);
+        $caneditroles = $USER->editing && has_capability('format/ucl:editcoursecontacts', $context);
+        $customcontacts = custom_contact::get_records(['courseid' => $course->id]);
+        $contacts = [];
+
+        foreach ($customcontacts as $customcontact) {
+            $editform = $caneditroles ? self::get_custom_contact_form($course, $output, $customcontact) : null;
+            $contact = $customcontact->to_record();
+            $contact->contactid = $contact->id;
+            $contact->editform = $editform;
+            $contacts[] = $contact;
+        }
+
+        return $contacts;
+    }
+
+    /**
+     * Get a form to add/edit custom contacts
+     *
+     * @param stdClass $course
+     * @param \renderer_base $output
+     * @param custom_contact|null $customcontact
+     * @return array
+     */
+    public static function get_custom_contact_form(
+        stdClass $course,
+        \renderer_base $output,
+        ?custom_contact $customcontact = null
+    ): array {
+        $customdata = ['persistent' => $customcontact ?: new custom_contact(0, (object)['courseid' => $course->id])];
+        $customcontactform = new custom_contact_form(
+            new moodle_url('/course/format/ucl/editcustomcontact.php', ['courseid' => $course->id]),
+            $customdata,
+            'post',
+            '',
+            ['class' => 'course-contact-form p-3 border']
+        );
+        return $customcontactform->export_for_template($output);
     }
 }

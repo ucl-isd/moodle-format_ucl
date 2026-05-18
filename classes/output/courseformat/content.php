@@ -160,18 +160,7 @@ class content extends content_base {
             }
 
             $contacts = new format_ucl\output\widgets\contacts($this->format);
-            $data->contacts = $contacts->export_for_template($output);
-            $customcontacts = new custom_contacts($this->format);
-            $data->customcontacts = $customcontacts->export_for_template($output);
-            $data->hascontacts = $data->contacts || $data->customcontacts;
-            $context = context_course::instance($course->id);
-            $data->caneditroles = $data->isediting &&
-                has_capability('format/ucl:editcoursecontacts', $context);
-            $data->showcontacts = $data->hascontacts || $data->caneditroles;
-
-            if ($data->caneditroles) {
-                $data->customcontactform = custom_contacts::get_custom_contact_form($course, $output);
-            }
+            $data->contactdata = $contacts->export_for_template($output);
 
             // Set first section to enable adding ucl metadata.
             $data->initialsection = $section;

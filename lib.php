@@ -177,6 +177,23 @@ class format_ucl extends core_courseformat\base {
         }
         return $url;
     }
+
+    /**
+     * Definitions of the additional options that this course format uses for course
+     *
+     * @param bool $foreditform
+     * @return array of options
+     */
+    public function course_format_options($foreditform = false) {
+        static $courseformatoptions = false;
+        if ($courseformatoptions === false) {
+            $hook = new \format_ucl\hook\extend_format_ucl_settings($courseformatoptions, $foreditform);
+            \core\di::get(\core\hook\manager::class)->dispatch($hook);
+            $courseformatoptions = $hook->course_format_options();
+        }
+
+        return $courseformatoptions;
+    }
 }
 
 /**

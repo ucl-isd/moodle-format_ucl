@@ -47,15 +47,6 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
         $mform->addElement('hidden', 'id');
         $mform->addElement('hidden', 'courseid');
 
-        $mform->addElement(
-            'html',
-            $OUTPUT->render_from_template('format_ucl/widgets/contacts/customcontact_fieldset', [])
-        );
-        $mform->addElement(
-            'html',
-            $OUTPUT->render_from_template('format_ucl/widgets/contacts/customcontact_flexwrapper', [])
-        );
-
         $attributes = [
             'placeholder' => get_string('role:placeholder', 'format_ucl'),
             'class' => 'm-3 flex-fill',
@@ -81,22 +72,12 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
         $mform->addRule('email', '', 'required');
         $mform->setForceLtr('email');
 
-        $mform->addElement(
-            'html',
-            $OUTPUT->render_from_template('format_ucl/widgets/contacts/customcontact_flexwrapper_close', [])
-        );
-
         $attributes = [
             'placeholder' => get_string('description:placeholder', 'format_ucl'),
         ];
         $mform->addElement('text', 'description', get_string('description', 'format_ucl'), $attributes);
         $mform->setType('description', PARAM_TEXT);
         $mform->addRule('description', '', 'required');
-
-        $mform->addElement(
-            'html',
-            $OUTPUT->render_from_template('format_ucl/widgets/contacts/customcontact_fieldset_close', [])
-        );
 
         $this->set_display_vertical();
         $this->add_action_buttons(true, get_string('save'));

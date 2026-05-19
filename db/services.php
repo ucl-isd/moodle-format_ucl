@@ -22,13 +22,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use format_ucl\external\toggle_contact_visibility;
+use format_ucl\external\set_contact_visibility;
 
 defined('MOODLE_INTERNAL') || die();
 
 $functions = [
-    'format_ucl_toggle_contact_visibility' => [
-        'classname' => toggle_contact_visibility::class,
+    'format_ucl_set_contact_visibility' => [
+        'classname' => set_contact_visibility::class,
         'description' => '',
         'type' => 'write',
         'ajax' => true,

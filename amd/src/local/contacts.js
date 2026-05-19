@@ -40,7 +40,6 @@ export let init = (courseid) => {
             let userid = coursecontact.dataset.userid;
             let input = coursecontact.querySelector('.custom-switch input');
             let action = input.dataset.action;
-            window.console.log(action);
             if (!userid || !action) {
                 return;
             }
@@ -68,7 +67,7 @@ export let init = (courseid) => {
  */
 const toggleCourseContactVisibility = (courseid, userid, action) => {
     const request = {
-        methodname: 'format_ucl_toggle_contact_visibility',
+        methodname: 'format_ucl_set_contact_visibility',
         args: {
             courseid: courseid,
             userid: userid,

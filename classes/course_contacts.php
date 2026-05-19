@@ -40,11 +40,11 @@ class course_contacts {
      */
     public function __construct(
         /** @var  int courseid */
-        protected int $courseid,
+        private int $courseid,
         /** @var  int userid */
-        protected int $userid,
+        private int $userid,
         /** @var  string action */
-        protected string $action,
+        private string $action,
     ) {
     }
 
@@ -53,7 +53,7 @@ class course_contacts {
 
      * @return bool
      */
-    public function toggle_contact_visibility(): bool {
+    public function set_contact_visibility(): bool {
         switch ($this->action) {
             case 'show':
                 return $this->add_to_group();
@@ -69,7 +69,7 @@ class course_contacts {
      *
      * @return bool
      */
-    protected function remove_from_group(): bool {
+    private function remove_from_group(): bool {
         // If no group exists do nothing.
         if (!$groupid = $this->get_group_id()) {
             return true;
@@ -82,9 +82,8 @@ class course_contacts {
      * Add a user to the course contacts group
      *
      * @return bool
-     * @throws \coding_exception
      */
-    protected function add_to_group(): bool {
+    private function add_to_group(): bool {
         if (!$groupid = $this->get_group_id()) {
             return false;
         }
@@ -96,9 +95,8 @@ class course_contacts {
      * Create the course contacts group
      *
      * @return int
-     * @throws \moodle_exception
      */
-    protected function create_group(): int {
+    private function create_group(): int {
         $group = new \stdClass();
         $group->name = self::GROUP_NAME;
         $group->idnumber = self::GROUP_IDNUMBER;
@@ -114,7 +112,7 @@ class course_contacts {
      * @return int
      * @throws \moodle_exception
      */
-    protected function get_group_id(): int {
+    private function get_group_id(): int {
         // If there is no existing group then create one.
         $group = groups_get_group_by_idnumber($this->courseid, self::GROUP_IDNUMBER);
         $groupid = $group ? $group->id : null;

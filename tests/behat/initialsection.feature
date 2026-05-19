@@ -58,7 +58,6 @@ Feature: Initial section has custom layout
     And "Teacher 3" "link" should not exist
     And "Teacher 4" "link" should not exist
 
-  @javascript
   Scenario: Course contacts appear in initial section when editing is off and contact is checked
     When I log in as "admin"
     And I am on "Course 1" course homepage with editing mode on

@@ -16,8 +16,7 @@
 
 namespace format_ucl\fixtures\format_ucl;
 
-use format_ucl\hook\after_first_section_html;
-use format_ucl\hook\before_first_section_html;
+use format_ucl\hook\after_export_for_template;
 
 /**
  * Mock hook to add HTML content after the first section.
@@ -29,22 +28,12 @@ use format_ucl\hook\before_first_section_html;
  */
 class mock_callbacks {
     /**
-     * Listener for the format_ucl before_first_section_html hook.
-     *
-     * @param before_first_section_html $hook
-     * @return void
-     */
-    public static function before_first_section_html(before_first_section_html $hook): void {
-        $hook->add_html('<div><p>Some before content</p></div>');
-    }
-
-    /**
      * Listener for the format_ucl after_first_section_html hook.
      *
-     * @param after_first_section_html $hook
+     * @param after_export_for_template $hook
      * @return void
      */
-    public static function after_first_section_html(after_first_section_html $hook): void {
-        $hook->add_html('<div><p>Some after content</p></div>');
+    public static function after_export_for_template(after_export_for_template $hook): void {
+        $hook->set_property('hookdataintrohtml', '<div><p>Some after content</p></div>');
     }
 }

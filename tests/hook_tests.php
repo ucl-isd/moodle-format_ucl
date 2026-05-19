@@ -56,34 +56,10 @@ final class hook_tests extends \advanced_testcase {
     }
 
     /**
-     * Tests the before_first_section_html hook.
-     *
-     */
-    public function test_before_first_section_html_hooked(): void {
-        require_once(__DIR__ . '/fixtures/format_ucl/mock_callbacks.php');
-
-        \core\di::set(
-            \core\hook\manager::class,
-            \core\hook\manager::phpunit_get_instance([
-                'test_plugin1' => __DIR__ . '/fixtures/format_ucl/hooks.php',
-            ]),
-        );
-
-        $page = new moodle_page();
-        $format = course_get_format($this->course);
-        $renderer = $format->get_renderer($page);
-        $outputclass = $format->get_output_classname('content');
-        $widget = new $outputclass($format);
-
-        $html = $widget->get_before_first_section_html($renderer, []);
-        $this->assertStringContainsString('Some before content', $html);
-    }
-
-    /**
      * Tests the after_first_section_html hook.
      *
      */
-    public function test_before_after_section_content_hooked(): void {
+    public function test_after_export_for_template_hooked(): void {
         require_once(__DIR__ . '/fixtures/format_ucl/mock_callbacks.php');
 
         \core\di::set(
@@ -96,10 +72,10 @@ final class hook_tests extends \advanced_testcase {
         $page = new moodle_page();
         $format = course_get_format($this->course);
         $renderer = $format->get_renderer($page);
+        $data = (object)['hookdataintrohtml' => ''];
         $outputclass = $format->get_output_classname('content');
         $widget = new $outputclass($format);
-
-        $html = $widget->get_after_first_section_html($renderer, []);
-        $this->assertStringContainsString('Some after content', $html);
+        $widget->after_export_for_template($renderer, $data);
+        $this->assertStringContainsString('Some after content', $data->hookdataintrohtml);
     }
 }

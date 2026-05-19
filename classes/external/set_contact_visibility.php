@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/group/lib.php');
  * @copyright  2026 Amanda Doughty <m.doughty@ucl.ac.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class toggle_contact_visibility extends external_api {
+class set_contact_visibility extends external_api {
     /**
      * Parameters for this webservice function.
      *
@@ -70,7 +70,7 @@ class toggle_contact_visibility extends external_api {
 
         // Update the course contact.
         $coursecontacts = new course_contacts($courseid, $userid, $action);
-        return $coursecontacts->toggle_contact_visibility();
+        return $coursecontacts->set_contact_visibility();
     }
 
     /**

@@ -27,17 +27,10 @@ defined('MOODLE_INTERNAL') || die();
 
 $callbacks = [
     [
-        'hook' => \format_ucl\hook\before_first_section_html::class,
+        'hook' => \format_ucl\hook\after_export_for_template::class,
         'callback' => [
             \format_ucl\fixtures\format_ucl\mock_callbacks::class,
-            'before_first_section_html',
-        ],
-    ],
-    [
-        'hook' => \format_ucl\hook\after_first_section_html::class,
-        'callback' => [
-            \format_ucl\fixtures\format_ucl\mock_callbacks::class,
-            'after_first_section_html',
+            'after_export_for_template',
         ],
     ],
 ];

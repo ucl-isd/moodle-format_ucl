@@ -218,7 +218,7 @@ body.format-ucl {
 
 /* Course contacts. */
 #format-ucl-contacts-widget {
-    /* Chevron transition. */ 
+    /* Chevron transition. */
     .fa-solid {
         transition: transform 0.5s ease;
     }
@@ -227,7 +227,7 @@ body.format-ucl {
         transform: rotate(-180deg);
     }
 
-     /* Custom contact form. */ 
+    /* Custom contact form. */
     div[id^="ucl-format-customcontact-form"] {
         .fitem,
         .col-form-label,
@@ -239,14 +239,7 @@ body.format-ucl {
 
         .form-label-addon,
         .fdescription.required {
-            display: none !important;
+            display: none !important; /* stylelint-disable-line declaration-no-important */
         }
     }
-}
-
-
-
-/* SHAME */
-#course-contact-form.mform .d-flex .fitem {
-    margin: 1rem !important; /* stylelint-disable-line declaration-no-important */
 }

@@ -94,7 +94,7 @@ Feature: Initial section has custom layout
     And I should see "zzucker@stamptown.com"
     And I should see "Clown king"
     And I switch editing mode on
-    And I click on "Edit contact Jack Tucker" "link"
+    And I click on "Edit custom contact Jack Tucker" "link"
     And I set the following fields to these values:
       | Role  | Director               |
       | Name  | Jonny Woolley          |

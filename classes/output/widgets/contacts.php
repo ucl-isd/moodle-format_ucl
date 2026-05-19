@@ -176,14 +176,15 @@ class contacts implements renderable, templatable {
 
         $course = $this->format->get_course();
         $context = context_course::instance($course->id);
-        $caneditroles = $USER->editing && has_capability('format/ucl:editcoursecontacts', $context);
         $customcontacts = custom_contact::get_records(['courseid' => $course->id]);
         $contacts = [];
 
         foreach ($customcontacts as $customcontact) {
-            $editform = $caneditroles ? self::get_custom_contact_form($course, $output, $customcontact) : null;
+            $editform = $USER->editing ? self::get_custom_contact_form($course, $output, $customcontact) : null;
             $contact = $customcontact->to_record();
             $contact->contactid = $contact->id;
+            $contact->custom = true;
+            $contact->show = true;
             $contact->editform = $editform;
             $contacts[] = $contact;
         }

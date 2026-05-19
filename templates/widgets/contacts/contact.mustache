@@ -29,13 +29,22 @@
 <div class="ucl-format-coursecontact d-flex align-items-start my-3" data-userid="{{id}}">
 
     {{! Image. }}
-    <div class="flex-0 ucl-format-coursecontact-picture">{{{picture}}}</div>
+    <div class="flex-0 ucl-format-coursecontact-picture">
+        {{{picture}}}
+        
+        {{! Custom contact image.}}
+        {{#custom}}
+           <div class="rounded-circle mr-1 bg-dark d-flex align-items-center justify-content-center" style="width: 3rem; height: 3rem;">
+                <i class="fa-regular fa-envelope fa-lg text-white"></i>
+            </div>
+        {{/custom}}
+    </div>
 
     {{! Details. }}
     <div class="ml-2">
-        <span class="badge badge-warning badge-pill {{#show}} d-none {{/show}}">
+        <span class="badge badge-warning badge-pill {{#show}} d-none {{/show}}" title="{{#str}}hiddenfromstudents, format_ucl{{/str}}">
             <i class="fa-solid fa-eye-slash mr-1"></i>
-            <span class="sr-only">{{#str}}showcontacttostudents, format_ucl{{/str}}</span>
+            <span class="sr-only">{{#str}} hiddenfromstudents, format_ucl {{/str}}</span>
             {{{role}}}
         </span>
 
@@ -43,7 +52,15 @@
             {{{role}}}
         </span>
 
+        {{#url}}
         <a class="mx-1" href="{{{url}}}">{{{name}}}</a>
+        {{/url}}
+        
+        {{! Custom contact has no user profile link.}}
+        {{#custom}}
+        <span class="mx-1">{{{name}}}</span>
+        {{/custom}}
+
         {{! TODO - can we add subject or body =  course code, student number? }}
         <a href="mailto:{{{email}}}" target="_blank">
             <i class="fa-regular fa-envelope mr-1"></i>{{{email}}}
@@ -56,12 +73,12 @@
         {{^description}}
             {{#isediting}}
                 <div class="small pt-1">
-                    {{! TODO - only output if you can edit this persons course profile.}}
+                    {{! TODO - only output if you can edit this persons course profile. }}
                     {{! TODO - add return to course? e.g. return=. }}
                     <a href="{{{ config.wwwroot }}}/user/editadvanced.php?id={{id}}&course={{courseid}}
                     #id_description_editor_label">
                     <i class="fa-solid fa-circle-plus mr-1"></i>
-                    {{#str}}adddescription, format_ucl{{/str}}
+                    {{#str}} adddescription, format_ucl{{/str}}
                     </a>
                 </div>
             {{/isediting}}
@@ -69,32 +86,48 @@
 
     </div>
 
-    {{! Hide/show contact. }}
+    
     {{#isediting}}
-        {{#caneditroles}}
-            <div class="ml-auto">
-                <div class="custom-control custom-switch">
-                    <input
-                        type="checkbox" id="switch-{{id}}"
-                        class="contact-hide-toggle custom-control-input"
-                        data-action="{{#show}}hide{{/show}}{{^show}}show{{/show}}"
-                        {{#show}} checked {{/show}}
-                    >
-                    <label
-                        class="custom-control-label" for="switch-{{id}}"
-                        title="{{#show}}{{#str}}hidefromstudents, format_ucl, {{{name}}}{{/str}}{{/show}}{{^show}}{{#str}}showtostudents, format_ucl, {{{name}}}{{/str}}{{/show}}"
-                    >
-                        <span class="sr-only">
-                            {{#show}}{{#str}}hidefromstudents, format_ucl, {{{name}}}{{/str}}{{/show}}
-                            {{^show}}{{#str}}showtostudents, format_ucl, {{{name}}}{{/str}}{{/show}}
-                        </span>
-                    </label>
-                </div>
+        <div class="ml-auto">
+            {{! Hide/show contact. }}
+            {{^custom}}
+            <div class="custom-control custom-switch">
+                <input
+                    type="checkbox" id="switch-{{id}}"
+                    class="contact-hide-toggle custom-control-input"
+                    data-action="{{#show}}hide{{/show}}{{^show}}show{{/show}}"
+                    {{#show}} checked {{/show}}
+                >
+                <label
+                    class="custom-control-label" for="switch-{{id}}"
+                    title="{{#str}} showtostudents, format_ucl, {{{name}}}{{/str}}"
+                >
+                    <span class="sr-only">
+                        {{#str}} showtostudents, format_ucl, {{{name}}}{{/str}}
+                    </span>
+                </label>
             </div>
-        {{/caneditroles}}
+            {{/custom}}
+            
+            {{! Edit custom contact. }}
+            {{#custom}}
+            <div>
+                <a class="btn add-section" data-toggle="collapse" href="#ucl-format-customcontact-form-{{contactid}}"
+                    role="button" aria-expanded="false"
+                    aria-controls="ucl-format-customcontact-form-{{contactid}}">
+                    <i class="fa-regular fa-circle-user mr-1"></i>
+                    {{#str}} editcustomcontact, format_ucl {{/str}}
+                    <span class="sr-only">{{{name}}}</span>
+                </a>
+            </div>
+            {{/custom}}
+        </div>
     {{/isediting}}
-
 </div>
+
 {{#isediting}}
-    <hr>
+{{#editform}}
+{{> format_ucl/widgets/contacts/editcustomcontact_form }}
+{{/editform}}
+<hr>
 {{/isediting}}

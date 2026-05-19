@@ -23,7 +23,7 @@
     Context variables required for this template:
     * hascontacts Whether the course has contacts to display.
     * contacts Array of contact objects, each with properties: id, name, email, role, picture, url, description.
-    * caneditroles Whether the user can edit course roles (to show edit button).
+    * isediting Whether the user can edit course roles (to show edit button).
     Example context (json):
     {
         "hascontacts": true,
@@ -41,66 +41,78 @@
     }
 }}
 {{#showcontacts}}
-    <div id="format-ucl-contacts-widget">
-        <hr>
-        <h3>
-            <a class="foo d-flex" data-toggle="collapse" href="#ucl-format-contacts" role="button"
-               aria-controls="ucl-format-contacts"
-                {{#isediting}} aria-expanded="true" {{/isediting}}
-                {{^isediting}} aria-expanded="false" {{/isediting}}>
-                {{#str}} coursecontacts, format_ucl {{/str}}
-                <span class="ml-auto"><i class="fa-solid fa-circle-arrow-down"></i></span>
-            </a>
-        </h3>
-        <div class="collapse {{#isediting}} show {{/isediting}}" id="ucl-format-contacts">
-            {{! Hide contact col label. }}
-            {{#hascontacts}}
-                {{#caneditroles}}
-                    <div class="d-flex align-items-end small">
-                        <div>{{#str}}showcontact:title, format_ucl{{/str}}
-                            <br>{{#str}}showcontact:desc, format_ucl{{/str}}
-                        </div>
-                        <div class="ml-auto">
-                            {{#str}}showcontact, format_ucl{{/str}}
-                        </div>
-                    </div>
-                {{/caneditroles}}
+<div id="format-ucl-contacts-widget">
+    <hr>
+    {{ Contacts header. }} 
+    <h3>
+        <a class="d-flex" data-toggle="collapse" href="#ucl-format-contacts" role="button"
+        aria-controls="ucl-format-contacts"
+        {{#isediting}} aria-expanded="true" {{/isediting}}
+        {{^isediting}} aria-expanded="false" {{/isediting}}>
+            {{#str}} coursecontacts, format_ucl {{/str}}
+            <span class="ml-auto"><i class="fa-solid fa-circle-arrow-down"></i></span>
+        </a>
+    </h3>
 
-                {{#contacts}}
-                    {{> format_ucl/widgets/contacts/contact }}
-                {{/contacts}}
+    {{ Contacts content. }} 
+    <div class="collapse {{#isediting}} show {{/isediting}}" id="ucl-format-contacts">
 
-                {{#customcontacts}}
-                    {{> format_ucl/widgets/contacts/customcontact }}
-                {{/customcontacts}}
-            {{/hascontacts}}
-            {{#caneditroles}}
-                <div>
-                    <a href="{{{ config.wwwroot }}}/user/index.php?id={{courseid}}" class="btn add-section bg-white
-                    mr-3">
-                    <i class="fa-solid fa-circle-user mr-2"></i>
-                    {{#str}} editcourseroles, format_ucl {{/str}}
-                    </a>
-
-                    <a class="btn add-section bg-white" data-toggle="collapse" href="#ucl-format-customcontact-form"
-                       role="button" aria-expanded="false"
-                       aria-controls="ucl-format-customcontact-form">
-                        <i class="fa-solid fa-circle-plus mr-2"></i>
-                        {{#str}} addcustomcontact, format_ucl {{/str}}
-                    </a>
-                </div>
-            {{/caneditroles}}
+    {{#hascontacts}}
+        {{#isediting}}
+        {{! Editing instructions. }}
+        <div class="d-flex align-items-end small">
+            <div>
+                {{#str}} coursecontacts:desc, format_ucl {{/str}}
+            </div>
+            <div class="ml-auto">
+                {{#str}} showcontact, format_ucl {{/str}}
+            </div>
         </div>
-        {{#caneditroles}}
-            {{#js}}
-                require(['format_ucl/local/contacts'], function(component) {
-                component.init({{courseid}});
-                });
-            {{/js}}
-        {{/caneditroles}}
-        <hr>
+        {{/isediting}}
+
+    {{#contacts}}
+    {{> format_ucl/widgets/contacts/contact }}
+    {{/contacts}}
+
+    {{#customcontacts}}
+    {{> format_ucl/widgets/contacts/contact }}
+    {{/customcontacts}}
+
+
+    {{/hascontacts}}
+
+    {{#isediting}}
+        <div>
+            <a href="{{{ config.wwwroot }}}/user/index.php?id={{courseid}}" class="btn add-section bg-white
+            mr-3">
+                <i class="fa-solid fa-circle-user mr-2"></i>
+                {{#str}} editcourseroles, format_ucl {{/str}}
+            </a>
+
+            <a class="btn add-section bg-white" data-toggle="collapse" href="#ucl-format-customcontact-form"
+            role="button" aria-expanded="false"
+            aria-controls="ucl-format-customcontact-form">
+                <i class="fa-solid fa-circle-plus mr-2"></i>
+                {{#str}} addcustomcontact, format_ucl {{/str}}
+            </a>
+        </div>
+        {{/isediting}}
     </div>
-    {{#caneditroles}}
+    <hr>
+    
+    {{#isediting}}
         {{> format_ucl/widgets/contacts/customcontact_form }}
-    {{/caneditroles}}
+    {{/isediting}}
+</div>
+
+
+
+{{#isediting}}
+{{#js}}
+require(['format_ucl/local/contacts'], function(component) {
+    component.init({{courseid}});
+});
+{{/js}}
+{{/isediting}}
+
 {{/showcontacts}}

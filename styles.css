@@ -221,7 +221,7 @@ body.format-ucl {
         transition: transform 0.5s ease;
     }
 
-    .foo[aria-expanded="true"] .fa-circle-arrow-down {
+    a[aria-expanded="true"] .fa-circle-arrow-down {
         transform: rotate(-180deg);
     }
 }

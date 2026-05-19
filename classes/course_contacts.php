@@ -71,7 +71,7 @@ class course_contacts {
      */
     private function remove_from_group(): bool {
         // If no group exists do nothing.
-        if (!$groupid = $this->get_group_id()) {
+        if (!$groupid = $this->get_group_id(false)) {
             return true;
         }
 
@@ -84,11 +84,7 @@ class course_contacts {
      * @return bool
      */
     private function add_to_group(): bool {
-        if (!$groupid = $this->get_group_id()) {
-            return false;
-        }
-
-        return groups_add_member($groupid, $this->userid);
+        return groups_add_member($this->get_group_id(), $this->userid);
     }
 
     /**
@@ -109,15 +105,15 @@ class course_contacts {
     /**
      * Get the ID of the course contacts group
      *
+     * @param bool $create
      * @return int
-     * @throws \moodle_exception
      */
-    private function get_group_id(): int {
+    private function get_group_id(bool $create = true): int {
         // If there is no existing group then create one.
         $group = groups_get_group_by_idnumber($this->courseid, self::GROUP_IDNUMBER);
-        $groupid = $group ? $group->id : null;
+        $groupid = $group ? $group->id : 0;
 
-        if (!$groupid) {
+        if ($create && !$groupid) {
             $groupid = $this->create_group();
         }
 

@@ -31,7 +31,8 @@ final class extend_format_ucl_settings implements \core\hook\described_hook {
     /**
      * Allows subscribers to edit a subset of template variables.
      *
-     * @param \admin_settingpage $settings
+     * @param bool|array $courseformatoptions
+     * @param bool $foreditform
      */
     public function __construct(
         /** @var bool|array $courseformatoptions */
@@ -62,10 +63,10 @@ final class extend_format_ucl_settings implements \core\hook\described_hook {
     /**
      * Add course format settings
      *
-     * @param $options
+     * @param array $options
      * @return void
      */
-    public function add_options($options): void {
+    public function add_options(array $options): void {
         $this->options = $this->courseformatoptions ? array_merge($this->courseformatoptions, $options) : $options;
     }
 

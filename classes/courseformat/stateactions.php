@@ -24,9 +24,11 @@ use stdClass;
 /**
  * Contains the core course state actions specific to ucl format.
  *
- * @package    format_ucl
- * @copyright  2022 Ferran Recio <ferran@moodle.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     format_ucl
+ * @copyright   2026 onwards University College London {@link https://www.ucl.ac.uk/}
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author      Stuart Lamour <s.lamour@ucl.ac.uk>
+ * @author      Amanda Doughty <m.doughty@ucl.ac.uk>
  */
 class stateactions extends stateactions_base {
     /**

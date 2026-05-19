@@ -17,9 +17,11 @@
 /**
  * Contains the default section controls output class.
  *
- * @package   format_ucl
- * @copyright 2020 Ferran Recio <ferran@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     format_ucl
+ * @copyright   2026 onwards University College London {@link https://www.ucl.ac.uk/}
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author      Stuart Lamour <s.lamour@ucl.ac.uk>
+ * @author      Amanda Doughty <m.doughty@ucl.ac.uk>
  */
 
 namespace format_ucl\output\courseformat\content\section;
@@ -33,9 +35,11 @@ use pix_icon;
 /**
  * Base class to render a course section menu.
  *
- * @package   format_ucl
- * @copyright 2020 Ferran Recio <ferran@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     format_ucl
+ * @copyright   2026 onwards University College London {@link https://www.ucl.ac.uk/}
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author      Stuart Lamour <s.lamour@ucl.ac.uk>
+ * @author      Amanda Doughty <m.doughty@ucl.ac.uk>
  */
 class controlmenu extends controlmenu_base {
     /** @var array sortorder */

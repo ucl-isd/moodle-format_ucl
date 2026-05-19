@@ -211,7 +211,6 @@ class contacts implements renderable, templatable {
             $customdata,
             'post',
             '',
-            ['class' => 'course-contact-form p-3 border']
         );
         return $customcontactform->export_for_template($output);
     }

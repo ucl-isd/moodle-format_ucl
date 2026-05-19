@@ -48,9 +48,11 @@
             {{{role}}}
         </span>
 
+        {{#role}}
         <span class="badge badge-dark badge-pill {{^show}} d-none {{/show}}">
-            {{{role}}}
+            {{{.}}}
         </span>
+        {{/role}}
 
         {{#url}}
         <a class="mx-1" href="{{{url}}}">{{{name}}}</a>
@@ -70,6 +72,7 @@
             <div class="small pt-1">{{{.}}}</div>
         {{/description}}
 
+        {{^custom}}
         {{^description}}
             {{#isediting}}
                 <div class="small pt-1">
@@ -83,6 +86,7 @@
                 </div>
             {{/isediting}}
         {{/description}}
+        {{/custom}}
 
     </div>
 

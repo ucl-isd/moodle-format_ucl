@@ -47,17 +47,22 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
         $mform->addElement('hidden', 'id');
         $mform->addElement('hidden', 'courseid');
 
+        $mform->addElement('html', '<legend>' . get_string('customcontact', 'format_ucl') . '</legend>');
+        $mform->addElement('html', '<p class="small">' . get_string('customcontact:desc', 'format_ucl') . '</p>');
+
+        $mform->addElement('html', '<div class="d-flex align-items-center w-100">');
+
         $attributes = [
             'placeholder' => get_string('role:placeholder', 'format_ucl'),
             'class' => 'm-3 flex-fill',
         ];
         $mform->addElement('text', 'role', get_string('role', 'format_ucl'), $attributes);
         $mform->setType('role', PARAM_TEXT);
-        $mform->addRule('role', '', 'required');
 
         $attributes = [
             'placeholder' => get_string('name:placeholder', 'format_ucl'),
             'class' => 'm-3 flex-fill',
+            'required' => 'required',
         ];
         $mform->addElement('text', 'name', get_string('name', 'format_ucl'), $attributes);
         $mform->setType('name', PARAM_TEXT);
@@ -66,18 +71,20 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
         $attributes = [
             'placeholder' => get_string('email:placeholder', 'format_ucl'),
             'class' => 'm-3 flex-fill',
+            'required' => 'required',
         ];
         $mform->addElement('text', 'email', get_string('email'), $attributes);
         $mform->setType('email', core_user::get_property_type('email'));
         $mform->addRule('email', '', 'required');
         $mform->setForceLtr('email');
 
+        $mform->addElement('html', '</div>');
+
         $attributes = [
             'placeholder' => get_string('description:placeholder', 'format_ucl'),
         ];
         $mform->addElement('text', 'description', get_string('description', 'format_ucl'), $attributes);
         $mform->setType('description', PARAM_TEXT);
-        $mform->addRule('description', '', 'required');
 
         $this->set_display_vertical();
         $this->add_action_buttons(true, get_string('save'));

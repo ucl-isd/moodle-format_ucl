@@ -23,15 +23,16 @@
     Example context (json):
     {
         "customcontactform": {
-            "contactid": "1",
             "formhtml": "<form...>...</form>"
         }
     }
 }}
 
-<div class="collapse pt-3" id="ucl-format-customcontact-form">
+<div id="ucl-format-customcontact-form" class="collapse pt-3" >
+    <div class="p-3 border">
     {{#customcontactform}}
         {{{formhtml}}}
     {{/customcontactform}}
+    </div>
 </div>
 

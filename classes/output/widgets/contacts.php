@@ -177,12 +177,12 @@ class contacts implements renderable, templatable {
         $contacts = [];
 
         foreach ($customcontacts as $customcontact) {
-            $editform = $USER->editing ? self::get_custom_contact_form($course, $output, $customcontact) : null;
+            $customcontactform = $USER->editing ? self::get_custom_contact_form($course, $output, $customcontact) : null;
             $contact = $customcontact->to_record();
             $contact->contactid = $contact->id;
             $contact->custom = true;
             $contact->show = true;
-            $contact->editform = $editform;
+            $contact->customcontactform = $customcontactform;
             $contacts[] = $contact;
         }
 

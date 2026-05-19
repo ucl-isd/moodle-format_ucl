@@ -35,10 +35,10 @@ export let init = (courseid) => {
             return;
         }
 
-        const coursecontact = e.target.closest('.ucl-format-coursecontact');
-        if (coursecontact) {
+        const input = e.target.closest('.custom-switch input');
+        if (input) {
+            let coursecontact = input.closest('.ucl-format-coursecontact');
             let userid = coursecontact.dataset.userid;
-            let input = coursecontact.querySelector('.custom-switch input');
             let action = input.dataset.action;
             if (!userid || !action) {
                 return;

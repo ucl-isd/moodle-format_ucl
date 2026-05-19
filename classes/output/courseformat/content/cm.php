@@ -25,8 +25,10 @@ use moodle_url;
  * UCL cm class.
  *
  * @package     format_ucl
- * @copyright   2026 Amanda Doughty <m.doughty@ucl.ac.uk>
+ * @copyright   2026 onwards University College London {@link https://www.ucl.ac.uk/}
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author      Stuart Lamour <s.lamour@ucl.ac.uk>
+ * @author      Amanda Doughty <m.doughty@ucl.ac.uk>
  */
 class cm extends cm_base {
     /**

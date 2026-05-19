@@ -17,10 +17,11 @@
 /**
  * Intermediate page to redirect to edit section page with new section ID
  *
- * @package   format_ucl
- * @copyright 2026 onwards University College London {@link https://www.ucl.ac.uk/}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author    Amanda Doughty <m.doughty@ucl.ac.uk>
+ * @package     format_ucl
+ * @copyright   2026 onwards University College London {@link https://www.ucl.ac.uk/}
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author      Stuart Lamour <s.lamour@ucl.ac.uk>
+ * @author      Amanda Doughty <m.doughty@ucl.ac.uk>
  */
 
 require_once("../../../config.php");

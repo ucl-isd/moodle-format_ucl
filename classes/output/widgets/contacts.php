@@ -148,15 +148,16 @@ class contacts implements renderable, templatable {
             }
 
             $allcontacts[] = $contact;
-
-            // Sort by the users role and then A-Z by lastname.
-            usort($allcontacts, function ($a, $b) {
-                if ($a->roleid === $b->roleid) {
-                    return strcasecmp($a->lastname, $b->lastname);
-                }
-                return $a->roleid <=> $b->roleid;
-            });
         }
+
+        // Sort by the users role and then A-Z by lastname.
+        usort($allcontacts, function ($a, $b) {
+            if ($a->roleid === $b->roleid) {
+                return strcasecmp($a->lastname, $b->lastname);
+            }
+            return $a->roleid <=> $b->roleid;
+        });
+
         return $allcontacts;
     }
 

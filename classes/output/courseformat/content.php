@@ -20,6 +20,7 @@ use context_course;
 use core_courseformat\output\local\content as content_base;
 use core_course\external\course_summary_exporter;
 use format_ucl;
+use format_ucl\config;
 use format_ucl\output\widgets\toc;
 use moodle_url;
 use stdClass;
@@ -158,8 +159,10 @@ class content extends content_base {
                 $data->singleedit = true;
             }
 
-            $contacts = new format_ucl\output\widgets\contacts($this->format);
-            $data->contactdata = $contacts->export_for_template($output);
+            if (config::instance()->display_course_contacts()) {
+                $contacts = new format_ucl\output\widgets\contacts($this->format);
+                $data->contactdata = $contacts->export_for_template($output);
+            }
 
             // Set first section to enable adding ucl metadata.
             $data->initialsection = $section;

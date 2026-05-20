@@ -43,6 +43,7 @@ $string['currentsection'] = 'Highlighted';
 $string['customcontact'] = 'Custom contact';
 $string['customcontact:desc'] = 'A custom contact is not linked to a Moodle user, and not listed in participants, or  elsewhere in a course.';
 $string['delete'] = 'Delete';
+$string['deletecustomcontact'] = 'Are you sure you want to delete this custom contact?';
 $string['deletepresetconfirm'] = 'Are you sure you want to delete the section "{$a}"?';
 $string['deletesection'] = 'Delete';
 $string['description'] = 'Description';

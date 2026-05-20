@@ -54,6 +54,7 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
 
         $mform->addElement('html', '<div class="d-flex align-items-center w-100">');
 
+        // Role.
         $attributes = [
             'placeholder' => get_string('role:placeholder', 'format_ucl'),
             'class' => 'm-3 flex-fill',
@@ -61,6 +62,7 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
         $mform->addElement('text', 'role', get_string('role', 'format_ucl'), $attributes);
         $mform->setType('role', PARAM_TEXT);
 
+        // Name.
         $attributes = [
             'placeholder' => get_string('name:placeholder', 'format_ucl'),
             'class' => 'm-3 flex-fill',
@@ -68,28 +70,73 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
         ];
         $mform->addElement('text', 'name', get_string('name', 'format_ucl'), $attributes);
         $mform->setType('name', PARAM_TEXT);
-        $mform->addRule('name', '', 'required');
 
+        // Email.
         $attributes = [
             'placeholder' => get_string('email:placeholder', 'format_ucl'),
             'class' => 'm-3 flex-fill',
             'required' => 'required',
+            'pattern' => "[^@\s]+@[^@\s]+\.[^@\s]+", // Email as pattern till moodle gets native input type=email.
         ];
         $mform->addElement('text', 'email', get_string('email'), $attributes);
-        $mform->setType('email', core_user::get_property_type('email'));
-        $mform->addRule('email', '', 'required');
-        $mform->setForceLtr('email');
+        $mform->setType('email', PARAM_NOTAGS);
 
         $mform->addElement('html', '</div>');
 
+        // Description.
         $attributes = [
             'placeholder' => get_string('description:placeholder', 'format_ucl'),
         ];
         $mform->addElement('text', 'description', get_string('description', 'format_ucl'), $attributes);
         $mform->setType('description', PARAM_TEXT);
 
-        $this->set_display_vertical();
-        $this->add_action_buttons(true, get_string('save'));
+        // Custom action buttons to allow delete and cancel.
+        $mform->addElement('html', '<div class="d-flex">');
+        // Save.
+        $savebtn = '<button type="submit" name="submitbutton" class="btn btn-primary mr-2">'
+            . get_string('save') .
+            '</button>';
+        $mform->addElement('html', $savebtn);
+
+         // Delete.
+        if ($this->get_persistent()->get('id')) {
+            // Setup the string configs for confirmation modal.
+            $titleparam = json_encode(['deletecheck', 'core', get_string('customcontact', 'format_ucl')]);
+            $contentparam = json_encode(['deletecustomcontact', 'format_ucl']);
+            $yesparam = json_encode(['delete', 'core']);
+
+            // Delete button with confirm.
+            $deletebtn = '<button type="submit" name="deletebutton" formnovalidate
+                        class="btn btn-danger mx-2"
+                        data-confirmation="modal"
+                        data-confirmation-title-str="' . s($titleparam) . '"
+                        data-confirmation-content-str="' . s($contentparam) . '"
+                        data-confirmation-yes-button-str="' . s($yesparam) . '">
+                    ' . get_string('delete') . '
+                </button>';
+            $mform->addElement('html', $deletebtn);
+            $mform->registerNoSubmitButton('deletebutton');
+        }
+
+        // Cancel button - closes the collapse.
+        $mform->addElement('html', '<div class="ml-auto">');
+
+        // Target collapse container - if contactid exists, target that specific form, otherwise target the generic form container.
+        $contactid = $this->get_persistent()->get('id');
+        $targetid = $contactid ? 'ucl-format-customcontact-form-' . $contactid : 'ucl-format-customcontact-form';
+
+        $cancelbtn = '<a role="button" class="btn btn-secondary" data-toggle="collapse" href="#' . $targetid . '" 
+            aria-expanded="false" name="cancelbutton"
+            aria-controls="' . $targetid . '">'
+            . get_string('cancel') .
+        '</a>';
+
+         $mform->addElement('html', $cancelbtn);
+         $mform->addElement('html', '</div>');
+
+         $mform->addElement('html', '</div>');
+
+         $this->set_display_vertical();
     }
 
     /**
@@ -114,11 +161,17 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
      *
      * @return bool
      */
+    /**
+     * Handle form submission
+     *
+     * @return bool
+     */
     public function process(): bool {
         if ($this->is_cancelled()) {
             return true;
         }
 
+        // Run the data assignment first so $data is defined.
         if ($data = $this->get_data()) {
             /** @var custom_contact $customcontact */
             $customcontact = $this->get_persistent();
@@ -132,6 +185,16 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
             }
 
             return true;
+        }
+
+        // If validation fails on creation ($data is empty), check the errors here.
+        if ($this->is_submitted()) {
+            $validationerrors = $this->validation($this->_form->getSubmitValues(), []);
+            if (!empty($validationerrors)) {
+                foreach ($validationerrors as $field => $error) {
+                    notification::error($field . ': ' . $error);
+                }
+            }
         }
 
         return false;

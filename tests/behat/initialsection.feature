@@ -81,29 +81,29 @@ Feature: Initial section has custom layout
     And I am on "Course 1" course homepage with editing mode on
     And I click on "Add custom contact" "link"
     And I set the following fields to these values:
-      | Role        | Ring Master           |
-      | Name        | Jack Tucker           |
-      | Email       | zzucker@stamptown.com |
-      | Description | Clown king            |
+      | Role        | Ring Master         |
+      | Name        | Jack Tucker         |
+      | Email       | zzucker@example.com |
+      | Description | Clown king          |
     And I press "Save"
     Then I should see "Changes saved"
     And I switch editing mode off
     And I click on "Course contacts" "link"
     And I should see "Ring Master"
     And I should see "Jack Tucker"
-    And I should see "zzucker@stamptown.com"
+    And I should see "zzucker@example.com"
     And I should see "Clown king"
     And I switch editing mode on
     And I click on "Edit custom contact Jack Tucker" "link"
     And I set the following fields to these values:
-      | Role  | Director               |
-      | Name  | Jonny Woolley          |
-      | Email | jwoolley@stamptown.com |
+      | Role  | Director             |
+      | Name  | Jonny Woolley        |
+      | Email | jwoolley@example.com |
     And I press "Save"
     And I switch editing mode off
     And I click on "Course contacts" "link"
     And I should not see "Ring Master"
     And I should see "Director"
     And I should see "Jonny Woolley"
-    And I should see "jwoolley@stamptown.com"
+    And I should see "jwoolley@example.com"
     And I should see "Clown king"

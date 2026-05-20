@@ -16,10 +16,7 @@
 
 namespace format_ucl\output\widgets;
 
-use completion_info;
 use context_course;
-use core\exception\coding_exception;
-use core\exception\moodle_exception;
 use core\output\renderable;
 use core\output\renderer_base;
 use core\output\templatable;
@@ -35,7 +32,7 @@ use stdClass;
  * Course contacts.
  *
  * @package    format_ucl
- * @copyright  2024 onwards University College London {@link https://www.ucl.ac.uk/}
+ * @copyright  2026 onwards University College London {@link https://www.ucl.ac.uk/}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     Stuart Lamour <s.lamour@ucl.ac.uk>
  */
@@ -47,7 +44,7 @@ class contacts implements renderable, templatable {
      */
     public function __construct(
         /** @var  format_ucl format */
-        protected format_ucl $format,
+        private format_ucl $format,
     ) {
     }
 
@@ -100,59 +97,57 @@ class contacts implements renderable, templatable {
         $contacts = $courselement->get_course_contacts();
         $allcontacts = [];
 
-        if (!empty($contacts)) {
-            foreach ($contacts as $c) {
-                $roleid = $c['role']->id;
-                if (!in_array($roleid, explode(',', $CFG->coursecontact))) {
-                    // The role is not one of course contact roles.
-                    continue;
-                }
-
-                $contact = new stdClass();
-                $userobj = $c['user'];
-                $user = \core_user::get_user($userobj->id, '*', MUST_EXIST);
-
-                $contact->id = $user->id;
-                $contact->name = $c['username'];
-                $contact->roleid = $c['role']->id;
-                $contact->role = $c['rolename'];
-                $contact->roleshortname = $c['role']->shortname;
-                $contact->email = $user->maildisplay == 0 ? null : $user->email;
-
-                // URL.
-                $contacturl = new moodle_url('/user/view.php', ['id' => $user->id, 'course' => $course->id]);
-                $contact->url = $contacturl->out(false);
-
-                // Description.
-                $contact->description = format_text(
-                    $user->description,
-                    $user->descriptionformat,
-                    ['context' => \context_course::instance($course->id)]
-                );
-
-                // Image / Initials.
-                $userpicture = new \user_picture($user);
-                $userpicture->link = false;
-                $userpicture->alttext = false;
-                $userpicture->size = 50;
-                $contact->picture = $output->render($userpicture);
-
-                // Last name for a-z sorting.
-                $contact->lastname = $user->lastname;
-
-                if (!$group = groups_get_group_by_idnumber($course->id, course_contacts::GROUP_IDNUMBER)) {
-                    $contact->show = false;
-                } else {
-                    $contact->show = groups_is_member($group->id, $contact->id);
-                }
-
-                // If hidden and not editing, don't show.
-                if (!$contact->show && !$USER->editing) {
-                    continue;
-                }
-
-                $allcontacts[] = $contact;
+        foreach ($contacts as $c) {
+            $roleid = $c['role']->id;
+            if (!in_array($roleid, explode(',', $CFG->coursecontact))) {
+                // The role is not one of course contact roles.
+                continue;
             }
+
+            $contact = new stdClass();
+            $userobj = $c['user'];
+            $user = \core_user::get_user($userobj->id, '*', MUST_EXIST);
+
+            $contact->id = $user->id;
+            $contact->name = $c['username'];
+            $contact->roleid = $c['role']->id;
+            $contact->role = $c['rolename'];
+            $contact->roleshortname = $c['role']->shortname;
+            $contact->email = $user->maildisplay == 0 ? null : $user->email;
+
+            // URL.
+            $contacturl = new moodle_url('/user/view.php', ['id' => $user->id, 'course' => $course->id]);
+            $contact->url = $contacturl->out(false);
+
+            // Description.
+            $contact->description = format_text(
+                $user->description,
+                $user->descriptionformat,
+                ['context' => \context_course::instance($course->id)]
+            );
+
+            // Image / Initials.
+            $userpicture = new \user_picture($user);
+            $userpicture->link = false;
+            $userpicture->alttext = false;
+            $userpicture->size = 50;
+            $contact->picture = $output->render($userpicture);
+
+            // Last name for a-z sorting.
+            $contact->lastname = $user->lastname;
+
+            if (!$group = groups_get_group_by_idnumber($course->id, course_contacts::GROUP_IDNUMBER)) {
+                $contact->show = false;
+            } else {
+                $contact->show = groups_is_member($group->id, $contact->id);
+            }
+
+            // If hidden and not editing, don't show.
+            if (!$contact->show && !$USER->editing) {
+                continue;
+            }
+
+            $allcontacts[] = $contact;
 
             // Sort by the users role and then A-Z by lastname.
             usort($allcontacts, function ($a, $b) {
@@ -196,13 +191,13 @@ class contacts implements renderable, templatable {
      * Get a form to add/edit custom contacts
      *
      * @param stdClass $course
-     * @param \renderer_base $output
+     * @param renderer_base $output
      * @param custom_contact|null $customcontact
      * @return array
      */
     public static function get_custom_contact_form(
         stdClass $course,
-        \renderer_base $output,
+        renderer_base $output,
         ?custom_contact $customcontact = null
     ): array {
         $customdata = ['persistent' => $customcontact ?: new custom_contact(0, (object)['courseid' => $course->id])];

@@ -133,8 +133,6 @@ Feature: Initial section has custom layout
     And I click on "Edit custom contact Jack Tucker" "link"
     And I press "Delete"
     And I click on "Delete" "button" in the "Custom contact" "dialogue"
-    And I switch editing mode off
-    And I click on "Course contacts" "link"
     And I should not see "Ring Master"
     And I should not see "Jack Tucker"
     And I should not see "zzucker@example.com"

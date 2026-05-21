@@ -128,8 +128,14 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
                 'data-confirmation-destination' => $url->out(false),
             ];
 
-            $mform->addElement('submit', 'deletebutton', get_string('delete'),
-                $attributes, null, $options);
+            $mform->addElement(
+                'submit',
+                'deletebutton',
+                get_string('delete'),
+                $attributes,
+                null,
+                $options
+            );
         }
 
         $mform->addElement('html', '<div class="ml-auto">');
@@ -174,8 +180,7 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
      *
      * @return bool
      */
-    public function process(): bool
-    {
+    public function process(): bool {
         if ($this->is_cancelled()) {
             return true;
         }

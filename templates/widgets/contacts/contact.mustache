@@ -130,8 +130,8 @@
 </div>
 
 {{#isediting}}
-{{#editform}}
-{{> format_ucl/widgets/contacts/editcustomcontact_form }}
-{{/editform}}
+    {{#custom}}
+        {{> format_ucl/widgets/contacts/customcontact_form }}
+    {{/custom}}
 <hr>
 {{/isediting}}

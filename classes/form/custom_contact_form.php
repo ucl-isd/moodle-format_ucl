@@ -32,7 +32,13 @@ use format_ucl\local\data\custom_contact;
  * @author      Stuart Lamour <s.lamour@ucl.ac.uk>
  * @author      Amanda Doughty <m.doughty@ucl.ac.uk>
  */
-class custom_contact_form extends \core\form\persistent implements renderable, templatable {
+class custom_contact_form extends \core\form\persistent implements renderable, templatable
+{
+    /** @var string */
+    public const DELETE = 'delete';
+    /** @var string */
+    public const SAVE = 'save';
+
     /** @var string The fully qualified classname. */
     protected static $persistentclass = custom_contact::class;
 
@@ -41,7 +47,8 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
      *
      * @return void
      */
-    protected function definition() {
+    protected function definition()
+    {
         global $OUTPUT;
 
         $mform = $this->_form;
@@ -89,34 +96,46 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
         ];
         $mform->addElement('text', 'description', get_string('description', 'format_ucl'), $attributes);
         $mform->setType('description', PARAM_TEXT);
+        $this->set_display_vertical();
+
 
         // Custom action buttons to allow delete and cancel.
-        $mform->addElement('html', '<div class="d-flex">');
         // Save.
-        $savebtn = '<button type="submit" name="submitbutton" class="btn btn-primary mr-2">'
-            . get_string('save') .
-            '</button>';
-        $mform->addElement('html', $savebtn);
+        $mform->addElement('html', '<div class="d-flex">');
 
-         // Delete.
-        if ($this->get_persistent()->get('id')) {
-            // Setup the string configs for confirmation modal.
-            $titleparam = json_encode(['deletecheck', 'core', get_string('customcontact', 'format_ucl')]);
-            $contentparam = json_encode(['deletecustomcontact', 'format_ucl']);
-            $yesparam = json_encode(['delete', 'core']);
+        $options = [
+            'customclassoverride' => 'btn btn-primary mr-2',
+        ];
+        $mform->addElement('submit', 'submitbutton', get_string('save'), [], null, $options);
 
-            // Delete button with confirm.
-            $deletebtn = '<button type="submit" name="deletebutton" formnovalidate
-                        class="btn btn-danger mx-2"
-                        data-confirmation="modal"
-                        data-confirmation-title-str="' . s($titleparam) . '"
-                        data-confirmation-content-str="' . s($contentparam) . '"
-                        data-confirmation-yes-button-str="' . s($yesparam) . '">
-                    ' . get_string('delete') . '
-                </button>';
-            $mform->addElement('html', $deletebtn);
+        // Delete.
+        if ($id = $this->get_persistent()->get('id')) {
+            // We'll add a second submit button to the form that will be used to delete a contact
             $mform->registerNoSubmitButton('deletebutton');
+            $options = [
+                'customclassoverride' => 'btn btn-danger mx-2',
+            ];
+            $params = [
+                'courseid' => $this->get_persistent()->get('courseid'),
+                'contactid' => $id,
+                'action' => self::DELETE,
+                'sesskey' => sesskey(),
+            ];
+            $url = new \moodle_url('/course/format/ucl/editcustomcontact.php', $params);
+            $attributes = [
+                'formnovalidate' => 'formnovalidate',
+                'data-confirmation' => 'modal',
+                'data-confirmation-title-str' => json_encode(["customcontact", "format_ucl"]),
+                'data-confirmation-content-str' => json_encode(["deletecustomcontact", "format_ucl"]),
+                'data-confirmation-yes-button-str' => json_encode(["delete"]),
+                'data-confirmation-destination' => $url->out(false),
+            ];
+
+            $mform->addElement('submit', 'deletebutton', get_string('delete'),
+                $attributes, null, $options);
+
         }
+
 
         // Cancel button - closes the collapse.
         $mform->addElement('html', '<div class="ml-auto">');
@@ -124,19 +143,19 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
         // Target collapse container - if contactid exists, target that specific form, otherwise target the generic form container.
         $contactid = $this->get_persistent()->get('id');
         $targetid = $contactid ? 'ucl-format-customcontact-form-' . $contactid : 'ucl-format-customcontact-form';
+        $options = [
+            'customclassoverride' => 'btn btn-secondary',
+        ];
+        $attributes = [
+            'data-toggle' => 'collapse',
+            'href' => "#$targetid",
+            'aria-expanded' => 'false',
+            'aria-controls' => "'$targetid'",
+        ];
+        $mform->addElement('button', 'cancelbutton', get_string('cancel'), $attributes, $options);
 
-        $cancelbtn = '<a role="button" class="btn btn-secondary" data-toggle="collapse" href="#' . $targetid . '" 
-            aria-expanded="false" name="cancelbutton"
-            aria-controls="' . $targetid . '">'
-            . get_string('cancel') .
-        '</a>';
-
-         $mform->addElement('html', $cancelbtn);
-         $mform->addElement('html', '</div>');
-
-         $mform->addElement('html', '</div>');
-
-         $this->set_display_vertical();
+        $mform->addElement('html', '</div>');
+        $mform->addElement('html', '</div>');
     }
 
     /**
@@ -145,7 +164,8 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
      * @param renderer_base $output Used to do a final render of any components that need to be rendered for export.
      * @return array
      */
-    public function export_for_template(renderer_base $output) {
+    public function export_for_template(renderer_base $output)
+    {
         ob_start();
         $this->display();
         $formhtml = ob_get_contents();
@@ -166,19 +186,27 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
      *
      * @return bool
      */
-    public function process(): bool {
+    public function process(string $action): bool
+    {
         if ($this->is_cancelled()) {
             return true;
         }
 
         // Run the data assignment first so $data is defined.
-        if ($data = $this->get_data()) {
+        if ($action === self::SAVE && $data = $this->get_data()) {
             /** @var custom_contact $customcontact */
             $customcontact = $this->get_persistent();
 
             try {
                 $customcontact->from_record($data);
-                $customcontact->save();
+//                switch ($action) {
+//                    case self::DELETE:
+//                        $customcontact->delete();
+//                        break;
+//                    case self::SAVE:
+                        $customcontact->save();
+//                        break;
+//                }
                 notification::success(get_string('changessaved'));
             } catch (\Exception $e) {
                 notification::error($e->getMessage());
@@ -187,15 +215,37 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
             return true;
         }
 
-        // If validation fails on creation ($data is empty), check the errors here.
-        if ($this->is_submitted()) {
-            $validationerrors = $this->validation($this->_form->getSubmitValues(), []);
-            if (!empty($validationerrors)) {
-                foreach ($validationerrors as $field => $error) {
-                    notification::error($field . ': ' . $error);
-                }
+        if ($action === self::DELETE) {
+            /** @var custom_contact $customcontact */
+            $customcontact = $this->get_persistent();
+
+            try {
+                $customcontact->from_record($data);
+//                switch ($action) {
+//                    case self::DELETE:
+//                        $customcontact->delete();
+//                        break;
+//                    case self::SAVE:
+                $customcontact->delete();
+//                        break;
+//                }
+                notification::success(get_string('deleted'));
+            } catch (\Exception $e) {
+                notification::error($e->getMessage());
             }
+
+            return true;
         }
+
+        // If validation fails on creation ($data is empty), check the errors here.
+//        if ($this->is_submitted()) {
+//            $validationerrors = $this->validation($this->_form->getSubmitValues(), []);
+//            if (!empty($validationerrors)) {
+//                foreach ($validationerrors as $field => $error) {
+//                    notification::error($field . ': ' . $error);
+//                }
+//            }
+//        }
 
         return false;
     }

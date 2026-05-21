@@ -42,6 +42,7 @@ $string['coursecontacts:desc'] = 'Select course contacts to show here to student
 $string['currentsection'] = 'Highlighted';
 $string['customcontact'] = 'Custom contact';
 $string['customcontact:desc'] = 'A custom contact is not linked to a Moodle user, and not listed in participants, or  elsewhere in a course.';
+$string['customcontactdeleted'] = 'Custom contact deleted.';
 $string['delete'] = 'Delete';
 $string['deletecustomcontact'] = 'Are you sure you want to delete this custom contact?';
 $string['deletepresetconfirm'] = 'Are you sure you want to delete the section "{$a}"?';

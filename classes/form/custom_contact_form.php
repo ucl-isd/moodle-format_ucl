@@ -107,6 +107,7 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
 
             // Delete button with confirm.
             $deletebtn = '<button type="submit" name="deletebutton" formnovalidate
+                        value="delete"
                         class="btn btn-danger mx-2"
                         data-confirmation="modal"
                         data-confirmation-title-str="' . s($titleparam) . '"
@@ -161,19 +162,39 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
      *
      * @return bool
      */
-    /**
-     * Handle form submission
-     *
-     * @return bool
-     */
     public function process(): bool {
         if ($this->is_cancelled()) {
             return true;
         }
 
-        // Run the data assignment first so $data is defined.
+        $submitteddata = $this->_form->getSubmitValues();
+
+        // Delete.
+        if (isset($submitteddata['deletebutton'])) {
+            $customcontact = $this->get_persistent();
+
+            // Check we have custom contact id.
+            $id = isset($submitteddata['id']) ? (int)$submitteddata['id'] : 0;
+
+            if ($id > 0) {
+                try {
+                    // If the object isn't loaded with the ID, load it now
+                    if ((int)$customcontact->get('id') !== $id) {
+                        $customcontact = new custom_contact($id);
+                    }
+
+                    $customcontact->delete();
+                    notification::success(get_string('customcontactdeleted', 'format_ucl'));
+                    return true; // SUCCESS: Exit immediately!
+                } catch (\Exception $e) {
+                    notification::error($e->getMessage());
+                    return false;
+                }
+            }
+        }
+
+        // Save.
         if ($data = $this->get_data()) {
-            /** @var custom_contact $customcontact */
             $customcontact = $this->get_persistent();
 
             try {
@@ -185,16 +206,6 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
             }
 
             return true;
-        }
-
-        // If validation fails on creation ($data is empty), check the errors here.
-        if ($this->is_submitted()) {
-            $validationerrors = $this->validation($this->_form->getSubmitValues(), []);
-            if (!empty($validationerrors)) {
-                foreach ($validationerrors as $field => $error) {
-                    notification::error($field . ': ' . $error);
-                }
-            }
         }
 
         return false;

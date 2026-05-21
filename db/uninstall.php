@@ -18,9 +18,10 @@
  * Code that is executed before the tables and data are dropped during the plugin uninstallation.
  *
  * @package     format_ucl
- * @category    upgrade
- * @copyright   2026 Amanda Doughty <m.doughty@ucl.ac.uk>
+ * @copyright   2026 onwards University College London {@link https://www.ucl.ac.uk/}
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author      Stuart Lamour <s.lamour@ucl.ac.uk>
+ * @author      Amanda Doughty <m.doughty@ucl.ac.uk>
  */
 
 /**

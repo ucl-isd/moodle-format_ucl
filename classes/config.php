@@ -20,8 +20,10 @@ namespace format_ucl;
  * Class for dealing with config settings relating to course format
  *
  * @package     format_ucl
- * @copyright   2026 Amanda Doughty <m.doughty@ucl.ac.uk>
+ * @copyright   2026 onwards University College London {@link https://www.ucl.ac.uk/}
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author      Stuart Lamour <s.lamour@ucl.ac.uk>
+ * @author      Amanda Doughty <m.doughty@ucl.ac.uk>
  */
 class config {
     /** @var \stdClass the config to use. */

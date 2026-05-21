@@ -18,8 +18,10 @@
  *  Format base class.
  *
  * @package     format_ucl
- * @copyright   2026 Amanda Doughty <m.doughty@ucl.ac.uk>
+ * @copyright   2026 onwards University College London {@link https://www.ucl.ac.uk/}
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author      Stuart Lamour <s.lamour@ucl.ac.uk>
+ * @author      Amanda Doughty <m.doughty@ucl.ac.uk>
  */
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/course/format/lib.php');
@@ -176,6 +178,23 @@ class format_ucl extends core_courseformat\base {
             return new moodle_url('/course/section.php', ['id' => $sectioninfo->id]);
         }
         return $url;
+    }
+
+    /**
+     * Definitions of the additional options that this course format uses for course
+     *
+     * @param bool $foreditform
+     * @return array of options
+     */
+    public function course_format_options($foreditform = false) {
+        static $courseformatoptions = false;
+        if ($courseformatoptions === false) {
+            $hook = new \format_ucl\hook\extend_format_ucl_settings($courseformatoptions, $foreditform);
+            \core\di::get(\core\hook\manager::class)->dispatch($hook);
+            $courseformatoptions = $hook->course_format_options();
+        }
+
+        return $courseformatoptions;
     }
 }
 

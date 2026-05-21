@@ -20,9 +20,11 @@ namespace format_ucl;
 /**
  * Stores course contact visibility
  *
- * @package    format_ucl
- * @copyright  2026 Amanda Doughty <m.doughty@ucl.ac.uk>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     format_ucl
+ * @copyright   2026 onwards University College London {@link https://www.ucl.ac.uk/}
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author      Stuart Lamour <s.lamour@ucl.ac.uk>
+ * @author      Amanda Doughty <m.doughty@ucl.ac.uk>
  */
 class course_contacts {
     /** ID number to use for course contacts group */

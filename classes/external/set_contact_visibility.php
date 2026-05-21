@@ -28,9 +28,11 @@ require_once($CFG->dirroot . '/group/lib.php');
 /**
  * Adds/removes a contact from a group that controls which course contacts are visible
  *
- * @package    format_ucl
- * @copyright  2026 Amanda Doughty <m.doughty@ucl.ac.uk>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     format_ucl
+ * @copyright   2026 onwards University College London {@link https://www.ucl.ac.uk/}
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author      Stuart Lamour <s.lamour@ucl.ac.uk>
+ * @author      Amanda Doughty <m.doughty@ucl.ac.uk>
  */
 class set_contact_visibility extends external_api {
     /**

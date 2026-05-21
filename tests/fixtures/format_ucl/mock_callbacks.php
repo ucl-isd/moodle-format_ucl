@@ -21,10 +21,11 @@ use format_ucl\hook\after_export_for_template;
 /**
  * Mock hook to add HTML content after the first section.
  *
- * @package   format_ucl
- * @copyright 2026 onwards University College London {@link https://www.ucl.ac.uk/}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author    Amanda Doughty <m.doughty@ucl.ac.uk>
+ * @package     format_ucl
+ * @copyright   2026 onwards University College London {@link https://www.ucl.ac.uk/}
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author      Stuart Lamour <s.lamour@ucl.ac.uk>
+ * @author      Amanda Doughty <m.doughty@ucl.ac.uk>
  */
 class mock_callbacks {
     /**

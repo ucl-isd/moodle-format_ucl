@@ -162,30 +162,22 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
      *
      * @return bool
      */
-    public function process(): bool {
-        if ($this->is_cancelled()) {
-            return true;
-        }
-
+    /**
+     * Handle form submission
+     *
+     * @return bool|string Returns true (save), 'deleted' (delete), or false (error/no action)
+     */
+    public function process() {
         $submitteddata = $this->_form->getSubmitValues();
 
         // Delete.
-        if (isset($submitteddata['deletebutton'])) {
-            $customcontact = $this->get_persistent();
-
-            // Check we have custom contact id.
+        if (!empty($submitteddata['deletebutton'])) {
             $id = isset($submitteddata['id']) ? (int)$submitteddata['id'] : 0;
-
             if ($id > 0) {
                 try {
-                    // If the object isn't loaded with the ID, load it now
-                    if ((int)$customcontact->get('id') !== $id) {
-                        $customcontact = new custom_contact($id);
-                    }
-
+                    $customcontact = new custom_contact($id);
                     $customcontact->delete();
-                    notification::success(get_string('customcontactdeleted', 'format_ucl'));
-                    return true; // SUCCESS: Exit immediately!
+                    return 'deleted';
                 } catch (\Exception $e) {
                     notification::error($e->getMessage());
                     return false;
@@ -196,16 +188,13 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
         // Save.
         if ($data = $this->get_data()) {
             $customcontact = $this->get_persistent();
-
             try {
                 $customcontact->from_record($data);
                 $customcontact->save();
-                notification::success(get_string('changessaved'));
+                return true;
             } catch (\Exception $e) {
                 notification::error($e->getMessage());
             }
-
-            return true;
         }
 
         return false;

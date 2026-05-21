@@ -126,7 +126,7 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
         $contactid = $this->get_persistent()->get('id');
         $targetid = $contactid ? 'ucl-format-customcontact-form-' . $contactid : 'ucl-format-customcontact-form';
 
-        $cancelbtn = '<a role="button" class="btn btn-secondary" data-toggle="collapse" href="#' . $targetid . '" 
+        $cancelbtn = '<a role="button" class="btn btn-secondary" data-toggle="collapse" href="#' . $targetid . '"
             aria-expanded="false" name="cancelbutton"
             aria-controls="' . $targetid . '">'
             . get_string('cancel') .

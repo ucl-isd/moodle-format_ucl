@@ -16,6 +16,8 @@ Feature: Custom contacts are backed up and restored
       | teacher1 | C1     | editingteacher |
     And the following config values are set as admin:
       | enableasyncbackup | 0 |
+    And the following config values are set as admin:
+      | displaycontacts   | 1 | format_ucl |
     And I log in as "admin"
     And I am on "Course 1" course homepage with editing mode on
     And I click on "Add custom contact" "link"
@@ -26,7 +28,6 @@ Feature: Custom contacts are backed up and restored
       | Description | Clown king            |
     And I press "Save"
 
-  @javascript
   Scenario: Backup and restore a course containing custom contacts
     When I am on the "Course 1" course page logged in as admin
     And I backup "Course 1" course using this options:

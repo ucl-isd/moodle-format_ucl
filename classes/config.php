@@ -60,4 +60,13 @@ class config {
     public function get_recommended_max_sections(): int {
         return (int) $this->config->recommendedmaxsections ?: self::MAX_SECTIONS;
     }
+
+    /**
+     * Should course contacts be displayed?
+     *
+     * @return bool
+     */
+    public function display_course_contacts(): int {
+        return (int) $this->config->displaycontacts ?: 0;
+    }
 }

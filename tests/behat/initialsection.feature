@@ -25,6 +25,8 @@ Feature: Initial section has custom layout
       | teacher4 | C1     | teacher        |
       | teacher5 | C1     | editingteacher |
       | student1 | C1     | student        |
+    And the following config values are set as admin:
+      | displaycontacts | 1 | format_ucl |
 
   Scenario: Initial section summary appears above main section content
     Given I log in as "admin"

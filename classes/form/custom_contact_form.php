@@ -165,9 +165,9 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
     /**
      * Handle form submission
      *
-     * @return bool|string Returns true (save), 'deleted' (delete), or false (error/no action)
+     * @return bool Returns true (save or delete) or false (error/no action)
      */
-    public function process() {
+    public function process(): bool {
         $submitteddata = $this->_form->getSubmitValues();
 
         // Delete.
@@ -177,7 +177,8 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
                 try {
                     $customcontact = new custom_contact($id);
                     $customcontact->delete();
-                    return 'deleted';
+                    notification::success(get_string('customcontactdeleted', 'format_ucl'));
+                    return true;
                 } catch (\Exception $e) {
                     notification::error($e->getMessage());
                     return false;
@@ -191,6 +192,7 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
             try {
                 $customcontact->from_record($data);
                 $customcontact->save();
+                notification::success(get_string('changessaved'));
                 return true;
             } catch (\Exception $e) {
                 notification::error($e->getMessage());

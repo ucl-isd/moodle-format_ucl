@@ -1,0 +1,137 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template format_ucl/widgets/contacts/contact
+    Template purpose and description.
+    Classes required for JS:
+    * none
+    Data attributes required for JS:
+    * none
+    Context variables required for this template:
+    * attributes Array of name / value pairs.
+    Example context (json):
+    {
+    }
+}}
+
+{{! Contact. }}
+<div class="ucl-format-coursecontact d-flex align-items-start my-3" data-userid="{{id}}">
+
+    {{! Image. }}
+    <div class="flex-0 ucl-format-coursecontact-picture">
+        {{{picture}}}
+        
+        {{! Custom contact image.}}
+        {{#custom}}
+           <div class="rounded-circle mr-1 bg-dark d-flex align-items-center justify-content-center" style="width: 3rem; height: 3rem;">
+                <i class="fa-regular fa-envelope fa-lg text-white"></i>
+            </div>
+        {{/custom}}
+    </div>
+
+    {{! Details. }}
+    <div class="ml-2">
+        <span class="badge badge-warning badge-pill {{#show}} d-none {{/show}}" title="{{#str}}hiddenfromstudents, format_ucl{{/str}}">
+            <i class="fa-solid fa-eye-slash mr-1"></i>
+            <span class="sr-only">{{#str}} hiddenfromstudents, format_ucl {{/str}}</span>
+            {{{role}}}
+        </span>
+
+        {{#role}}
+        <span class="badge badge-dark badge-pill {{^show}} d-none {{/show}}">
+            {{{.}}}
+        </span>
+        {{/role}}
+
+        {{#url}}
+        <a class="mx-1" href="{{{url}}}">{{{name}}}</a>
+        {{/url}}
+        
+        {{! Custom contact has no user profile link.}}
+        {{#custom}}
+        <span class="mx-1">{{{name}}}</span>
+        {{/custom}}
+
+        {{! TODO - can we add subject or body =  course code, student number? }}
+        <a href="mailto:{{{email}}}" target="_blank">
+            <i class="fa-regular fa-envelope mr-1"></i>{{{email}}}
+        </a>
+
+        {{#description}}
+            <div class="small pt-1">{{{.}}}</div>
+        {{/description}}
+
+        {{^custom}}
+        {{^description}}
+            {{#isediting}}
+                <div class="small pt-1">
+                    {{! TODO - only output if you can edit this persons course profile. }}
+                    {{! TODO - add return to course? e.g. return=. }}
+                    <a href="{{{ config.wwwroot }}}/user/editadvanced.php?id={{id}}&course={{courseid}}
+                    #id_description_editor_label">
+                    <i class="fa-solid fa-circle-plus mr-1"></i>
+                    {{#str}} adddescription, format_ucl{{/str}}
+                    </a>
+                </div>
+            {{/isediting}}
+        {{/description}}
+        {{/custom}}
+
+    </div>
+
+    
+    {{#isediting}}
+        <div class="ml-auto">
+            {{! Hide/show contact. }}
+            {{^custom}}
+            <div class="custom-control custom-switch">
+                <input
+                    type="checkbox" id="switch-{{id}}"
+                    class="contact-hide-toggle custom-control-input"
+                    data-action="{{#show}}hide{{/show}}{{^show}}show{{/show}}"
+                    {{#show}} checked {{/show}}
+                >
+                <label
+                    class="custom-control-label" for="switch-{{id}}"
+                    title="{{#str}} showtostudents, format_ucl, {{{name}}}{{/str}}"
+                >
+                    <span class="sr-only">
+                        {{#str}} showtostudents, format_ucl, {{{name}}}{{/str}}
+                    </span>
+                </label>
+            </div>
+            {{/custom}}
+            
+            {{! Edit custom contact. }}
+            {{#custom}}
+            <div>
+                <a class="btn add-section" data-toggle="collapse" href="#ucl-format-customcontact-form-{{contactid}}"
+                    role="button" aria-expanded="false"
+                    aria-controls="ucl-format-customcontact-form-{{contactid}}">
+                    <i class="fa-regular fa-circle-user mr-1"></i>
+                    {{#str}} editcustomcontact, format_ucl {{/str}}
+                    <span class="sr-only">{{{name}}}</span>
+                </a>
+            </div>
+            {{/custom}}
+        </div>
+    {{/isediting}}
+</div>
+
+{{#isediting}}
+{{#editform}}
+{{> format_ucl/widgets/contacts/editcustomcontact_form }}
+{{/editform}}
+<hr>
+{{/isediting}}

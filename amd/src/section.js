@@ -17,7 +17,7 @@
  * Format ucl section extra logic component.
  *
  * @module     format_ucl/section
- * @copyright  2022 Ferran Recio <ferran@moodle.com>
+ * @copyright  2026 Amanda Doughty <m.doughty@ucl.ac.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

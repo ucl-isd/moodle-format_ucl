@@ -17,10 +17,10 @@
 namespace format_ucl\output\courseformat;
 
 use context_course;
-use core\exception\moodle_exception;
 use core_courseformat\output\local\content as content_base;
 use core_course\external\course_summary_exporter;
 use format_ucl;
+use format_ucl\config;
 use format_ucl\output\widgets\toc;
 use moodle_url;
 use stdClass;
@@ -71,7 +71,8 @@ class content extends content_base {
 
         /** @var format_ucl $format */
         $format = $this->format;
-        $data->courseid = $format->get_course()->id;
+        $data->course = $format->get_course();
+        $data->courseid = $data->course->id;
         $sectioninfo = $format->get_modinfo()->get_section_info($singlesectionnum);
         $data->coursename = $format->get_course()->fullname;
         $data->courseimg = course_summary_exporter::get_course_image($format->get_course());
@@ -110,6 +111,7 @@ class content extends content_base {
             // SHAME - Is there a better way to do this?
             if ($singlesectionnum === 0) {
                 $data = $this->get_ucl_initialsection($data, $output);
+                $this->after_export_for_template($output, $data);
             }
         }
 
@@ -134,6 +136,7 @@ class content extends content_base {
      * @return stdClass
      */
     public function get_ucl_initialsection(stdClass $data, \renderer_base $output): stdClass {
+        $course = $this->format->get_course();
         $section = $data->singlesection;
         if ($section->num == '0') {
             $section->displayonesection = true; // Magic to stop accordians.
@@ -156,10 +159,14 @@ class content extends content_base {
                 $data->singleedit = true;
             }
 
+            if (config::instance()->display_course_contacts()) {
+                $contacts = new format_ucl\output\widgets\contacts($this->format);
+                $data->contactdata = $contacts->export_for_template($output);
+            }
+
             // Set first section to enable adding ucl metadata.
             $data->initialsection = $section;
-            $data->beforefirstsectionhtml = $this->get_before_first_section_html($output, $data);
-            $data->afterfirstsectionhtml = $this->get_after_first_section_html($output, $data);
+            $data->hookdataintrohtml = '';
         }
         return $data;
     }
@@ -203,39 +210,10 @@ class content extends content_base {
      * Dispatch hook to allow other plugins to add content before the first section html.
      *
      * @param \renderer_base $output
-     * @param array|stdClass $data
-     * @return string
+     * @param stdClass $data
      */
-    public function get_before_first_section_html(\renderer_base $output, array|stdClass $data): string {
-        $course = $this->format->get_course();
-        // Dispatch hook to retrieve extra content to add at the start of the section.
-        $hook = new \format_ucl\hook\before_first_section_html($output, $data, $course, '');
+    public function after_export_for_template(\renderer_base $output, stdClass $data) {
+        $hook = new \format_ucl\hook\after_export_for_template($output, $data);
         \core\di::get(\core\hook\manager::class)->dispatch($hook);
-        return $hook->get_output();
     }
-
-    /**
-     * Dispatch hook to allow other plugins to add content after the first section html.
-     *
-     * @param \renderer_base $output
-     * @param array|stdClass $data
-     * @return string
-     */
-    public function get_after_first_section_html(\renderer_base $output, array|stdClass $data): string {
-        $course = $this->format->get_course();
-        // Dispatch hook to retrieve extra content to add at the end of the section.
-        $hook = new \format_ucl\hook\after_first_section_html($output, $data, $course, '');
-        \core\di::get(\core\hook\manager::class)->dispatch($hook);
-        return $hook->get_output();
-    }
-
-    // TODO - best practice - build into format.
-
-    // phpcs:disable moodle.Commenting.InlineComment.InvalidEndChar
-    // phpcs:disable moodle.Files.LineLength.TooLong
-    // More than 16 sections - not display well on laptops.
-    // This course contains unnamed sections - you can improve your course by giving each section a meanigful title.
-    // This course contains sections with one or less visbible actitivites - you can imporve your course by re-organising these.
-    // This section contains lots of activites without any structure - you can improve this by using lables to structure the content.
-    // etc
 }

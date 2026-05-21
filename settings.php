@@ -41,5 +41,17 @@ if ($hassiteconfig) {
             PARAM_INT,
             2
         ));
+        // TODO remove this setting when SL is happy contacts are working.
+        $yesno = [
+            0 => new lang_string('no'),
+            1 => new lang_string('yes'),
+        ];
+        $settings->add(new admin_setting_configselect(
+            'format_ucl/displaycontacts',
+            new lang_string('config:displaycontacts', 'format_ucl'),
+            new lang_string('config:displaycontacts:desc', 'format_ucl'),
+            0,
+            $yesno
+        ));
     }
 }

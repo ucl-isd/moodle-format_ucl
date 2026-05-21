@@ -15,22 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Mock hook callbacks for format_ucl
+ * Web services definition
  *
- * @package   format_ucl
- * @copyright 2026 onwards University College London {@link https://www.ucl.ac.uk/}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author    Amanda Doughty <m.doughty@ucl.ac.uk>
+ * @package    format_ucl
+ * @copyright  2026 Amanda Doughty <m.doughty@ucl.ac.uk>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+use format_ucl\external\set_contact_visibility;
 
 defined('MOODLE_INTERNAL') || die();
 
-$callbacks = [
-    [
-        'hook' => \format_ucl\hook\after_export_for_template::class,
-        'callback' => [
-            \format_ucl\fixtures\format_ucl\mock_callbacks::class,
-            'after_export_for_template',
-        ],
+$functions = [
+    'format_ucl_set_contact_visibility' => [
+        'classname' => set_contact_visibility::class,
+        'description' => '',
+        'type' => 'write',
+        'ajax' => true,
     ],
 ];

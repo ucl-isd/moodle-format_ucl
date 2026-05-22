@@ -32,8 +32,7 @@ use format_ucl\local\data\custom_contact;
  * @author      Stuart Lamour <s.lamour@ucl.ac.uk>
  * @author      Amanda Doughty <m.doughty@ucl.ac.uk>
  */
-class custom_contact_form extends \core\form\persistent implements renderable, templatable
-{
+class custom_contact_form extends \core\form\persistent implements renderable, templatable {
     /** @var string */
     public const DELETE = 'delete';
     /** @var string */

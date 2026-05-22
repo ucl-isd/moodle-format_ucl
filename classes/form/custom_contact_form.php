@@ -101,7 +101,7 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
 
         // Save.
         $options = [
-            'customclassoverride' => 'btn btn-primary mr-2',
+            'customclassoverride' => 'btn btn-primary',
         ];
         $mform->addElement('submit', 'submitbutton', get_string('save'), [], null, $options);
 

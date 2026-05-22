@@ -236,6 +236,14 @@ body.format-ucl {
             width: 100%;
             max-width: 100%;
         }
+        /* No label elements - e.g. buttons. */
+        .femptylabel {
+            width: auto;
+        }
+        /* SHAME - remove padding on submit button. */
+        #fitem_id_submitbutton {
+            padding-right: 0;
+        }
 
         .form-label-addon,
         .fdescription.required {

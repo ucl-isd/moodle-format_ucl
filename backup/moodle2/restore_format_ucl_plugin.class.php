@@ -30,7 +30,6 @@ class restore_format_ucl_plugin extends \restore_format_plugin {
      * Returns the paths to be handled by the plugin at course level
      */
     protected function define_course_plugin_structure(): array {
-        $paths = [];
         $paths[] = new restore_path_element(
             'customcontact',
             $this->get_pathfor('/customcontacts/customcontact')
@@ -48,14 +47,13 @@ class restore_format_ucl_plugin extends \restore_format_plugin {
     public function process_customcontact($data): void {
         global $DB;
 
-        $data = (object)$data;
         /* We only process this information if the course we are restoring to
-           has 'ucl' format (target format can change depending of restore options). */
-        $format = $DB->get_field('course', 'format', ['id' => $this->task->get_courseid()]);
-        if ($format != 'ucl') {
-            return;
+           has 'ucl' format (target format can change depending on restore options). */
+        if ($DB->get_field('course', 'format', ['id' => $this->task->get_courseid()]) != 'ucl') {
+              return;
         }
 
+        $data = (object)$data;
         $oldid = $data->id;
         $data->courseid = $this->task->get_courseid();
         unset($data->id);

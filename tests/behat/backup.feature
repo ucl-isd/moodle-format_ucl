@@ -6,8 +6,8 @@ Feature: Custom contacts are backed up and restored
 
   Background:
     Given the following "courses" exist:
-      | fullname | shortname | format | coursedisplay | numsections | startdate     |
-      | Course 1 | C1        | ucl    | 0             | 5           | ##yesterday## |
+      | fullname | shortname | format | coursedisplay | numsections |
+      | Course 1 | C1        | ucl    | 0             | 5           |
     And the following "users" exist:
       | username | firstname | lastname | email                |
       | teacher1 | Teacher   | 1        | teacher1@example.com |
@@ -24,7 +24,7 @@ Feature: Custom contacts are backed up and restored
     And I set the following fields to these values:
       | Role        | Ring Master           |
       | Name        | Jack Tucker           |
-      | Email       | zzucker@stamptown.com |
+      | Email       | zzucker@example.com |
       | Description | Clown king            |
     And I press "Save"
 
@@ -39,5 +39,5 @@ Feature: Custom contacts are backed up and restored
     And I click on "Course contacts" "link"
     Then I should see "Ring Master"
     And I should see "Jack Tucker"
-    And I should see "zzucker@stamptown.com"
+    And I should see "zzucker@example.com"
     And I should see "Clown king"

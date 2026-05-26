@@ -17,6 +17,7 @@
 namespace format_ucl;
 
 use core_external\external_api;
+use format_ucl\local\data\custom_contact;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -294,5 +295,81 @@ final class format_ucl_test extends \advanced_testcase {
         $course = $generator->create_course(['format' => 'ucl']);
         $format = course_get_format($course);
         $this->assertEmpty($format->get_required_jsfiles());
+    }
+
+    /**
+     * Test for the delete format data behaviour.
+     *
+     * @covers ::delete_format_data
+     * @dataProvider delete_format_data_provider
+     * @param bool $usehook if it should use course_delete to trigger $format->delete_format_data as a hook
+     */
+    public function test_delete_format_data(bool $usehook): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $generator = $this->getDataGenerator();
+        $course1 = $generator->create_course(['format' => 'ucl']);
+        course_create_sections_if_missing($course1, [0, 1]);
+        $course2 = $generator->create_course(['format' => 'ucl']);
+        course_create_sections_if_missing($course2, [0, 1]);
+
+        // Create a custom course contact for Course 1.
+        $data = (object)[
+            'courseid' => $course1->id,
+            'role' => 'Ringmaster',
+            'name' => 'Jack Tucker',
+            'email' => 'zzucker@example.com'
+        ];
+        $contact1 = new custom_contact(0, $data);
+        $contact1->save();
+        $this->assertTrue(
+            custom_contact::record_exists($contact1->get('id'))
+        );
+
+        // Create a custom course contact for Course 2.
+        $data = (object)[
+            'courseid' => $course2->id,
+            'role' => 'Director',
+            'name' => 'Jonny Woolley',
+            'email' => 'jwoolley@example.com'
+        ];
+        $contact2 = new custom_contact(0, $data);
+        $contact2->save();
+        $this->assertTrue(
+            custom_contact::record_exists($contact2->get('id'))
+        );
+
+        if ($usehook) {
+            delete_course($course1, false);
+        } else {
+            $format = course_get_format($course1);
+            $format->delete_format_data();
+        }
+
+        // Check which custom contacts exist.
+        $this->assertFalse(
+            custom_contact::record_exists($contact1->get('id'))
+        );
+        $this->assertTrue(
+            custom_contact::record_exists($contact2->get('id'))
+        );
+    }
+
+    /**
+     * Data provider for test_delete_format_data.
+     *
+     * @return array the testing scenarios
+     */
+    public static function delete_format_data_provider(): array {
+        return [
+            'direct call' => [
+                'usehook' => false
+            ],
+            'use hook' => [
+                'usehook' => true,
+            ]
+        ];
     }
 }

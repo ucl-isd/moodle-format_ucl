@@ -17,6 +17,7 @@
 namespace format_ucl\fixtures\format_ucl;
 
 use format_ucl\hook\after_export_for_template;
+use format_ucl\hook\extend_format_ucl_settings;
 
 /**
  * Mock hook to add HTML content after the first section.
@@ -36,5 +37,42 @@ class mock_callbacks {
      */
     public static function after_export_for_template(after_export_for_template $hook): void {
         $hook->set_property('hookdataintrohtml', '<div><p>Some after content</p></div>');
+    }
+
+    /**
+     * Listener for the format_ucl extend_format_ucl_settings hook.
+     *
+     * @param extend_format_ucl_settings $hook
+     * @return void
+     */
+    public static function extend_format_ucl_settings(extend_format_ucl_settings $hook): void {
+        $options = self::get_options($hook->foreditform);
+        $hook->add_options($options);
+    }
+
+    /**
+     * Get mock course format options
+     *
+     * @param $foreditform
+     * @return array[]
+     */
+    public static function get_options($foreditform) {
+        if ($foreditform) {
+            return [
+                'checkbox' => [
+                    'default' => 1,
+                    'type' => PARAM_INT,
+                    'label' => 'Test checkbox',
+                    'element_type' => 'checkbox',
+                ],
+            ];
+        }
+
+        return [
+            'checkbox' => [
+                'default' => 1,
+                'type' => PARAM_INT,
+            ],
+        ];
     }
 }

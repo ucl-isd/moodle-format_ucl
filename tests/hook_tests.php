@@ -16,7 +16,7 @@
 
 namespace format_ucl;
 
-use core_renderer;
+use format_ucl\fixtures\format_ucl\mock_callbacks;
 use moodle_page;
 
 /**
@@ -73,11 +73,36 @@ final class hook_tests extends \advanced_testcase {
 
         $page = new moodle_page();
         $format = course_get_format($this->course);
+
         $renderer = $format->get_renderer($page);
         $data = (object)['hookdataintrohtml' => ''];
         $outputclass = $format->get_output_classname('content');
         $widget = new $outputclass($format);
         $widget->after_export_for_template($renderer, $data);
         $this->assertStringContainsString('Some after content', $data->hookdataintrohtml);
+    }
+
+    /**
+     * Tests the after_first_section_html hook.
+     *
+     */
+    public function test_extend_format_ucl_settings_hooked(): void {
+        require_once(__DIR__ . '/fixtures/format_ucl/mock_callbacks.php');
+
+        \core\di::set(
+            \core\hook\manager::class,
+            \core\hook\manager::phpunit_get_instance([
+                'test_plugin1' => __DIR__ . '/fixtures/format_ucl/hooks.php',
+            ]),
+        );
+
+        $format = course_get_format($this->course);
+        $expected = mock_callbacks::get_options(true);
+        $options = $format->course_format_options(true);
+        $this->assertEqualsCanonicalizing($expected, $options);
+
+        $expected = mock_callbacks::get_options(false);
+        $options = $format->course_format_options();
+        $this->assertEqualsCanonicalizing($expected, $options);
     }
 }

@@ -56,8 +56,7 @@ class mock_callbacks {
      * @param bool $foreditform
      * @return array[]
      */
-    public static function get_options(bool $foreditform): array
-    {
+    public static function get_options(bool $foreditform): array {
         if ($foreditform) {
             return [
                 'checkbox' => [

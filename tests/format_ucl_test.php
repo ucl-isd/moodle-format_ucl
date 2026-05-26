@@ -320,7 +320,7 @@ final class format_ucl_test extends \advanced_testcase {
             'courseid' => $course1->id,
             'role' => 'Ringmaster',
             'name' => 'Jack Tucker',
-            'email' => 'zzucker@example.com'
+            'email' => 'zzucker@example.com',
         ];
         $contact1 = new custom_contact(0, $data);
         $contact1->save();
@@ -333,7 +333,7 @@ final class format_ucl_test extends \advanced_testcase {
             'courseid' => $course2->id,
             'role' => 'Director',
             'name' => 'Jonny Woolley',
-            'email' => 'jwoolley@example.com'
+            'email' => 'jwoolley@example.com',
         ];
         $contact2 = new custom_contact(0, $data);
         $contact2->save();
@@ -365,11 +365,11 @@ final class format_ucl_test extends \advanced_testcase {
     public static function delete_format_data_provider(): array {
         return [
             'direct call' => [
-                'usehook' => false
+                'usehook' => false,
             ],
             'use hook' => [
                 'usehook' => true,
-            ]
+            ],
         ];
     }
 }

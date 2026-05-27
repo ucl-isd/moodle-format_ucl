@@ -61,5 +61,5 @@ $mform = new custom_contact_form(
     $customdata
 );
 
-$mform->process($action);
+$mform->process();
 redirect($redirect);

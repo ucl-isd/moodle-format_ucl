@@ -121,28 +121,25 @@ class Section extends BaseComponent {
      * @param {object} param0.element the state object
      */
     _reloadSectionNavigation({element}) {
-        const pendingReload = new Pending(`format_ucl/section:reloadNavigation_${element.id}`);
         const sectionnavigation = this.getElement(this.selectors.SECTION_NAVIGATION, element.id);
-
-        if (!sectionnavigation) {
-            return pendingReload.resolve();
+        if (sectionnavigation) {
+            const pendingReload = new Pending(`format_ucl/section:reloadNavigation_${element.id}`);
+            const promise = Fragment.loadFragment(
+                'format_ucl',
+                'section_navigation',
+                Config.courseContextId,
+                {
+                    id: element.id,
+                    courseid: Config.courseId,
+                }
+            );
+            promise.then((html, js) => {
+                Templates.replaceNode(sectionnavigation, html, js);
+                return pendingReload.resolve();
+            }).catch(() => {
+                return;
+            });
         }
-
-        const promise = Fragment.loadFragment(
-            'format_ucl',
-            'section_navigation',
-            Config.courseContextId,
-            {
-                id: element.id,
-                courseid: Config.courseId,
-            }
-        );
-        promise.then((html, js) => {
-            Templates.replaceNode(sectionnavigation, html, js);
-            return pendingReload.resolve();
-        }).catch(() => {
-            return;
-        });
     }
 
     /**
@@ -152,28 +149,25 @@ class Section extends BaseComponent {
      * @param {object} param0.element the state object
      */
     _reloadSectionDivider({element}) {
-        const pendingReload = new Pending(`format_ucl/section:reloadDivider_${element.id}`);
         const sectiondivider = this.getElement(this.selectors.SECTION_DIVIDER, element.id);
-
-        if (!sectiondivider) {
-            return pendingReload.resolve();
+        if (sectiondivider) {
+            const pendingReload = new Pending(`format_ucl/section:reloadDivider_${element.id}`);
+            const promise = Fragment.loadFragment(
+                'format_ucl',
+                'section_divider',
+                Config.courseContextId,
+                {
+                    id: element.id,
+                    courseid: Config.courseId,
+                }
+            );
+            promise.then((html, js) => {
+                Templates.replaceNode(sectiondivider, html, js);
+                return pendingReload.resolve();
+            }).catch(() => {
+                return;
+            });
         }
-
-        const promise = Fragment.loadFragment(
-            'format_ucl',
-            'section_divider',
-            Config.courseContextId,
-            {
-                id: element.id,
-                courseid: Config.courseId,
-            }
-        );
-        promise.then((html, js) => {
-            Templates.replaceNode(sectiondivider, html, js);
-            return pendingReload.resolve();
-        }).catch(() => {
-            return;
-        });
     }
 
     /**
@@ -183,28 +177,26 @@ class Section extends BaseComponent {
      * @param {object} param0.element the state object
      */
     _reloadSectionControlMenu({element}) {
-        const pendingReload = new Pending(`format_ucl/section:reloadControlmenu_${element.id}`);
         const sectioncontrolmenu = this.getElement(this.selectors.SECTION_CONTROLMENU, element.id);
 
-        if (!sectioncontrolmenu) {
-            pendingReload.resolve();
+        if (sectioncontrolmenu) {
+            const pendingReload = new Pending(`format_ucl/section:reloadControlmenu_${element.id}`);
+            const promise = Fragment.loadFragment(
+                'format_ucl',
+                'section_controlmenu',
+                Config.courseContextId,
+                {
+                    id: element.id,
+                    courseid: Config.courseId,
+                }
+            );
+            promise.then((html, js) => {
+                Templates.replaceNode(sectioncontrolmenu, html, js);
+                return pendingReload.resolve();
+            }).catch(() => {
+                return;
+            });
         }
-
-        const promise = Fragment.loadFragment(
-            'format_ucl',
-            'section_controlmenu',
-            Config.courseContextId,
-            {
-                id: element.id,
-                courseid: Config.courseId,
-            }
-        );
-        promise.then((html, js) => {
-            Templates.replaceNode(sectioncontrolmenu, html, js);
-            return pendingReload.resolve();
-        }).catch(() => {
-            return;
-        });
     }
 
     /**

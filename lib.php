@@ -191,6 +191,19 @@ class format_ucl extends core_courseformat\base {
         \core\di::get(\core\hook\manager::class)->dispatch($hook);
         return $hook->course_format_options();
     }
+
+    /**
+     * Course deletion hook.
+     *
+     */
+    public function delete_format_data() {
+        global $DB;
+
+        parent::delete_format_data();
+        $course = $this->get_course();
+        // Delete the custom course contacts.
+        $DB->delete_records('format_ucl_custom_contacts', ['courseid' => $course->id]);
+    }
 }
 
 /**

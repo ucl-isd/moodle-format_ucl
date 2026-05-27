@@ -44,6 +44,8 @@ class custom_contact extends persistent {
             ],
             'role' => [
                 'type' => PARAM_TEXT,
+                'null' => NULL_ALLOWED,
+                'default' => null,
             ],
             'name' => [
                 'type' => PARAM_TEXT,
@@ -53,6 +55,8 @@ class custom_contact extends persistent {
             ],
             'description' => [
                 'type' => PARAM_TEXT,
+                'null' => NULL_ALLOWED,
+                'default' => null,
             ],
         ];
     }

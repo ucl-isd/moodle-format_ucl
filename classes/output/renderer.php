@@ -19,6 +19,9 @@ namespace format_ucl\output;
 use context_course;
 use core_courseformat\base as course_format;
 use core_courseformat\output\section_renderer;
+use format_ucl\output\courseformat\content\section\controlmenu;
+use format_ucl\output\courseformat\content\sectionnavigation;
+use format_ucl\output\courseformat\content\sectionselector;
 use moodle_url;
 use section_info;
 
@@ -122,10 +125,8 @@ class renderer extends section_renderer {
         course_format $format,
         section_info $section
     ): string {
-        $sectionnavigationclass = $format->get_output_classname('content\\sectionnavigation');
-        $sectionselectorclass = $format->get_output_classname('content\\sectionselector');
-        $sectionnavigation = new $sectionnavigationclass($format, $section->section);
-        $sectionselector = new $sectionselectorclass($format, $sectionnavigation);
+        $sectionnavigation = new sectionnavigation($format, $section->section);
+        $sectionselector = new sectionselector($format, $sectionnavigation);
 
         return $this->render($sectionselector);
     }
@@ -145,8 +146,7 @@ class renderer extends section_renderer {
         course_format $format,
         section_info $section
     ): string {
-        $sectioncontrolmenuclass = $format->get_output_classname('content\\section\\controlmenu');
-        $controlmenu = new $sectioncontrolmenuclass($format, $section);
+        $controlmenu = new controlmenu($format, $section);
 
         return $this->render($controlmenu->get_action_menu($this));
     }

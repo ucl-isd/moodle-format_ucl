@@ -137,7 +137,7 @@ class Section extends BaseComponent {
                 Templates.replaceNode(sectionnavigation, html, js);
                 return pendingReload.resolve();
             }).catch(() => {
-                return;
+                return pendingReload.resolve();
             });
         }
     }
@@ -165,7 +165,7 @@ class Section extends BaseComponent {
                 Templates.replaceNode(sectiondivider, html, js);
                 return pendingReload.resolve();
             }).catch(() => {
-                return;
+                return pendingReload.resolve();
             });
         }
     }
@@ -194,7 +194,7 @@ class Section extends BaseComponent {
                 Templates.replaceNode(sectioncontrolmenu, html, js);
                 return pendingReload.resolve();
             }).catch(() => {
-                return;
+                return pendingReload.resolve();
             });
         }
     }

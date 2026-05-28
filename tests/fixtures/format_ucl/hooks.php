@@ -34,4 +34,11 @@ $callbacks = [
             'after_export_for_template',
         ],
     ],
+    [
+        'hook' => \format_ucl\hook\extend_format_ucl_settings::class,
+        'callback' => [
+            \format_ucl\fixtures\format_ucl\mock_callbacks::class,
+            'extend_format_ucl_settings',
+        ],
+    ],
 ];

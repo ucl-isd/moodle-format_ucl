@@ -17,10 +17,13 @@
 namespace format_ucl\output\widgets;
 
 use context_course;
+use context_system;
+use context_user;
 use core\output\renderable;
 use core\output\renderer_base;
 use core\output\templatable;
 use core_course_list_element;
+use core_user;
 use format_ucl;
 use format_ucl\course_contacts;
 use format_ucl\form\custom_contact_form;
@@ -107,18 +110,38 @@ class contacts implements renderable, templatable {
 
             $contact = new stdClass();
             $userobj = $c['user'];
-            $user = \core_user::get_user($userobj->id, '*', MUST_EXIST);
-
+            $user = core_user::get_user($userobj->id, '*', MUST_EXIST);
+            $usercontext = context_user::instance($user->id);
             $contact->id = $user->id;
+
+            if (!$group = groups_get_group_by_idnumber($course->id, course_contacts::GROUP_IDNUMBER)) {
+                $contact->show = false;
+            } else {
+                $contact->show = groups_is_member($group->id, $contact->id);
+            }
+
+            // If hidden and not editing, don't show.
+            if (!$contact->show && !$USER->editing) {
+                continue;
+            }
+
             $contact->name = $c['username'];
             $contact->roleid = $c['role']->id;
             $contact->role = $c['rolename'];
             $contact->roleshortname = $c['role']->shortname;
             $contact->email = $user->maildisplay == 0 ? null : $user->email;
 
+            // Can the current user edit this contact profile?
+            if ($USER->id === $user->id) {
+                $caneditprofile = has_capability('moodle/user:editownprofile', context_system::instance());
+            } else {
+                $caneditprofile = has_capability('moodle/user:editprofile', $usercontext);
+            }
+            $contact->caneditprofile = $USER->editing && $caneditprofile;
+
             // URL.
             $contacturl = new moodle_url('/user/view.php', ['id' => $user->id, 'course' => $course->id]);
-            $contact->url = $contacturl->out(false);
+            $contact->url = $contacturl;
 
             // Description.
             $contact->description = format_text(
@@ -134,19 +157,20 @@ class contacts implements renderable, templatable {
             $userpicture->size = 50;
             $contact->picture = $output->render($userpicture);
 
+            // Edit description URL.
+            $editurl = new moodle_url(
+                '/user/edit.php',
+                [
+                    'id' => $user->id,
+                    'course' => $course->id,
+                    'returnto' => 'profile',
+                ]
+            );
+            $editurl->set_anchor('id_description_editor_label');
+            $contact->editurl = $contact->caneditprofile ? $editurl : null;
+
             // Last name for a-z sorting.
             $contact->lastname = $user->lastname;
-
-            if (!$group = groups_get_group_by_idnumber($course->id, course_contacts::GROUP_IDNUMBER)) {
-                $contact->show = false;
-            } else {
-                $contact->show = groups_is_member($group->id, $contact->id);
-            }
-
-            // If hidden and not editing, don't show.
-            if (!$contact->show && !$USER->editing) {
-                continue;
-            }
 
             $allcontacts[] = $contact;
         }
@@ -172,7 +196,6 @@ class contacts implements renderable, templatable {
         global $USER;
 
         $course = $this->format->get_course();
-        $context = context_course::instance($course->id);
         $customcontacts = custom_contact::get_records(['courseid' => $course->id]);
         $contacts = [];
 

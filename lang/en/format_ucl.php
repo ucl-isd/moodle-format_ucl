@@ -54,6 +54,7 @@ $string['editcustomcontact'] = 'Edit custom contact';
 $string['editsection'] = 'Edit section';
 $string['editsectionname'] = 'Edit section name';
 $string['email:placeholder'] = 'name@example.com';
+$string['forcontact'] = 'for contact {$a}';
 $string['hiddenfromstudents'] = 'Hidden from students';
 $string['hidefromothers'] = 'Hide';
 $string['highlight'] = 'Highlight';

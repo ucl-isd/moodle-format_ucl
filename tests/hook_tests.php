@@ -16,6 +16,8 @@
 
 namespace format_ucl;
 
+use core\di;
+use core\hook\manager;
 use format_ucl\fixtures\format_ucl\mock_callbacks;
 use moodle_page;
 
@@ -64,9 +66,9 @@ final class hook_tests extends \advanced_testcase {
     public function test_after_export_for_template_hooked(): void {
         require_once(__DIR__ . '/fixtures/format_ucl/mock_callbacks.php');
 
-        \core\di::set(
-            \core\hook\manager::class,
-            \core\hook\manager::phpunit_get_instance([
+        di::set(
+            manager::class,
+            manager::phpunit_get_instance([
                 'test_plugin1' => __DIR__ . '/fixtures/format_ucl/hooks.php',
             ]),
         );
@@ -83,15 +85,15 @@ final class hook_tests extends \advanced_testcase {
     }
 
     /**
-     * Tests the after_first_section_html hook.
+     * Tests the xtend_format_ucl_settings hook.
      *
      */
     public function test_extend_format_ucl_settings_hooked(): void {
         require_once(__DIR__ . '/fixtures/format_ucl/mock_callbacks.php');
 
-        \core\di::set(
-            \core\hook\manager::class,
-            \core\hook\manager::phpunit_get_instance([
+        di::set(
+            manager::class,
+            manager::phpunit_get_instance([
                 'test_plugin1' => __DIR__ . '/fixtures/format_ucl/hooks.php',
             ]),
         );

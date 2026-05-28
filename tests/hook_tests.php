@@ -85,7 +85,7 @@ final class hook_tests extends \advanced_testcase {
     }
 
     /**
-     * Tests the xtend_format_ucl_settings hook.
+     * Tests the extend_format_ucl_settings hook.
      *
      */
     public function test_extend_format_ucl_settings_hooked(): void {

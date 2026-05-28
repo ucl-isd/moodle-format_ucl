@@ -33,7 +33,7 @@ global $PAGE, $DB;
 
 $courseid = required_param('courseid', PARAM_INT);
 $contactid = optional_param('contactid', 0, PARAM_INT);
-$action = optional_param('action', custom_contact_form::SAVE, PARAM_TEXT);
+$action = optional_param('action', custom_contact_form::SAVE, PARAM_ALPHA);
 
 $course = get_course($courseid);
 $params = ['courseid' => $course->id, 'contactid' => $contactid, 'action' => $action];

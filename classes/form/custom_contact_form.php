@@ -20,7 +20,6 @@ use core\notification;
 use core\output\renderable;
 use core\output\renderer_base;
 use core\output\templatable;
-use core_user;
 use format_ucl\local\data\custom_contact;
 
 /**
@@ -149,7 +148,7 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
             'data-toggle' => 'collapse',
             'href' => "#$targetid",
             'aria-expanded' => 'false',
-            'aria-controls' => "'$targetid'",
+            'aria-controls' => '$targetid',
         ];
         $mform->addElement('button', 'cancelbutton', get_string('cancel'), $attributes, $options);
 

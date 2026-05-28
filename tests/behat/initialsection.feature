@@ -78,7 +78,7 @@ Feature: Initial section has custom layout
     And I am on "Course 1" course homepage with editing mode on
     Then "Show Teacher 1 to students" "checkbox" should exist
 
-  Scenario: In editing mode, user can add and edit custom contacts
+  Scenario: In editing mode, user can add custom contacts
     When I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     And I click on "Add custom contact" "link"
@@ -95,7 +95,17 @@ Feature: Initial section has custom layout
     And I should see "Jack Tucker"
     And I should see "zzucker@example.com"
     And I should see "Clown king"
-    And I switch editing mode on
+
+  Scenario: In editing mode, user can edit custom contacts
+    When I log in as "teacher1"
+    And I am on "Course 1" course homepage with editing mode on
+    And I click on "Add custom contact" "link"
+    And I set the following fields to these values:
+      | Role        | Ring Master         |
+      | Name        | Jack Tucker         |
+      | Email       | zzucker@example.com |
+      | Description | Clown king          |
+    And I press "Save"
     And I click on "Edit custom contact Jack Tucker" "link"
     And I set the following fields to these values:
       | Role  | Director             |
@@ -104,8 +114,28 @@ Feature: Initial section has custom layout
     And I press "Save"
     And I switch editing mode off
     And I click on "Course contacts" "link"
-    And I should not see "Ring Master"
+    Then I should not see "Ring Master"
     And I should see "Director"
     And I should see "Jonny Woolley"
     And I should see "jwoolley@example.com"
     And I should see "Clown king"
+
+  Scenario: In editing mode, user can delete custom contacts
+    When I log in as "teacher1"
+    And I am on "Course 1" course homepage with editing mode on
+    And I click on "Add custom contact" "link"
+    And I set the following fields to these values:
+      | Role        | Ring Master         |
+      | Name        | Jack Tucker         |
+      | Email       | zzucker@example.com |
+      | Description | Clown king          |
+    And I press "Save"
+    And I click on "Edit custom contact Jack Tucker" "link"
+    And I press "Delete"
+    And I click on "Delete" "button" in the "Custom contact" "dialogue"
+    And I should not see "Ring Master"
+    And I should not see "Jack Tucker"
+    And I should not see "zzucker@example.com"
+    And I should not see "Clown king"
+    And I switch editing mode off
+    And "Course contacts" "link" should not exist

@@ -51,7 +51,7 @@ class custom_contact extends persistent {
                 'type' => PARAM_TEXT,
             ],
             'email' => [
-                'type' => PARAM_EMAIL,
+                'type' => PARAM_NOTAGS,
             ],
             'description' => [
                 'type' => PARAM_TEXT,

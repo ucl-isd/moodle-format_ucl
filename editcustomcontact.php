@@ -24,6 +24,7 @@
  * @author      Amanda Doughty <m.doughty@ucl.ac.uk>
  */
 
+use format_ucl\form\custom_contact_form;
 use format_ucl\local\data\custom_contact;
 
 require_once("../../../config.php");
@@ -32,9 +33,10 @@ global $PAGE, $DB;
 
 $courseid = required_param('courseid', PARAM_INT);
 $contactid = optional_param('contactid', 0, PARAM_INT);
+$action = optional_param('action', custom_contact_form::SAVE, PARAM_ALPHA);
 
 $course = get_course($courseid);
-$params = ['courseid' => $course->id, 'contactid' => $contactid];
+$params = ['courseid' => $course->id, 'contactid' => $contactid, 'action' => $action];
 $PAGE->set_url('/course/format/ucl/editcustomcontact.php', $params);
 
 require_login($course);
@@ -45,9 +47,16 @@ $PAGE->set_context($context);
 $redirect = new moodle_url('/course/view.php', ['id' => $course->id]);
 
 $data = ['id' => $contactid];
-$customcontact = custom_contact::get_record($data) ?: new format_ucl\local\data\custom_contact();
+$customcontact = custom_contact::get_record($data) ?: new custom_contact();
+
+if ($contactid && $action == custom_contact_form::DELETE) {
+    require_sesskey();
+    $customcontact->delete();
+    redirect($redirect);
+}
+
 $customdata = ['persistent' => $customcontact];
-$mform = new format_ucl\form\custom_contact_form(
+$mform = new custom_contact_form(
     new moodle_url('/course/format/ucl/editcustomcontact.php', $params),
     $customdata
 );

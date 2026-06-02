@@ -2,7 +2,7 @@
 Feature: Initial section has custom layout
   In order to to quickly find important course information
   As a user
-  I need to see consistent layout
+  I need to see a consistent layout in the initial section
 
   Background:
     Given the following "courses" exist:

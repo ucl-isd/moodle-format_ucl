@@ -1,8 +1,8 @@
 @format @format_ucl
-Feature: Adding a new section lands on the editing page
-  In order to add a new section
+Feature: Moving a section updates section navigation links
+  In order to move section
   As a user
-  I need to edit a new section when one is added
+  I need the section navigation links to update
 
   Background:
     Given the following "course" exists:

@@ -30,6 +30,7 @@ use format_ucl\form\custom_contact_form;
 use format_ucl\local\data\custom_contact;
 use moodle_url;
 use stdClass;
+use tool_brickfield\local\areas\core_course\fullname;
 
 /**
  * Course contacts.
@@ -130,6 +131,9 @@ class contacts implements renderable, templatable {
             $contact->role = $c['rolename'];
             $contact->roleshortname = $c['role']->shortname;
             $contact->email = $user->maildisplay == 0 ? null : $user->email;
+            $a = ['course' => $course->shortname, 'contactname' => fullname($user)];
+            $subject = rawurlencode(get_string('mailto:subject', 'format_ucl', $a));
+            $contact->subject = $user->maildisplay == 0 ? null : $subject;
 
             // Can the current user edit this contact profile?
             if ($USER->id === $user->id) {

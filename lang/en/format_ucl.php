@@ -58,6 +58,7 @@ $string['forcontact'] = 'for contact {$a}';
 $string['hiddenfromstudents'] = 'Hidden from students';
 $string['hidefromothers'] = 'Hide';
 $string['highlight'] = 'Highlight';
+$string['mailto:subject'] = '{$a->course} - {$a->contactname}';
 $string['messageprovider:expiry'] = 'Expiry message';
 $string['messageprovider:submission'] = 'Submission message';
 $string['name'] = 'Name';

@@ -64,6 +64,7 @@
         {{/custom}}
 
         {{! TODO - can we add subject or body =  course code, student number? }}
+        {{! https://stackoverflow.com/questions/4782068/can-i-set-subject-content-of-email-using-mailto }}
         <a href="mailto:{{{email}}}" target="_blank">
             <i class="fa-regular fa-envelope mr-1"></i>{{{email}}}
         </a>
@@ -74,17 +75,16 @@
 
         {{^custom}}
         {{^description}}
-            {{#isediting}}
+            {{#caneditprofile}}
                 <div class="small pt-1">
-                    {{! TODO - only output if you can edit this persons course profile. }}
                     {{! TODO - add return to course? e.g. return=. }}
-                    <a href="{{{ config.wwwroot }}}/user/editadvanced.php?id={{id}}&course={{courseid}}
-                    #id_description_editor_label">
+                    <a href="{{{editurl}}}">
                     <i class="fa-solid fa-circle-plus mr-1"></i>
                     {{#str}} adddescription, format_ucl{{/str}}
+                    <span class="sr-only">{{#str}} forcontact, format_ucl, {{{name}}}{{/str}}</span>
                     </a>
                 </div>
-            {{/isediting}}
+            {{/caneditprofile}}
         {{/description}}
         {{/custom}}
 

@@ -2,12 +2,12 @@
 Feature: Initial section has custom layout
   In order to to quickly find important course information
   As a user
-  I need to see consistent layout
+  I need to see a consistent layout in the initial section
 
   Background:
     Given the following "courses" exist:
-      | fullname | shortname | format | coursedisplay | numsections | startdate     |
-      | Course 1 | C1        | ucl    | 0             | 5           | ##yesterday## |
+      | fullname | shortname | format | coursedisplay | numsections |
+      | Course 1 | C1        | ucl    | 0             | 5           |
     And the following "users" exist:
       | username | firstname | lastname | email                |
       | teacher1 | Teacher   | 1        | teacher1@example.com |
@@ -29,7 +29,7 @@ Feature: Initial section has custom layout
       | displaycontacts | 1 | format_ucl |
 
   Scenario: Initial section summary appears above main section content
-    Given I log in as "admin"
+    Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     And I click on "Edit" "link"
     And I set the field "Description" to "Welcome to Stamptown"
@@ -41,7 +41,7 @@ Feature: Initial section has custom layout
     And "Welcome to Stamptown" "text" should not exist in the ".section-item .content" "css_element"
 
   Scenario: Course contacts appear in initial section when editing is on
-    When I log in as "admin"
+    When I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     Then "Contacts" "text" should exist
     And "Teacher 1" "link" should exist
@@ -51,21 +51,21 @@ Feature: Initial section has custom layout
     And "Teacher 4" "link" should not exist
 
   Scenario: Course contacts do not appear in initial section when editing is off
-    When I log in as "admin"
+    When I log in as "teacher1"
     And I am on "Course 1" course homepage
     Then "Contacts" "link" should not exist in the "#ucl-course-content" "css_element"
-    And "Teacher 1" "link" should not exist
+    And "Teacher 1" "link" should not exist in the "#ucl-course-content" "css_element"
     And "Teacher 2" "link" should not exist
     And "Teacher 5" "link" should not exist
     And "Teacher 3" "link" should not exist
     And "Teacher 4" "link" should not exist
 
   Scenario: Course contacts appear in initial section when editing is off and contact is checked
-    When I log in as "admin"
+    When I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     And I click on "Show Teacher 1 to students" "checkbox"
     And I turn editing mode off
-    Then "Teacher 1" "link" should exist
+    Then "Teacher 1" "link" should exist in the "#ucl-course-content" "css_element"
     And "Teacher 2" "link" should not exist
     And "Teacher 5" "link" should not exist
     And "Teacher 3" "link" should not exist
@@ -73,12 +73,35 @@ Feature: Initial section has custom layout
     And I reload the page
     And "Teacher 1" "link" should exist
 
-  Scenario: In editing mode, user can show/hide contacts
+  Scenario: User can show/hide contacts
     When I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     Then "Show Teacher 1 to students" "checkbox" should exist
 
-  Scenario: In editing mode, user can add custom contacts
+  Scenario: User with 'moodle/user:editownprofile' can edit own profile description
+    When I log in as "teacher1"
+    And I am on "Course 1" course homepage with editing mode on
+    Then "Add description for contact Teacher 1" "link" should exist
+    And "Add description for contact Teacher 2" "link" should not exist
+    And "Add description for contact Teacher 5" "link" should not exist
+
+  Scenario: User with 'moodle/user:editprofile' can edit other contacts profile description
+    Given the following "roles" exist:
+      | name | shortname   | description | archetype |
+      | Head | headteacher | headteacher |           |
+    And the following "role assigns" exist:
+      | user     | role        | contextlevel | reference |
+      | teacher1 | headteacher | User         | teacher5  |
+    And the following "permission overrides" exist:
+      | capability              | permission | role        | contextlevel | reference |
+      | moodle/user:editprofile | Allow      | headteacher | User         | teacher5  |
+    When I log in as "teacher1"
+    And I am on "Course 1" course homepage with editing mode on
+    Then "Add description for contact Teacher 1" "link" should exist
+    And "Add description for contact Teacher 2" "link" should not exist
+    And "Add description for contact Teacher 5" "link" should exist
+
+  Scenario: User can add custom contacts
     When I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     And I click on "Add custom contact" "link"
@@ -96,7 +119,7 @@ Feature: Initial section has custom layout
     And I should see "zzucker@example.com"
     And I should see "Clown king"
 
-  Scenario: In editing mode, user can edit custom contacts
+  Scenario: User can edit custom contacts
     When I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     And I click on "Add custom contact" "link"
@@ -120,7 +143,7 @@ Feature: Initial section has custom layout
     And I should see "jwoolley@example.com"
     And I should see "Clown king"
 
-  Scenario: In editing mode, user can delete custom contacts
+  Scenario: User can delete custom contacts
     When I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     And I click on "Add custom contact" "link"

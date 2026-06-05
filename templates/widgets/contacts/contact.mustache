@@ -63,9 +63,11 @@
         <span class="mx-1">{{{name}}}</span>
         {{/custom}}
 
+        {{#email}}
         <a href="mailto:{{{email}}}?subject={{{subject}}}" target="_blank">
             <i class="fa-regular fa-envelope mr-1"></i>{{{email}}}
         </a>
+        {{/email}}
 
         {{#description}}
             <div class="small pt-1">{{{.}}}</div>

@@ -130,6 +130,7 @@ class contacts implements renderable, templatable {
             $contact->role = $c['rolename'];
             $contact->roleshortname = $c['role']->shortname;
             $contact->email = $user->maildisplay == 0 ? null : $user->email;
+            $contact->subject = rawurlencode($course->fullname);
 
             // Can the current user edit this contact profile?
             if ($USER->id === $user->id) {
@@ -205,6 +206,7 @@ class contacts implements renderable, templatable {
             $contact->contactid = $contact->id;
             $contact->custom = true;
             $contact->show = true;
+            $contact->subject = rawurlencode($course->fullname);
             $contact->customcontactform = $customcontactform;
             $contacts[] = $contact;
         }

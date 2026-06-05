@@ -9,13 +9,13 @@ Feature: Initial section has custom layout
       | fullname | shortname | format | coursedisplay | numsections |
       | Course 1 | C1        | ucl    | 0             | 5           |
     And the following "users" exist:
-      | username | firstname | lastname | email                |
-      | teacher1 | Teacher   | 1        | teacher1@example.com |
-      | teacher2 | Teacher   | 2        | teacher2@example.com |
-      | teacher3 | Teacher   | 3        | teacher3@example.com |
-      | teacher4 | Teacher   | 4        | teacher4@example.com |
-      | teacher5 | Teacher   | 5        | teacher5@example.com |
-      | student1 | Student   | 1        | student1@example.com |
+      | username | firstname | lastname | email                | maildisplay |
+      | teacher1 | Teacher   | 1        | teacher1@example.com | 1           |
+      | teacher2 | Teacher   | 2        | teacher2@example.com | 1           |
+      | teacher3 | Teacher   | 3        | teacher3@example.com | 1           |
+      | teacher4 | Teacher   | 4        | teacher4@example.com | 1           |
+      | teacher5 | Teacher   | 5        | teacher5@example.com | 0           |
+      | student1 | Student   | 1        | student1@example.com | 1           |
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
@@ -64,10 +64,13 @@ Feature: Initial section has custom layout
     When I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     And I click on "Show Teacher 1 to students" "checkbox"
+    And I click on "Show Teacher 5 to students" "checkbox"
     And I turn editing mode off
     Then "Teacher 1" "link" should exist in the "#ucl-course-content" "css_element"
+    And "teacher1@example.com" "link" should exist in the "#ucl-course-content" "css_element"
     And "Teacher 2" "link" should not exist
-    And "Teacher 5" "link" should not exist
+    And "Teacher 5" "link" should exist
+    And "teacher5@example.com" "link" should not exist
     And "Teacher 3" "link" should not exist
     And "Teacher 4" "link" should not exist
     And I reload the page

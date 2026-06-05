@@ -63,11 +63,11 @@
         <span class="mx-1">{{{name}}}</span>
         {{/custom}}
 
-        {{! TODO - can we add subject or body =  course code, student number? }}
-        {{! https://stackoverflow.com/questions/4782068/can-i-set-subject-content-of-email-using-mailto }}
-        <a href="mailto:{{{email}}}" target="_blank">
+        {{#email}}
+        <a href="mailto:{{{email}}}?subject={{{subject}}}" target="_blank">
             <i class="fa-regular fa-envelope mr-1"></i>{{{email}}}
         </a>
+        {{/email}}
 
         {{#description}}
             <div class="small pt-1">{{{.}}}</div>
@@ -77,8 +77,7 @@
         {{^description}}
             {{#caneditprofile}}
                 <div class="small pt-1">
-                    {{! TODO - add return to course? e.g. return=. }}
-                    <a href="{{{editurl}}}">
+                    <a href="{{{editurl}}}" target="_blank">
                     <i class="fa-solid fa-circle-plus mr-1"></i>
                     {{#str}} adddescription, format_ucl{{/str}}
                     <span class="sr-only">{{#str}} forcontact, format_ucl, {{{name}}}{{/str}}</span>

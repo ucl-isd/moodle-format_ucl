@@ -207,6 +207,7 @@ class contacts implements renderable, templatable {
             $contact->contactid = $contact->id;
             $contact->custom = true;
             $contact->show = true;
+            $contact->subject = rawurlencode($course->fullname);
             $contact->customcontactform = $customcontactform;
             $contacts[] = $contact;
         }

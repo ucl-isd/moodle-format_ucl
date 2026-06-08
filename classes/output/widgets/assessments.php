@@ -171,7 +171,7 @@ class assessments implements renderable, templatable {
             });
 
             foreach ($template->assessments as $assess) {
-                $assess->duedatedate = date('jS M', $assess->duedate);
+                $assess->duedatedate = date('jS M Y', $assess->duedate);
                 $assess->duedatetime = userdate($assess->duedate, '%I:%M%P');
             }
 

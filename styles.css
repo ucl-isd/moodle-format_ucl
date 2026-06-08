@@ -190,27 +190,20 @@ body.format-ucl {
     /* Course contacts. */
     /* Checked. */
     .ucl-format-coursecontact:has(.contact-hide-toggle:checked) {
-        .badge-warning {
+       .ucl-format-image-hidden {
             display: none !important; /* stylelint-disable-line declaration-no-important */
-        }
-
-        .badge-dark {
-            display: inline-block !important; /* stylelint-disable-line declaration-no-important */
         }
     }
 
     /* Not checked. */
     .ucl-format-coursecontact:has(.contact-hide-toggle:not(:checked)) {
-        .badge-warning {
-            display: inline-block !important; /* stylelint-disable-line declaration-no-important */
+        .ucl-format-image-hidden {
+            display: flex !important; /* stylelint-disable-line declaration-no-important */
         }
 
-        .badge-dark {
+        .userpicture,
+        .userinitials {
             display: none !important; /* stylelint-disable-line declaration-no-important */
-        }
-
-        .ucl-format-coursecontact-picture {
-            opacity: .5;
         }
     }
 
@@ -218,15 +211,6 @@ body.format-ucl {
 
 /* Course contacts. */
 #format-ucl-contacts-widget {
-    /* Chevron transition. */
-    .fa-solid {
-        transition: transform 0.5s ease;
-    }
-
-    a[aria-expanded="true"] .fa-circle-arrow-down {
-        transform: rotate(-180deg);
-    }
-
     /* Custom contact form. */
     div[id^="ucl-format-customcontact-form"] {
         .fitem,
@@ -250,4 +234,15 @@ body.format-ucl {
             display: none !important; /* stylelint-disable-line declaration-no-important */
         }
     }
+
+    .userpicture,
+    .userinitials,
+    .ucl-format-image-hidden {
+        border: none;
+        font-weight: 900;
+        width: 3rem;
+        height: 3rem;
+        margin: 0;
+    }
 }
+

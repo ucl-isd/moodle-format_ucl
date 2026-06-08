@@ -45,66 +45,62 @@
 {{#showcontacts}}
 <div id="format-ucl-contacts-widget">
     <hr>
-    {{ Contacts header. }} 
-    <h3>
-        <a class="d-flex" data-toggle="collapse" href="#ucl-format-contacts" role="button"
-        aria-controls="ucl-format-contacts"
-        {{#isediting}} aria-expanded="true" {{/isediting}}
-        {{^isediting}} aria-expanded="false" {{/isediting}}>
-            {{#str}} coursecontacts, format_ucl {{/str}}
-            <span class="ml-auto"><i class="fa-solid fa-circle-arrow-down"></i></span>
-        </a>
+    <h3 class="py-2">
+        {{#str}} coursecontacts, format_ucl {{/str}}
     </h3>
 
     {{ Contacts content. }} 
-    <div class="collapse {{#isediting}} show {{/isediting}}" id="ucl-format-contacts">
+    <div id="ucl-format-contacts">
 
-    {{#hascontacts}}
+        {{#hascontacts}}
+            {{#isediting}}
+            {{! Editing instructions. }}
+            <div class="d-flex align-items-end small pb-2">
+                <div>
+                    {{#str}} coursecontacts:desc, format_ucl {{/str}}
+                </div>
+                <div class="ml-auto">
+                    {{#str}} showcontact, format_ucl {{/str}}
+                </div>
+            </div>
+            {{/isediting}}
+
+        {{#contacts}}
+        {{> format_ucl/widgets/contacts/contact }}
+        <hr>
+        {{/contacts}}
+
+        {{#customcontacts}}
+        {{> format_ucl/widgets/contacts/contact }}
+        <hr>
+        {{/customcontacts}}
+
+
+        {{/hascontacts}}
+
         {{#isediting}}
-        {{! Editing instructions. }}
-        <div class="d-flex align-items-end small">
-            <div>
-                {{#str}} coursecontacts:desc, format_ucl {{/str}}
+            <div class="py-3">
+                <a href="{{{ config.wwwroot }}}/user/index.php?id={{courseid}}" class="btn add-section bg-white
+                mr-3">
+                    <i class="fa-solid fa-circle-user mr-2"></i>
+                    {{#str}} editcourseroles, format_ucl {{/str}}
+                </a>
+
+                <a class="btn add-section bg-white" data-toggle="collapse" href="#ucl-format-customcontact-form"
+                role="button" aria-expanded="false"
+                aria-controls="ucl-format-customcontact-form">
+                    <i class="fa-solid fa-circle-plus mr-2"></i>
+                    {{#str}} addcustomcontact, format_ucl {{/str}}
+                </a>
             </div>
-            <div class="ml-auto">
-                {{#str}} showcontact, format_ucl {{/str}}
-            </div>
-        </div>
+            
+            {{> format_ucl/widgets/contacts/customcontact_form }}
+
+            <hr>
+        
         {{/isediting}}
 
-    {{#contacts}}
-    {{> format_ucl/widgets/contacts/contact }}
-    {{/contacts}}
-
-    {{#customcontacts}}
-    {{> format_ucl/widgets/contacts/contact }}
-    {{/customcontacts}}
-
-
-    {{/hascontacts}}
-
-    {{#isediting}}
-        <div>
-            <a href="{{{ config.wwwroot }}}/user/index.php?id={{courseid}}" class="btn add-section bg-white
-            mr-3">
-                <i class="fa-solid fa-circle-user mr-2"></i>
-                {{#str}} editcourseroles, format_ucl {{/str}}
-            </a>
-
-            <a class="btn add-section bg-white" data-toggle="collapse" href="#ucl-format-customcontact-form"
-            role="button" aria-expanded="false"
-            aria-controls="ucl-format-customcontact-form">
-                <i class="fa-solid fa-circle-plus mr-2"></i>
-                {{#str}} addcustomcontact, format_ucl {{/str}}
-            </a>
-        </div>
-        {{/isediting}}
-    </div>
-    <hr>
-    
-    {{#isediting}}
-        {{> format_ucl/widgets/contacts/customcontact_form }}
-    {{/isediting}}
+    </div>   
 </div>
 
 

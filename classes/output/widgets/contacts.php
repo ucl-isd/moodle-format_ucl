@@ -126,30 +126,8 @@ class contacts implements renderable, templatable {
             }
 
             $contact->name = $c['username'];
-            $contact->roleid = $c['role']->id;
-            $contact->role = $c['rolename'];
-            $contact->roleshortname = $c['role']->shortname;
-            $contact->email = $user->maildisplay == 0 ? null : $user->email;
-            $contact->subject = rawurlencode($course->fullname);
-
-            // Can the current user edit this contact profile?
-            if ($USER->id === $user->id) {
-                $caneditprofile = has_capability('moodle/user:editownprofile', context_system::instance());
-            } else {
-                $caneditprofile = has_capability('moodle/user:editprofile', $usercontext);
-            }
-            $contact->caneditprofile = $USER->editing && $caneditprofile;
-
-            // URL.
             $contacturl = new moodle_url('/user/view.php', ['id' => $user->id, 'course' => $course->id]);
             $contact->url = $contacturl;
-
-            // Description.
-            $contact->description = format_text(
-                $user->description,
-                $user->descriptionformat,
-                ['context' => \context_course::instance($course->id)]
-            );
 
             // Image / Initials.
             $userpicture = new \user_picture($user);
@@ -158,17 +136,45 @@ class contacts implements renderable, templatable {
             $userpicture->size = 50;
             $contact->picture = $output->render($userpicture);
 
-            // Edit description URL.
-            $editurl = new moodle_url(
-                '/user/edit.php',
-                [
-                    'id' => $user->id,
-                    'course' => $course->id,
-                    'returnto' => 'profile',
-                ]
+            // Role.
+            $contact->roleid = $c['role']->id;
+            $contact->role = $c['rolename'];
+            $contact->roleshortname = $c['role']->shortname;
+
+            // Description.
+            $contact->description = format_text(
+                $user->description,
+                $user->descriptionformat,
+                ['context' => \context_course::instance($course->id)]
             );
-            $editurl->set_anchor('id_description_editor_label');
-            $contact->editurl = $contact->caneditprofile ? $editurl : null;
+
+            // Add description link.
+            if (empty($contact->description) && $USER->editing) {
+                if ($USER->id === $user->id) {
+                    $caneditprofile = has_capability('moodle/user:editownprofile', context_system::instance());
+                } else {
+                    $caneditprofile = has_capability('moodle/user:editprofile', $usercontext);
+                }
+                $contact->caneditprofile = $caneditprofile;
+
+                // Edit description URL.
+                $editurl = new moodle_url(
+                    '/user/edit.php',
+                    [
+                        'id' => $user->id,
+                        'course' => $course->id,
+                        'returnto' => 'profile',
+                    ]
+                );
+                $editurl->set_anchor('id_description_editor_label');
+                $contact->editurl = $editurl;
+            }
+
+            // Email.
+            $contact->email = $user->maildisplay == 0 ? null : $user->email;
+            if ($contact->email) {
+                $contact->subject = rawurlencode($course->fullname);
+            }
 
             // Last name for a-z sorting.
             $contact->lastname = $user->lastname;

@@ -26,72 +26,82 @@
 }}
 
 {{! Contact. }}
-<div class="ucl-format-coursecontact d-flex align-items-start my-3" data-userid="{{id}}">
+<div class="ucl-format-coursecontact d-flex align-items-start ml-1" data-userid="{{id}}">
 
     {{! Image. }}
-    <div class="flex-0 ucl-format-coursecontact-picture">
+    <div class="flex-0 mr-2 ucl-format-coursecontact-picture">
         {{{picture}}}
+        
+        {{^custom}}
+        <div class="ucl-format-image-hidden rounded-circle bg-warning d-flex align-items-center justify-content-center" 
+        title="{{#str}}hiddenfromstudents, format_ucl{{/str}}">
+                <i class="fa-regular fa-solid fa-eye-slash text-dark"></i>
+        </div>
+        {{/custom}}
         
         {{! Custom contact image.}}
         {{#custom}}
-           <div class="rounded-circle mr-1 bg-dark d-flex align-items-center justify-content-center" style="width: 3rem; height: 3rem;">
-                <i class="fa-regular fa-envelope fa-lg text-white"></i>
+           <div class="userinitials">
+                <i class="fa-regular fa-envelope fa-lg"></i>
             </div>
         {{/custom}}
+
+        
     </div>
 
     {{! Details. }}
     <div class="ml-2">
-        <span class="badge badge-warning badge-pill {{#show}} d-none {{/show}}" title="{{#str}}hiddenfromstudents, format_ucl{{/str}}">
-            <i class="fa-solid fa-eye-slash mr-1"></i>
-            <span class="sr-only">{{#str}} hiddenfromstudents, format_ucl {{/str}}</span>
-            {{{role}}}
-        </span>
+        
+        {{! Name. }}
+        <div>
+            {{#url}}
+                <a href="{{{url}}}">{{{name}}}</a>
+            {{/url}}
+            {{! Custom contact has no user profile link.}}
+            {{#custom}}
+                {{{name}}}
+            {{/custom}}
+        </div>
+        
 
         {{#role}}
-        <span class="badge badge-dark badge-pill {{^show}} d-none {{/show}}">
+        <div class="small text-muted">
             {{{.}}}
-        </span>
+        </div>
         {{/role}}
 
-        {{#url}}
-        <a class="mx-1" href="{{{url}}}">{{{name}}}</a>
-        {{/url}}
-        
-        {{! Custom contact has no user profile link.}}
-        {{#custom}}
-        <span class="mx-1">{{{name}}}</span>
-        {{/custom}}
-
-        {{#email}}
-        <a href="mailto:{{{email}}}?subject={{{subject}}}" target="_blank">
-            <i class="fa-regular fa-envelope mr-1"></i>{{{email}}}
-        </a>
-        {{/email}}
-
+        {{! Description. }}
         {{#description}}
             <div class="small pt-1">{{{.}}}</div>
         {{/description}}
 
         {{^custom}}
-        {{^description}}
-            {{#caneditprofile}}
-                <div class="small pt-1">
-                    <a href="{{{editurl}}}" target="_blank">
-                    <i class="fa-solid fa-circle-plus mr-1"></i>
-                    {{#str}} adddescription, format_ucl{{/str}}
-                    <span class="sr-only">{{#str}} forcontact, format_ucl, {{{name}}}{{/str}}</span>
-                    </a>
-                </div>
-            {{/caneditprofile}}
-        {{/description}}
+        {{#caneditprofile}}
+            <div>
+                <a href="{{{editurl}}}" target="_blank" class="btn add-section bg-white my-2">
+                <i class="fa-solid fa-circle-plus mr-1"></i>{{#str}} adddescription, format_ucl{{/str}}
+                <span class="sr-only">{{#str}} forcontact, format_ucl, {{{name}}}{{/str}}</span>
+                </a>
+            </div>
+        {{/caneditprofile}}
         {{/custom}}
+
+        {{! Email. }}
+        {{#email}}
+        <div>
+            {{#str}} email{{/str}}: 
+            <a href="mailto:{{{email}}}?subject={{{subject}}}" target="_blank">
+                {{{email}}}
+            </a>
+        </div>
+        {{/email}}
 
     </div>
 
-    
+    {{! Editing. }}
     {{#isediting}}
         <div class="ml-auto">
+            
             {{! Hide/show contact. }}
             {{^custom}}
             <div class="custom-control custom-switch">
@@ -115,7 +125,7 @@
             {{! Edit custom contact. }}
             {{#custom}}
             <div>
-                <a class="btn add-section" data-toggle="collapse" href="#ucl-format-customcontact-form-{{contactid}}"
+                <a class="ml-2 btn text-nowrap add-section" data-toggle="collapse" href="#ucl-format-customcontact-form-{{contactid}}"
                     role="button" aria-expanded="false"
                     aria-controls="ucl-format-customcontact-form-{{contactid}}">
                     <i class="fa-regular fa-circle-user mr-1"></i>
@@ -126,11 +136,11 @@
             {{/custom}}
         </div>
     {{/isediting}}
+
 </div>
 
 {{#isediting}}
     {{#custom}}
         {{> format_ucl/widgets/contacts/customcontact_form }}
-        <hr>
     {{/custom}}
 {{/isediting}}

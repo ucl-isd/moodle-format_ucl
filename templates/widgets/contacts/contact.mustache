@@ -78,8 +78,9 @@
         {{^custom}}
         {{#caneditprofile}}
             <div>
-                <a href="{{{editurl}}}" target="_blank" class="btn add-section bg-white my-2">
-                <i class="fa-solid fa-circle-plus mr-1"></i>{{#str}} adddescription, format_ucl{{/str}}
+                <a href="{{{editurl}}}" target="_blank" class="btn btn-add-content my-2">
+                <i class="fa-solid fa-circle-plus mr-2"></i>
+                {{#str}} adddescription, format_ucl{{/str}}
                 <span class="sr-only">{{#str}} forcontact, format_ucl, {{{name}}}{{/str}}</span>
                 </a>
             </div>
@@ -125,10 +126,10 @@
             {{! Edit custom contact. }}
             {{#custom}}
             <div>
-                <a class="ml-2 btn text-nowrap add-section" data-toggle="collapse" href="#ucl-format-customcontact-form-{{contactid}}"
+                <a class="ml-2 btn text-nowrap btn-add-content" data-toggle="collapse" href="#ucl-format-customcontact-form-{{contactid}}"
                     role="button" aria-expanded="false"
                     aria-controls="ucl-format-customcontact-form-{{contactid}}">
-                    <i class="fa-regular fa-circle-user mr-1"></i>
+                    <i class="fa-regular fa-circle-user mr-2"></i>
                     {{#str}} editcustomcontact, format_ucl {{/str}}
                     <span class="sr-only">{{{name}}}</span>
                 </a>

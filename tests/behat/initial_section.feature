@@ -116,7 +116,6 @@ Feature: Initial section has custom layout
     And I press "Save"
     Then I should see "Changes saved"
     And I switch editing mode off
-    And I click on "Course contacts" "link"
     And I should see "Ring Master"
     And I should see "Jack Tucker"
     And I should see "zzucker@example.com"
@@ -139,7 +138,6 @@ Feature: Initial section has custom layout
       | Email | jwoolley@example.com |
     And I press "Save"
     And I switch editing mode off
-    And I click on "Course contacts" "link"
     Then I should not see "Ring Master"
     And I should see "Director"
     And I should see "Jonny Woolley"
@@ -164,4 +162,4 @@ Feature: Initial section has custom layout
     And I should not see "zzucker@example.com"
     And I should not see "Clown king"
     And I switch editing mode off
-    And "Course contacts" "link" should not exist
+    And "#format-ucl-contacts-widget" "css_element" should not exist

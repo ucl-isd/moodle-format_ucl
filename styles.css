@@ -190,7 +190,7 @@ body.format-ucl {
     /* Course contacts. */
     /* Checked. */
     .ucl-format-coursecontact:has(.contact-hide-toggle:checked) {
-       .ucl-format-image-hidden {
+        .ucl-format-image-hidden {
             display: none !important; /* stylelint-disable-line declaration-no-important */
         }
     }

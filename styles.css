@@ -228,7 +228,7 @@ body.format-ucl {
         .ucl-format-coursecontact:has(.contact-hide-toggle:not(:checked)) {
             .ucl-format-image-hidden {
                 display: flex !important; /* stylelint-disable-line declaration-no-important */
-        }
+            }
 
             .userpicture,
             .userinitials {
@@ -258,6 +258,6 @@ body.format-ucl {
             .fdescription.required {
                 display: none !important; /* stylelint-disable-line declaration-no-important */
             }
-        } 
+        }
     }
 }

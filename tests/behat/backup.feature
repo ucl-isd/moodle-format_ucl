@@ -36,7 +36,8 @@ Feature: Custom contacts are backed up and restored
       | Schema | Course name       | Course 2 |
       | Schema | Course short name | C2       |
     And I am on the "Course 2" course page
-    Then I should see "Ring Master"
+    Then "Course contacts" "text" should exist
+    And I should see "Ring Master"
     And I should see "Jack Tucker"
     And I should see "zzucker@example.com"
     And I should see "Clown king"

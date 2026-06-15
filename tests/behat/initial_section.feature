@@ -139,7 +139,8 @@ Feature: Initial section has custom layout
       | Email | jwoolley@example.com |
     And I press "Save"
     And I switch editing mode off
-    Then I should not see "Ring Master"
+    Then "Course contacts" "text" should exist
+    And I should not see "Ring Master"
     And I should see "Director"
     And I should see "Jonny Woolley"
     And I should see "jwoolley@example.com"
@@ -163,4 +164,5 @@ Feature: Initial section has custom layout
     And I should not see "zzucker@example.com"
     And I should not see "Clown king"
     And I switch editing mode off
+    And "Course contacts" "text" should not exist
     And "#format-ucl-contacts-widget" "css_element" should not exist

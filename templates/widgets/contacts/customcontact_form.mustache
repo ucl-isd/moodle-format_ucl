@@ -19,9 +19,11 @@
     Data attributes required for JS:
     * none
     Context variables required for this template:
-    * attributes Array of name / value pairs.
+    * contactid Optional custom contact ID suffix used to make form container IDs unique.
+    * customcontactform Form render data object containing HTML.
     Example context (json):
     {
+        "contactid": 10,
         "customcontactform": {
             "formhtml": "<form>...</form>"
         }

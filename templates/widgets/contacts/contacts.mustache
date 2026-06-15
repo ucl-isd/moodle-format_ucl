@@ -26,20 +26,47 @@
     * isediting Whether the user can edit course roles (to show edit button).
     Example context (json):
     {
+        "showcontacts": true,
         "hascontacts": true,
+        "isediting": true,
+        "courseid": 42,
+        "config": {
+            "wwwroot": "https://moodle.example.ac.uk"
+        },
         "contacts": [
             {
                 "id": 1,
                 "name": "John Doe",
-                "showemail": true,
+                "show": true,
                 "email": "john.doe@example.com",
                 "subject": "Course 1",
                 "role": "Teacher",
                 "picture": "<img src='path/to/picture.jpg' alt='John Doe'>",
                 "url": "/user/view.php?id=1",
-                "description": "Course teacher"
+                "description": "Course lead and primary contact.",
+                "caneditprofile": true,
+                "editurl": "/user/edit.php?id=1&course=42"
             }
-        ]
+        ],
+        "customcontacts": [
+            {
+                "id": 10,
+                "contactid": 10,
+                "name": "Course Administrator",
+                "custom": true,
+                "show": true,
+                "email": "course.admin@example.com",
+                "subject": "Course 1",
+                "role": "Support contact",
+                "description": "Contact for timetable and assessment queries.",
+                "customcontactform": {
+                    "formhtml": "<form>...</form>"
+                }
+            }
+        ],
+        "customcontactform": {
+            "formhtml": "<form>...</form>"
+        }
     }
 }}
 {{#showcontacts}}

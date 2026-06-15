@@ -16,7 +16,7 @@ Feature: Adding a new section lands on the editing page
   Scenario: Add and edit section
     When I log in as "admin"
     And I am on "Course 1" course homepage with editing mode on
-    And I click on ".behat-btn-add-content" "css_element"
+    And I click on ".behat-add-section" "css_element"
     Then I should see "Edit section settings"
     And I set the field "Section name" to "Welcome to Stamptown"
     And I press "Save changes"

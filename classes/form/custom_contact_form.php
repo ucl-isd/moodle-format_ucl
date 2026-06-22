@@ -57,14 +57,6 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
 
         $mform->addElement('html', '<div class="d-flex align-items-center w-100">');
 
-        // Role.
-        $attributes = [
-            'placeholder' => get_string('role:placeholder', 'format_ucl'),
-            'class' => 'm-3 flex-fill',
-        ];
-        $mform->addElement('text', 'role', get_string('role', 'format_ucl'), $attributes);
-        $mform->setType('role', PARAM_TEXT);
-
         // Name.
         $attributes = [
             'placeholder' => get_string('name:placeholder', 'format_ucl'),
@@ -73,6 +65,14 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
         ];
         $mform->addElement('text', 'name', get_string('name', 'format_ucl'), $attributes);
         $mform->setType('name', PARAM_TEXT);
+
+         // Role.
+        $attributes = [
+            'placeholder' => get_string('role:placeholder', 'format_ucl'),
+            'class' => 'flex-fill',
+        ];
+        $mform->addElement('text', 'role', get_string('role', 'format_ucl'), $attributes);
+        $mform->setType('role', PARAM_TEXT);
 
         // Email.
         $attributes = [

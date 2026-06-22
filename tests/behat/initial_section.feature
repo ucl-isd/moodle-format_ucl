@@ -53,7 +53,7 @@ Feature: Initial section has custom layout
   Scenario: Course contacts do not appear in initial section when editing is off
     When I log in as "teacher1"
     And I am on "Course 1" course homepage
-    Then "Contacts" "link" should not exist in the "#ucl-course-content" "css_element"
+    Then "Contacts" "text" should not exist in the "#ucl-course-content" "css_element"
     And "Teacher 1" "link" should not exist in the "#ucl-course-content" "css_element"
     And "Teacher 2" "link" should not exist
     And "Teacher 5" "link" should not exist
@@ -116,7 +116,7 @@ Feature: Initial section has custom layout
     And I press "Save"
     Then I should see "Changes saved"
     And I switch editing mode off
-    And I click on "Course contacts" "link"
+    And "Course contacts" "text" should exist
     And I should see "Ring Master"
     And I should see "Jack Tucker"
     And I should see "zzucker@example.com"
@@ -139,8 +139,8 @@ Feature: Initial section has custom layout
       | Email | jwoolley@example.com |
     And I press "Save"
     And I switch editing mode off
-    And I click on "Course contacts" "link"
-    Then I should not see "Ring Master"
+    Then "Course contacts" "text" should exist
+    And I should not see "Ring Master"
     And I should see "Director"
     And I should see "Jonny Woolley"
     And I should see "jwoolley@example.com"
@@ -164,4 +164,5 @@ Feature: Initial section has custom layout
     And I should not see "zzucker@example.com"
     And I should not see "Clown king"
     And I switch editing mode off
-    And "Course contacts" "link" should not exist
+    And "Course contacts" "text" should not exist
+    And "#format-ucl-contacts-widget" "css_element" should not exist

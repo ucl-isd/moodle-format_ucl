@@ -47,29 +47,31 @@
         {{! Mobile toc. }}
         {{> format_ucl/widgets/toc/mobiletoc }}
 
-        <div class="d-flex align-items-center">
-            {{#sectionname}}
-            <h2 data-region="ucl-section-name" class="ucl-section-name text-break">
-                {{{.}}}
-            </h2>
-            {{/sectionname}}
+        <div class="pl-lg-3">
+            <div class="d-flex align-items-center">
+                {{#sectionname}}
+                <h2 data-region="ucl-section-name" class="ucl-section-name text-break">
+                    {{{.}}}
+                </h2>
+                {{/sectionname}}
 
-            {{#sectionactions}}
-                <div class="ml-auto" data-for="section-controlmenu" data-id="{{id}}">
-                    {{{sectionactions}}}
-                </div>
-            {{/sectionactions}}
+                {{#sectionactions}}
+                    <div class="ml-auto" data-for="section-controlmenu" data-id="{{id}}">
+                        {{{sectionactions}}}
+                    </div>
+                {{/sectionactions}}
 
-            {{#singleedit}}
-                <div class="ml-auto">
-                    <a class="btn btn-outline-secondary" href="{{{editurl}}}">
-                        Edit
-                    </a>
-                </div>
-            {{/singleedit}}
+                {{#singleedit}}
+                    <div class="ml-auto">
+                        <a class="btn btn-outline-secondary" href="{{{editurl}}}">
+                            Edit
+                        </a>
+                    </div>
+                {{/singleedit}}
+            </div>
+
+            {{> format_ucl/local/content }}
         </div>
-
-        {{> format_ucl/local/content }}
     </div>
 </div>
 

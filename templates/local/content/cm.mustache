@@ -59,12 +59,12 @@
 }}
 {{< core_courseformat/local/content/cm}}
     {{$content}}
-        <a role="button" href="{{{labelurl}}}" class="btn add-section bg-white mr-3">
+        <a role="button" href="{{{labelurl}}}" class="btn btn-add-content mr-3">
             <i class="fa-solid fa-circle-plus mr-2"></i>
             {{#str}}addtextmedia, format_ucl{{/str}}
         </a>
         <button
-                class="btn bg-white add-section section-modchooser section-modchooser-link"
+                class="btn btn-add-content section-modchooser section-modchooser-link"
                 data-action="open-chooser"
                 data-sectionnum="{{sectionnum}}"
                 data-beforemod="{{cmid}}"

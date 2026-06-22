@@ -88,8 +88,9 @@
     }
 }}
 <div id="section-{{num}}"
-    class="section course-section main {{#onlysummary}} section-summary {{/onlysummary}} clearfix
-            {{#ishidden}} hidden {{/ishidden}} {{#iscurrent}}{{^displayonesection}} current {{/displayonesection}}{{/iscurrent}}
+    class="section course-section main clearfix
+            {{#ishidden}} hidden {{/ishidden}} 
+            {{#iscurrent}} current {{/iscurrent}}
             {{#isstealth}} orphaned {{/isstealth}}"
     data-sectionid="{{num}}"
     data-sectionreturnnum="{{sectionreturnnum}}"

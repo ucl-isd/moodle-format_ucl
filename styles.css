@@ -1,9 +1,28 @@
 /* UCL course format. */
 body.format-ucl {
-    /* Utility from theme. */
+    /* Utility class from theme. */
     .bg-cover {
         background-size: cover;
         background-position: center;
+    }
+
+    /* Add content button. */
+    /* TODO - remove in Moodle 5 upgrade where this is in core. */
+    .btn-add-content {
+        border-radius: 1rem;
+        border: 2px dashed color-mix(in srgb, var(--primary) 20%, white);
+        color: var(--primary);
+        background-color: white;
+        font-size: .9rem;
+        font-weight: bold;
+        transition: all 1s;
+        &:hover,
+        &:focus {
+            background-color: color-mix(in srgb, var(--primary) 6%, white);
+            border-style: solid;
+            border-color: var(--primary);
+            color: color-mix(in srgb, var(--primary) 63%, black);
+        }
     }
 
     /* Page width. */
@@ -188,66 +207,57 @@ body.format-ucl {
     }
 
     /* Course contacts. */
-    /* Checked. */
-    .ucl-format-coursecontact:has(.contact-hide-toggle:checked) {
-        .badge-warning {
+    #format-ucl-contacts-widget {
+        /* User icon. */
+        .userpicture,
+        .userinitials,
+        .ucl-format-image-hidden {
+            border: none;
+            font-weight: bold;
+            width: 3rem;
+            height: 3rem;
+            margin: 0;
+        }
+
+        /* Hidden contact icon. */
+        .ucl-format-image-hidden {
             display: none !important; /* stylelint-disable-line declaration-no-important */
         }
 
-        .badge-dark {
-            display: inline-block !important; /* stylelint-disable-line declaration-no-important */
-        }
-    }
+        /* Contact is hidden - show hidden icon, hide userpic. */
+        .ucl-format-coursecontact:has(.contact-hide-toggle:not(:checked)) {
+            .ucl-format-image-hidden {
+                display: flex !important; /* stylelint-disable-line declaration-no-important */
+            }
 
-    /* Not checked. */
-    .ucl-format-coursecontact:has(.contact-hide-toggle:not(:checked)) {
-        .badge-warning {
-            display: inline-block !important; /* stylelint-disable-line declaration-no-important */
-        }
-
-        .badge-dark {
-            display: none !important; /* stylelint-disable-line declaration-no-important */
+            .userpicture,
+            .userinitials {
+                display: none !important; /* stylelint-disable-line declaration-no-important */
+            }
         }
 
-        .ucl-format-coursecontact-picture {
-            opacity: .5;
-        }
-    }
+        /* Custom contact form. */
+        div[id^="ucl-format-customcontact-form"] {
+            .fitem,
+            .col-form-label,
+            .felement {
+                display: block;
+                width: 100%;
+                max-width: 100%;
+            }
+            /* No label elements - e.g. buttons. */
+            .femptylabel {
+                width: auto;
+            }
+            /* SHAME - remove padding on submit button. */
+            #fitem_id_submitbutton {
+                padding-right: 0;
+            }
 
-}
-
-/* Course contacts. */
-#format-ucl-contacts-widget {
-    /* Chevron transition. */
-    .fa-solid {
-        transition: transform 0.5s ease;
-    }
-
-    a[aria-expanded="true"] .fa-circle-arrow-down {
-        transform: rotate(-180deg);
-    }
-
-    /* Custom contact form. */
-    div[id^="ucl-format-customcontact-form"] {
-        .fitem,
-        .col-form-label,
-        .felement {
-            display: block;
-            width: 100%;
-            max-width: 100%;
-        }
-        /* No label elements - e.g. buttons. */
-        .femptylabel {
-            width: auto;
-        }
-        /* SHAME - remove padding on submit button. */
-        #fitem_id_submitbutton {
-            padding-right: 0;
-        }
-
-        .form-label-addon,
-        .fdescription.required {
-            display: none !important; /* stylelint-disable-line declaration-no-important */
+            .form-label-addon,
+            .fdescription.required {
+                display: none !important; /* stylelint-disable-line declaration-no-important */
+            }
         }
     }
 }

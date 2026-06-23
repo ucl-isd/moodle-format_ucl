@@ -31,3 +31,7 @@ $plugin->release = '0.1.0';
 $plugin->version = 2026052000;
 $plugin->requires = 2022041900;
 $plugin->maturity = MATURITY_BETA;
+// NOTE - Temp dependency till we move assessment code to plugin.
+$plugin->dependencies = [
+    'local_assess_type' => 2026051900,
+];

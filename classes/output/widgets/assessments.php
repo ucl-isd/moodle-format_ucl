@@ -16,8 +16,8 @@
 
 namespace format_ucl\output\widgets;
 
-use completion_info;
-use context_course;
+defined('MOODLE_INTERNAL') || die();
+
 use core\output\renderable;
 use core\output\renderer_base;
 use core\output\templatable;
@@ -25,9 +25,6 @@ use format_ucl;
 use local_assess_type\assess_type;
 use moodle_url;
 use stdClass;
-
-require_once($CFG->libdir . '/gradelib.php');
-require_once($CFG->dirroot . '/grade/querylib.php');
 
 /**
  * Assessment data for a course.
@@ -38,14 +35,16 @@ require_once($CFG->dirroot . '/grade/querylib.php');
  * @author     Stuart Lamour <s.lamour@ucl.ac.uk>
  */
 class assessments implements renderable, templatable {
+    /** @var format_ucl Course format instance. */
+    protected format_ucl $format;
+
     /**
      * Constructor.
      *
      * @param format_ucl $format The course format instance.
      */
-    public function __construct(
-        protected format_ucl $format,
-    ) {
+    public function __construct(format_ucl $format) {
+        $this->format = $format;
     }
 
     /**
@@ -57,7 +56,7 @@ class assessments implements renderable, templatable {
     public function export_for_template(renderer_base $output) {
         global $USER, $COURSE;
 
-        if (!$course = $this->format->get_course()) {
+        if (!$this->format->get_course()) {
             return [];
         }
 
@@ -77,15 +76,9 @@ class assessments implements renderable, templatable {
             // Expand Turnitin assignments into individual parts.
             $summative = $this->expand_turnitin_parts($summative, $mods);
 
-            $context = context_course::instance($COURSE->id);
-            $students = self::get_students($context);
             $template = new stdClass();
+            $template->hasassessments = false;
             $template->assessments = [];
-
-            // Staff of learner display for template.
-            $canedit = has_capability('moodle/course:update', $context);
-            $template->staff = $canedit;
-            $template->learner = !$canedit;
 
             foreach ($summative as $s) {
                 // We use isset again just in case turnitin added something weird.
@@ -112,59 +105,22 @@ class assessments implements renderable, templatable {
                     if ($duedate) {
                         $assess = new stdClass();
                         $assess->duedate = $duedate;
-                        $modname = 'mod' . $mod->modname;
-                        $assess->$modname = true;
                         $assess->url = new moodle_url('/mod/' . $mod->modname . '/view.php', ['id' => $mod->id]);
                         $assess->name = $s->displayname ?? $mod->name;
                         $assess->icon = $mod->get_icon_url()->out(false);
 
                         $sectioninfo = $mod->get_section_info();
                         $assess->section = get_section_name($COURSE, $sectioninfo);
-
-                        if ($canedit) {
-                            $isgroupmode = (bool) groups_get_activity_groupmode($mod);
-                            $readonly = $context->is_locked();
-                            if ($isgroupmode || $readonly) {
-                                $assess->groupmode = $isgroupmode;
-                                $assess->readonly = $readonly;
-                            } else {
-                                $markingdata = $handler->get_staff_marking();
-                                $handler->set_participants(users: $students);
-                                $assess->hasstats = true;
-                                $assess->expectedcount = $handler->get_participant_count();
-                                $assess->submittedcount = $markingdata->submitted ?? 0;
-                                $rawpercent = ($assess->expectedcount > 0) ? ($assess->submittedcount / $assess->expectedcount) * 100 : 0;
-                                $assess->percent = floatval(round($rawpercent, 2));
-                                $assess->requiremarking = $markingdata->requiremarking ?? 0;
-                            }
-                        }
-
-                        if (!$canedit) {
-                            $markdata = $handler->get_learner_mark();
-                            $assess->submitted = $markdata->submitted ?? false;
-
-                            if (empty($markdata->mark) && !$assess->submitted) {
-                                if (time() > $assess->duedate) {
-                                    $assess->overdue = true;
-                                }
-                            }
-
-                            if ($markdata->mark !== null) {
-                                $assess->hasmark = true;
-                                if (is_numeric($markdata->mark)) {
-                                    $assess->mark = floatval(round($markdata->mark, 2));
-                                    if (!empty($markdata->max)) {
-                                        $assess->max = floatval(round($markdata->max, 2));
-                                    }
-                                } else {
-                                    $assess->mark = $markdata->mark;
-                                }
-                            }
-                        }
                         $template->assessments[] = $assess;
                     }
                 }
             }
+
+            if (empty($template->assessments)) {
+                return [];
+            }
+
+            $template->hasassessments = true;
 
             usort($template->assessments, function ($a, $b) {
                 return $a->duedate <=> $b->duedate;
@@ -178,22 +134,6 @@ class assessments implements renderable, templatable {
             return $template;
         }
         return [];
-    }
-
-    /**
-     * Get the list of students for the course.
-     *
-     * @param context $context
-     * @return array List of user objects (IDs only).
-     */
-    protected static function get_students(\context $context): array {
-        // We fetch the IDs for anyone with the student-level 'submit' capability.
-        return get_enrolled_users(
-            context: $context,
-            withcapability: 'mod/assign:submit',
-            userfields: 'u.id',
-            onlyactive: true
-        );
     }
 
     /**

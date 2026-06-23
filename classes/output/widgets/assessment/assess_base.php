@@ -30,9 +30,6 @@ abstract class assess_base {
     /** @var \cm_info The course module info object */
     protected $cm;
 
-    /** @var array Pre - loaded list of student IDs for the course . */
-    protected array $students = [];
-
     /**
      * Constructor
      * @param \cm_info $cm
@@ -66,78 +63,6 @@ abstract class assess_base {
         }
 
         return 0;
-    }
-
-    /**
-     * Set the student list used for marker stats.
-     * @param array $users
-     */
-    public function set_participants(array $users): void {
-        $this->students = $users;
-    }
-
-    /**
-     * Get the number of expected participants.
-     * @return int
-     */
-    public function get_participant_count(): int {
-        if (empty($this->students)) {
-            return 0;
-        }
-
-        // Filter the students based on activity restrictions or groups.
-        $info = new \core_availability\info_module(cm: $this->cm);
-        $filtered = $info->filter_user_list(users: $this->students);
-
-        return count($filtered);
-    }
-
-    /**
-     * Get marking data for staff view.
-     * @return \stdClass Object with: submitted, marked, requiremarking, hasstats (bool).
-     */
-    abstract public function get_staff_marking(): \stdClass;
-
-    /**
-     * Global helper to fetch a mark from the Gradebook.
-     * * @return \stdClass Object with mark (string|null) and submitted (bool)
-     */
-    public function get_learner_mark(): \stdClass {
-        global $USER;
-
-        $result = new \stdClass();
-        $result->mark = null;
-        $result->max = null;
-        $result->submitted = false;
-
-        $gradeitems = grade_get_grade_items_for_activity($this->cm, true);
-        if (empty($gradeitems)) {
-            return $result;
-        }
-
-        $gradeitem = reset($gradeitems);
-
-        // Store the max grade, cleaned up.
-        if (isset($gradeitem->grademax)) {
-            $result->max = floatval(round($gradeitem->grademax, 2));
-        }
-
-        $grade = \grade_grade::fetch([
-            'itemid' => $gradeitem->id,
-            'userid' => $USER->id,
-        ]);
-
-        if ($grade) {
-            if (!is_null($grade->finalgrade) && !$grade->is_hidden()) {
-                $result->mark = floatval(round($grade->finalgrade, 2));
-                return $result;
-            }
-            if (!is_null($grade->rawgrade)) {
-                $result->submitted = true;
-            }
-        }
-
-        return $result;
     }
 
     /**

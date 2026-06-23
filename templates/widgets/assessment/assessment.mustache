@@ -1,83 +1,62 @@
- <div class="col-md-3 mb-1">
+{{!
+    This file is part of Moodle - https://moodle.org/
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template format_ucl/widgets/assessment/assessment
+
+    Display a single assessment row with due date and activity link.
+
+    Classes required for JS:
+    * none
+    Data attributes required for JS:
+    * none
+    Context variables required for this template:
+    * duedatedate Formatted due date.
+    * duedatetime Formatted due time.
+    * icon Activity icon URL.
+    * url Activity URL.
+    * name Activity display name.
+    * section Section display name.
+    Example context (json):
+    {
+        "duedatedate": "24th Jun 2026",
+        "duedatetime": "10:00am",
+        "icon": "https://moodle.example/mod/assign/icon",
+        "url": "https://moodle.example/mod/assign/view.php?id=123",
+        "name": "Essay 1",
+        "section": "Week 4"
+    }
+}}
+<div class="col-4 mb-1">
     <div class="d-flex align-items-start pl-2">
-        <div class="status-icon 
-        {{#hasmark}} status-success {{/hasmark}}
-        {{#submitted}} status-success {{/submitted}}
-        {{#overdue}} status-overdue {{/overdue}}
-        {{#requiremarking}} status-requiremarking {{/requiremarking}}
-        rounded-circle mr-2 d-flex align-items-center justify-content-center">
+        <div class="status-icon rounded-circle mr-2 d-flex align-items-center justify-content-center">
             <i class="fa-regular fa-calendar"></i>
         </div>
         <div>
-            <span class="text-muted d-md-none">Due: </span>
+            <span class="text-muted d-md-none">{{#str}} due, format_ucl {{/str}}: </span>
             <strong>{{duedatedate}}</strong>
             <div class="small text-muted">{{duedatetime}}</div>
         </div>
     </div>
 </div>
 
-<div class="col-12 col-md-9">
-    <div class="row">
-        {{! Activity.}}
-        <div class="col-6">
-            <div class="d-flex align-items-start">
-                <img src="{{icon}}" alt="" class="flex-shrink-0 mr-2" style="width: 2rem; height: 2rem;">
-                <div>
-                    <a href="{{{url}}}" class="line-clamp-2">{{{name}}}</a>
-                    <small class="line-clamp-1 text-muted">{{{section}}}</small>
-                </div>
-            </div>
-        </div>
-
-       {{! Activity metadata.}}
-        <div class="col-6 pl-3">
-            
-            {{! Learner data. }}
-            {{#learner}}
-                <div class="text-right">
-                    {{#hasmark}}
-                        <span class="text-muted d-md-none">Mark: </span>
-                        <span class="h5"><a href="{{{url}}}">{{mark}}</a></span>
-                        <small>{{#max}} of {{.}}{{/max}}</small>
-                    {{/hasmark}}
-                    
-                    {{! Overdue.}}
-                    {{#overdue}}
-                        <div class="badge badge-danger badge-pill mt-1">Overdue - not submitted</div>
-                    {{/overdue}}
-                    
-                    {{! Submitted.}}
-                    {{#submitted}}
-                        <div class="badge badge-success badge-pill">Submitted</div>
-                    {{/submitted}}
-
-                </div>
-            {{/learner}}
-            
-            {{! Staff data. }}
-            {{#staff}}
-                {{#groupmode}}
-                    <div class="small">Group mode, visit the assessment for submissions.</div>
-                {{/groupmode}}
-                {{#readonly}}
-                    <div class="small text-right">This course is read only.</div>
-                {{/readonly}}
-
-                {{#hasstats}}
-                    {{> format_ucl/widgets/assessment/progress }}
-                    {{! Coursework specific notice.}}
-                    {{#modcoursework}}
-                        <div class="small py-2">Note: Coursework marking depends on your role.</div>
-                    {{/modcoursework}}
-                    {{#requiremarking}}
-                        <div class="text-right">
-                            <a href="{{{url}}}" class="btn btn-primary btn-sm my-2">{{{.}}} to mark</a>
-                        </div>
-                    {{/requiremarking}}
-                    
-                    
-                {{/hasstats}}
-            {{/staff}}
+<div class="col-8">
+    {{! Activity.}}
+    <div class="d-flex align-items-start">
+        <img src="{{icon}}" alt="" class="flex-shrink-0 mr-2" style="width: 2rem; height: 2rem;">
+        <div>
+            <a href="{{{url}}}" class="line-clamp-2">{{{name}}}</a>
+            <small class="line-clamp-1 text-muted">{{{section}}}</small>
         </div>
     </div>
 </div>

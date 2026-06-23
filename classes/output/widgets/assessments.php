@@ -58,6 +58,11 @@ class assessments implements renderable, templatable {
             return [];
         }
 
+        // Exit early if assess_type plugin is not installed.
+        if (!class_exists(assess_type::class)) {
+            return [];
+        }
+
         if ($summative = assess_type::get_assess_type_records_by_courseid($COURSE->id, "1")) {
             $modinfo = get_fast_modinfo($COURSE->id, $USER->id);
             $mods = $modinfo->get_cms(); // This is our safety map.

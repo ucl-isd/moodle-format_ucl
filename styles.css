@@ -70,7 +70,7 @@ body.format-ucl {
     /* Toc. */
     /* Sticky top and toc fab when navbar is fixed top - e.g. boost theme. */
     &:has(.navbar.fixed-top) {
-       .sticky-top {
+        .sticky-top {
             top: 5rem !important; /* stylelint-disable-line declaration-no-important */
         }
         #ucl-format-mobile-toc-fab {

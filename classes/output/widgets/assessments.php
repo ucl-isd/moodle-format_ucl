@@ -16,8 +16,6 @@
 
 namespace format_ucl\output\widgets;
 
-defined('MOODLE_INTERNAL') || die();
-
 use core\output\renderable;
 use core\output\renderer_base;
 use core\output\templatable;

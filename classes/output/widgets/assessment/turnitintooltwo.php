@@ -16,8 +16,6 @@
 
 namespace format_ucl\output\widgets\assessment;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Turnitin assignment handler for UCL Course Format.
  *

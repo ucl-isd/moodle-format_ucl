@@ -20,6 +20,7 @@ use core\output\renderable;
 use core\output\renderer_base;
 use core\output\templatable;
 use format_ucl;
+use format_ucl\output\widgets\assessment\turnitintooltwo;
 use local_assess_type\assess_type;
 use moodle_url;
 use stdClass;
@@ -68,7 +69,6 @@ class assessments implements renderable, templatable {
                 return [];
             }
 
-            // Expand Turnitin assignments into individual parts.
             $summatives = $this->expand_turnitin_parts($summatives, $mods);
 
             $template = new stdClass();
@@ -164,66 +164,17 @@ class assessments implements renderable, templatable {
      * @return array The expanded list of records.
      */
     protected function expand_turnitin_parts(array $summatives, array $mods): array {
-        global $DB;
-
-        // Get Turnitin instance ids.
-        $turnitinids = [];
-        foreach ($summatives as $summative) {
-            $mod = $mods[$summative->cmid];
-            if ($mod->modname === 'turnitintooltwo') {
-                $turnitinids[] = $mod->instance;
-            }
-        }
-
-        if (empty($turnitinids)) {
-            return $summatives;
-        }
-
-        $allparts = [];
-        [$insql, $params] = $DB->get_in_or_equal($turnitinids);
-        $records = $DB->get_records_select(
-            'turnitintooltwo_parts',
-            "turnitintooltwoid $insql",
-            $params,
-            'id ASC'
-        );
-        foreach ($records as $part) {
-            $allparts[$part->turnitintooltwoid][] = $part;
-        }
-
         $expanded = [];
+
         foreach ($summatives as $summative) {
             $mod = $mods[$summative->cmid];
-
             if ($mod->modname !== 'turnitintooltwo') {
                 $expanded[] = $summative;
                 continue;
             }
 
-            $parts = $allparts[$mod->instance] ?? [];
-
-            // If no parts to expand, just keep the original and move on.
-            if (empty($parts)) {
-                $expanded[] = $summative;
-                continue;
-            }
-
-            // Expand multi-part Turnitin things.
-            $partcount = count($parts);
-            $partlabel = get_string('part', 'mod_turnitintooltwo');
-            foreach ($parts as $index => $part) {
-                $newpart = clone $summative;
-                $partno = $index + 1;
-                $partname = $part->partname ?: $partlabel . " $partno";
-
-                $newpart->turnitinpartno = $partno;
-                $newpart->partdtdue = (int) $part->dtdue;
-                $newpart->displayname = ($partcount > 1)
-                    ? ($mod->name . ' ' . $partname)
-                    : $mod->name;
-
-                $expanded[] = $newpart;
-            }
+            $turnitin = new turnitintooltwo($mod);
+            $expanded = array_merge($expanded, $turnitin->expand_parts($summative));
         }
 
         return $expanded;

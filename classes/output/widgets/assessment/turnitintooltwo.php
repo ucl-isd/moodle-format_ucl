@@ -71,4 +71,35 @@ class turnitintooltwo extends assess_base {
 
         return (int) ($parts[$index]->dtdue ?? 0);
     }
+
+    /**
+     * Expand a Turnitin parts for one record per part.
+     *
+     * @param \stdClass $summative The source summative record.
+     * @return array
+     */
+    public function expand_parts(\stdClass $summative): array {
+        $parts = array_values($this->parts);
+
+        if (empty($parts)) {
+            return [$summative];
+        }
+
+        $expanded = [];
+
+        foreach ($parts as $index => $part) {
+            $newpart = clone $summative;
+            $partno = $index + 1;
+
+            $newpart->turnitinpartno = $partno;
+            $newpart->partdtdue = (int) $part->dtdue;
+            $newpart->displayname = ($part->partname === '')
+                ? $this->cm->name
+                : $this->cm->name . ' - ' . $part->partname;
+
+            $expanded[] = $newpart;
+        }
+
+        return $expanded;
+    }
 }

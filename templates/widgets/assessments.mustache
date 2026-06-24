@@ -39,7 +39,7 @@
     }
 }}
 {{#hasassessments}}
-<div class="py-3">
+<div id="format-ucl-assessments-widget" class="py-3 behat-ucl-assessments-widget">
     <hr class="gr">
     <h3 class="pt-3">
         {{#str}} summativeassessments, format_ucl {{/str}}
@@ -47,7 +47,7 @@
     <p>{{#str}} summativeassessments:desc, format_ucl {{/str}}</p>
 
     {{#assessments}}
-        <div class="row pt-1">
+        <div class="row pt-1 behat-ucl-assessment-row">
             {{> format_ucl/widgets/assessment/assessment }}
         </div>
         <hr>

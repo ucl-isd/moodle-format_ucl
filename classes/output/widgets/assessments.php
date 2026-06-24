@@ -120,14 +120,7 @@ class assessments implements renderable, templatable {
             return null;
         }
 
-        if ($mod->modname === 'turnitintooltwo' && !empty($summative->turnitinpartno)) {
-            // Turnitin specific handler.
-            $handler = new \format_ucl\output\widgets\assessment\turnitintooltwo($mod, $summative->turnitinpartno);
-        } else {
-            $handler = \format_ucl\output\widgets\assessment\assess_base::instance($mod);
-        }
-
-        $duedate = $handler->get_activity_duedate();
+        $duedate = $this->get_due_date($summative, $mod);
         if (!$duedate) {
             return null;
         }
@@ -142,6 +135,25 @@ class assessments implements renderable, templatable {
         $assess->section = get_section_name($COURSE, $mod->get_section_info());
 
         return $assess;
+    }
+
+    /**
+     * Get the due date for a summative assessment.
+     * SHAME - only needed, because of turnitin parts.
+     *
+     * For Turnitin parts we use the due date from expand_turnitin_parts.
+     * Everything else uses the activity dates API.
+     *
+     * @param stdClass $summative The expanded assessment record.
+     * @param \cm_info $mod The course module.
+     * @return int Unix timestamp, or 0 if not found.
+     */
+    protected function get_due_date(stdClass $summative, \cm_info $mod): int {
+        if ($mod->modname === 'turnitintooltwo' && !empty($summative->partdtdue)) {
+            return (int) $summative->partdtdue;
+        }
+
+        return \format_ucl\output\widgets\assessment\assess_base::instance($mod)->get_activity_duedate();
     }
 
     /**

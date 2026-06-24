@@ -25,15 +25,14 @@ namespace format_ucl\output\widgets\assessment;
  * @author     Stuart Lamour <s.lamour@ucl.ac.uk>
  */
 abstract class assess_base {
-    /** @var \cm_info The course module info object */
-    protected $cm;
-
     /**
      * Constructor
      * @param \cm_info $cm
      */
-    public function __construct(\cm_info $cm) {
-        $this->cm = $cm;
+    public function __construct(
+        /** @var \cm_info The course module info object */
+        protected \cm_info $cm,
+    ) {
     }
 
 

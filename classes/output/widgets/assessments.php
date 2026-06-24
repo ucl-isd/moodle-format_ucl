@@ -33,16 +33,15 @@ use stdClass;
  * @author     Stuart Lamour <s.lamour@ucl.ac.uk>
  */
 class assessments implements renderable, templatable {
-    /** @var format_ucl Course format instance. */
-    protected format_ucl $format;
-
     /**
      * Constructor.
      *
      * @param format_ucl $format The course format instance.
      */
-    public function __construct(format_ucl $format) {
-        $this->format = $format;
+    public function __construct(
+        /** @var format_ucl Course format instance. */
+        protected format_ucl $format,
+    ) {
     }
 
     /**

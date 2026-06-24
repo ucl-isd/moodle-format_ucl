@@ -27,20 +27,19 @@ class turnitintooltwo extends assess_base {
     /** @var array All sub-parts for this Turnitin instance. */
     protected array $parts = [];
 
-    /** @var int|null Specific part number filter. */
-    protected ?int $partno = null;
-
     /**
      * Constructor override to preload Turnitin parts.
      *
      * @param \cm_info $cm
      * @param int|null $partno
      */
-    public function __construct(\cm_info $cm, ?int $partno = null) {
+    public function __construct(
+        \cm_info $cm,
+        /** @var int|null Specific part number filter. */
+        protected ?int $partno = null,
+    ) {
         global $DB;
         parent::__construct($cm);
-
-        $this->partno = $partno;
 
         // Simple request-level memoization.
         static $partscache = [];

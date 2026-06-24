@@ -54,10 +54,6 @@ class assessments implements renderable, templatable {
     public function export_for_template(renderer_base $output) {
         global $USER, $COURSE;
 
-        if (!$this->format->get_course()) {
-            return [];
-        }
-
         // Exit early if assess_type plugin is not installed.
         if (!class_exists(assess_type::class)) {
             return [];
@@ -84,38 +80,9 @@ class assessments implements renderable, templatable {
             $template->assessments = [];
 
             foreach ($summative as $s) {
-                // We use isset again just in case turnitin added something weird.
-                if (!isset($mods[$s->cmid])) {
-                    continue;
-                }
-
-                $mod = $mods[$s->cmid];
-
-                if ($mod->uservisible && $mod->visible) {
-                    if ($mod->modname === 'turnitintooltwo' && !empty($s->turnitinpartno)) {
-                        // Turinin specific handler.
-                        $handler = new \format_ucl\output\widgets\assessment\turnitintooltwo(
-                            $mod,
-                            $s->turnitinpartno
-                        );
-                    } else {
-                        // Other mods.
-                        $handler = \format_ucl\output\widgets\assessment\assess_base::instance($mod);
-                    }
-
-                    $duedate = $handler->get_activity_duedate();
-
-                    if ($duedate) {
-                        $assess = new stdClass();
-                        $assess->duedate = $duedate;
-                        $assess->url = new moodle_url('/mod/' . $mod->modname . '/view.php', ['id' => $mod->id]);
-                        $assess->name = $s->displayname ?? $mod->name;
-                        $assess->icon = $mod->get_icon_url()->out(false);
-
-                        $sectioninfo = $mod->get_section_info();
-                        $assess->section = get_section_name($COURSE, $sectioninfo);
-                        $template->assessments[] = $assess;
-                    }
+                $assess = $this->build_assess_item($s, $mods);
+                if ($assess) {
+                    $template->assessments[] = $assess;
                 }
             }
 
@@ -137,6 +104,51 @@ class assessments implements renderable, templatable {
             return $template;
         }
         return [];
+    }
+
+    /**
+     * Build a single assessment item for the template.
+     *
+     * Returns null if the mod is not visible or has no due date.
+     *
+     * @param stdClass $s The summative assessment record.
+     * @param array $mods The course modules map.
+     * @return stdClass|null The assessment item, or null if it should be skipped.
+     */
+    private function build_assess_item(stdClass $s, array $mods): ?stdClass {
+        global $COURSE;
+
+        // We use isset just in case turnitin added something weird.
+        if (!isset($mods[$s->cmid])) {
+            return null;
+        }
+
+        $mod = $mods[$s->cmid];
+
+        if (!$mod->uservisible || !$mod->visible) {
+            return null;
+        }
+
+        if ($mod->modname === 'turnitintooltwo' && !empty($s->turnitinpartno)) {
+            // Turnitin specific handler.
+            $handler = new \format_ucl\output\widgets\assessment\turnitintooltwo($mod, $s->turnitinpartno);
+        } else {
+            $handler = \format_ucl\output\widgets\assessment\assess_base::instance($mod);
+        }
+
+        $duedate = $handler->get_activity_duedate();
+        if (!$duedate) {
+            return null;
+        }
+
+        $assess = new stdClass();
+        $assess->duedate = $duedate;
+        $assess->url = new moodle_url('/mod/' . $mod->modname . '/view.php', ['id' => $mod->id]);
+        $assess->name = $s->displayname ?? $mod->name;
+        $assess->icon = $mod->get_icon_url()->out(false);
+        $assess->section = get_section_name($COURSE, $mod->get_section_info());
+
+        return $assess;
     }
 
     /**
@@ -180,15 +192,16 @@ class assessments implements renderable, templatable {
             }
 
             // Expand multi-part Turnitin things.
+            $partcount = count($parts);
             foreach ($parts as $index => $part) {
                 $newpart = clone $s;
                 $partno = $index + 1;
 
                 $newpart->turnitinpartno = $partno;
                 $newpart->partdtdue = (int) $part->dtdue;
-                $newpart->displayname = (count($parts) > 1)
-                ? ($mod->name . ' ' . ($part->partname ?: get_string('part', 'mod_turnitintooltwo') . " $partno"))
-                : $mod->name;
+                $newpart->displayname = ($partcount > 1)
+                    ? ($mod->name . ' ' . ($part->partname ?: get_string('part', 'mod_turnitintooltwo') . " $partno"))
+                    : $mod->name;
 
                 $expanded[] = $newpart;
             }

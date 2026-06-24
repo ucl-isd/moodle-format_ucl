@@ -27,7 +27,7 @@ namespace format_ucl\hook;
  */
 final class extend_format_ucl_settings implements \core\hook\described_hook {
     /** @var array $options */
-    private array $options = [];
+    private array $options;
 
     /**
      * Allows subscribers to edit a subset of template variables.
@@ -41,6 +41,7 @@ final class extend_format_ucl_settings implements \core\hook\described_hook {
         /** @var bool|array $foreditform */
         public readonly bool $foreditform,
     ) {
+        $this->options = $this->courseformatoptions ?: [];
     }
 
     /**
@@ -68,7 +69,7 @@ final class extend_format_ucl_settings implements \core\hook\described_hook {
      * @return void
      */
     public function add_options(array $options): void {
-        $this->options = $this->courseformatoptions ? array_merge($this->courseformatoptions, $options) : $options;
+        $this->options = $this->options ? array_merge($this->options, $options) : $options;
     }
 
     /**

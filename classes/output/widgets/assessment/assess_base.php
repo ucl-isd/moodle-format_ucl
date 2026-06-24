@@ -51,11 +51,11 @@ abstract class assess_base {
             return 0;
         }
 
-        // List of labels Moodle uses for the due date of an activity.
-        $dueevents = ['duedate', 'timeclose', 'deadline'];
+        // Date IDs treated as the assessment due date across supported activities.
+        $dueevents = ['duedate', 'timeclose', 'deadline', 'submissionend', 'assessmentend'];
 
         foreach ($dates as $date) {
-            if (in_array($date['dataid'], $dueevents)) {
+            if (in_array($date['dataid'], $dueevents, true)) {
                 return (int) $date['timestamp'];
             }
         }

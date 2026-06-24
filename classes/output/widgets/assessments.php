@@ -59,30 +59,27 @@ class assessments implements renderable, templatable {
             return [];
         }
 
-        if ($summative = assess_type::get_assess_type_records_by_courseid($COURSE->id, "1")) {
+        // 1 = summative assessments only.
+        $summatives = assess_type::get_assess_type_records_by_courseid($COURSE->id, "1");
+        if ($summatives) {
             $modinfo = get_fast_modinfo($COURSE->id, $USER->id);
-            $mods = $modinfo->get_cms(); // This is our safety map.
+            $mods = $modinfo->get_cms();
 
-            // Check mods exists.
-            $summative = array_filter($summative, function ($s) use ($mods) {
-                return $s->cmid != 0 && isset($mods[$s->cmid]);
-            });
-
-            if (empty($summative)) {
+            if (empty($mods)) {
                 return [];
             }
 
             // Expand Turnitin assignments into individual parts.
-            $summative = $this->expand_turnitin_parts($summative, $mods);
+            $summatives = $this->expand_turnitin_parts($summatives, $mods);
 
             $template = new stdClass();
             $template->hasassessments = false;
             $template->assessments = [];
 
-            foreach ($summative as $s) {
-                $assess = $this->build_assess_item($s, $mods);
-                if ($assess) {
-                    $template->assessments[] = $assess;
+            foreach ($summatives as $summative) {
+                $assessitem = $this->build_assess_item($summative, $mods);
+                if ($assessitem) {
+                    $template->assessments[] = $assessitem;
                 }
             }
 
@@ -96,11 +93,6 @@ class assessments implements renderable, templatable {
                 return $a->duedate <=> $b->duedate;
             });
 
-            foreach ($template->assessments as $assess) {
-                $assess->duedatedate = date('jS M Y', $assess->duedate);
-                $assess->duedatetime = userdate($assess->duedate, '%I:%M%P');
-            }
-
             return $template;
         }
         return [];
@@ -111,27 +103,27 @@ class assessments implements renderable, templatable {
      *
      * Returns null if the mod is not visible or has no due date.
      *
-     * @param stdClass $s The summative assessment record.
+     * @param stdClass $summative The summative assessment record.
      * @param array $mods The course modules map.
      * @return stdClass|null The assessment item, or null if it should be skipped.
      */
-    private function build_assess_item(stdClass $s, array $mods): ?stdClass {
+    private function build_assess_item(stdClass $summative, array $mods): ?stdClass {
         global $COURSE;
 
         // We use isset just in case turnitin added something weird.
-        if (!isset($mods[$s->cmid])) {
+        if (!isset($mods[$summative->cmid])) {
             return null;
         }
 
-        $mod = $mods[$s->cmid];
+        $mod = $mods[$summative->cmid];
 
         if (!$mod->uservisible || !$mod->visible) {
             return null;
         }
 
-        if ($mod->modname === 'turnitintooltwo' && !empty($s->turnitinpartno)) {
+        if ($mod->modname === 'turnitintooltwo' && !empty($summative->turnitinpartno)) {
             // Turnitin specific handler.
-            $handler = new \format_ucl\output\widgets\assessment\turnitintooltwo($mod, $s->turnitinpartno);
+            $handler = new \format_ucl\output\widgets\assessment\turnitintooltwo($mod, $summative->turnitinpartno);
         } else {
             $handler = \format_ucl\output\widgets\assessment\assess_base::instance($mod);
         }
@@ -143,8 +135,10 @@ class assessments implements renderable, templatable {
 
         $assess = new stdClass();
         $assess->duedate = $duedate;
+        $assess->duedatedate = date('jS M Y', $duedate);
+        $assess->duedatetime = userdate($duedate, '%I:%M%P');
         $assess->url = new moodle_url('/mod/' . $mod->modname . '/view.php', ['id' => $mod->id]);
-        $assess->name = $s->displayname ?? $mod->name;
+        $assess->name = $summative->displayname ?? $mod->name;
         $assess->icon = $mod->get_icon_url()->out(false);
         $assess->section = get_section_name($COURSE, $mod->get_section_info());
 
@@ -154,53 +148,67 @@ class assessments implements renderable, templatable {
     /**
      * Expand Turnitin assignments into separate parts.
      *
-     * @param array $summative The original assessment records.
+     * @param array $summatives The original assessment records.
      * @param array $mods The course modules map.
      * @return array The expanded list of records.
      */
-    protected function expand_turnitin_parts(array $summative, array $mods): array {
+    protected function expand_turnitin_parts(array $summatives, array $mods): array {
         global $DB;
 
         // Get Turnitin instance ids.
-        $turnitinids = array_filter(array_map(function ($s) use ($mods) {
-            return ($mods[$s->cmid]->modname === 'turnitintooltwo') ? $mods[$s->cmid]->instance : null;
-        }, $summative));
-
-        $allparts = [];
-        if ($turnitinids) {
-            [$insql, $params] = $DB->get_in_or_equal($turnitinids);
-            $records = $DB->get_records_select(
-                table: 'turnitintooltwo_parts',
-                select: "turnitintooltwoid $insql",
-                params: $params,
-                sort: 'id ASC'
-            );
-            foreach ($records as $part) {
-                $allparts[$part->turnitintooltwoid][] = $part;
+        $turnitinids = [];
+        foreach ($summatives as $summative) {
+            $mod = $mods[$summative->cmid];
+            if ($mod->modname === 'turnitintooltwo') {
+                $turnitinids[] = $mod->instance;
             }
         }
 
+        if (empty($turnitinids)) {
+            return $summatives;
+        }
+
+        $allparts = [];
+        [$insql, $params] = $DB->get_in_or_equal($turnitinids);
+        $records = $DB->get_records_select(
+            'turnitintooltwo_parts',
+            "turnitintooltwoid $insql",
+            $params,
+            'id ASC'
+        );
+        foreach ($records as $part) {
+            $allparts[$part->turnitintooltwoid][] = $part;
+        }
+
         $expanded = [];
-        foreach ($summative as $s) {
-            $mod = $mods[$s->cmid] ?? null;
-            $parts = ($mod && $mod->modname === 'turnitintooltwo') ? ($allparts[$mod->instance] ?? []) : [];
+        foreach ($summatives as $summative) {
+            $mod = $mods[$summative->cmid];
+
+            if ($mod->modname !== 'turnitintooltwo') {
+                $expanded[] = $summative;
+                continue;
+            }
+
+            $parts = $allparts[$mod->instance] ?? [];
 
             // If no parts to expand, just keep the original and move on.
             if (empty($parts)) {
-                $expanded[] = $s;
+                $expanded[] = $summative;
                 continue;
             }
 
             // Expand multi-part Turnitin things.
             $partcount = count($parts);
+            $partlabel = get_string('part', 'mod_turnitintooltwo');
             foreach ($parts as $index => $part) {
-                $newpart = clone $s;
+                $newpart = clone $summative;
                 $partno = $index + 1;
+                $partname = $part->partname ?: $partlabel . " $partno";
 
                 $newpart->turnitinpartno = $partno;
                 $newpart->partdtdue = (int) $part->dtdue;
                 $newpart->displayname = ($partcount > 1)
-                    ? ($mod->name . ' ' . ($part->partname ?: get_string('part', 'mod_turnitintooltwo') . " $partno"))
+                    ? ($mod->name . ' ' . $partname)
                     : $mod->name;
 
                 $expanded[] = $newpart;

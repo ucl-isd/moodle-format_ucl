@@ -139,9 +139,9 @@ class assessments implements renderable, templatable {
 
     /**
      * Get the due date for a summative assessment.
-     * SHAME - only needed, because of turnitin parts.
+     * SHAME - only needed, because Turnitin parts can have their own due date.
      *
-     * For Turnitin parts we use the due date from expand_turnitin_parts.
+     * If an expanded record includes partdtdue, we use that first.
      * Everything else uses the activity dates API.
      *
      * @param stdClass $summative The expanded assessment record.
@@ -149,7 +149,7 @@ class assessments implements renderable, templatable {
      * @return int Unix timestamp, or 0 if not found.
      */
     protected function get_due_date(stdClass $summative, \cm_info $mod): int {
-        if ($mod->modname === 'turnitintooltwo' && !empty($summative->partdtdue)) {
+        if (!empty($summative->partdtdue)) {
             return (int) $summative->partdtdue;
         }
 

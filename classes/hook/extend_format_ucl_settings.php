@@ -41,7 +41,7 @@ final class extend_format_ucl_settings implements \core\hook\described_hook {
         /** @var bool|array $foreditform */
         public readonly bool $foreditform,
     ) {
-        $this->options = $this->courseformatoptions ?: [];
+        $this->options = is_array($this->courseformatoptions) ? $this->courseformatoptions : [];
     }
 
     /**

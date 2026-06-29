@@ -28,6 +28,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'format_ucl';
 $plugin->release = '0.1.0';
-$plugin->version = 2026062400;
+$plugin->version = 2026062900;
 $plugin->requires = 2022041900;
 $plugin->maturity = MATURITY_BETA;

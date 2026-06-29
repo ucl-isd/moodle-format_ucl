@@ -14,20 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+namespace format_ucl\output\widgets\assessment;
+
 /**
- * Plugin version and other meta-data are defined here.
+ * Generic assessment handler for UCL Course Format.
  *
- * @package     format_ucl
- * @copyright   2026 onwards University College London {@link https://www.ucl.ac.uk/}
- * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author      Stuart Lamour <s.lamour@ucl.ac.uk>
- * @author      Amanda Doughty <m.doughty@ucl.ac.uk>
+ * @package    format_ucl
+ * @copyright  2026 onwards University College London
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author     Stuart Lamour <s.lamour@ucl.ac.uk>
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->component = 'format_ucl';
-$plugin->release = '0.1.0';
-$plugin->version = 2026062900;
-$plugin->requires = 2022041900;
-$plugin->maturity = MATURITY_BETA;
+class generic extends assess_base {
+}

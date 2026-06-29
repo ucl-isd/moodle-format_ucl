@@ -21,6 +21,7 @@ use core_courseformat\output\local\content as content_base;
 use core_course\external\course_summary_exporter;
 use format_ucl;
 use format_ucl\config;
+use format_ucl\output\widgets\assessments;
 use format_ucl\output\widgets\toc;
 use moodle_url;
 use stdClass;
@@ -169,6 +170,10 @@ class content extends content_base {
             // Set first section to enable adding ucl metadata.
             $data->initialsection = $section;
             $data->hookdataintrohtml = '';
+
+            // Assessments.
+            $assessmentswidget = new assessments($this->format);
+            $data->assessments = $assessmentswidget->export_for_template($output);
         }
         return $data;
     }

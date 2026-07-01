@@ -87,40 +87,30 @@
                     return;
                 }
 
+                // Core stuff.
                 const manualCompletionEvent = (CourseEvents && CourseEvents.manualCompletionToggled)
                     || 'core_course:manualcompletiontoggled';
                 document.addEventListener(manualCompletionEvent, function(event) {
                     const detail = event.detail || {};
-                    const itemLabel = detail.activityname || ('cmid ' + (detail.cmid || 'unknown'));
-                    const statusLabel = detail.completed ? 'marked as done' : 'marked as not done';
-                    console.log(itemLabel + ' ' + statusLabel);
-
                     const cm = courseState.get('cm', detail.cmid);
-                    if (cm && cm.sectionid) {
-                        updateSectionProgress(cm.sectionid);
-                        return;
-                    }
+                    const currentProgress = document.querySelector('.pie[data-id]');
+                    const sectionId = (cm && cm.sectionid) || (currentProgress && currentProgress.dataset.id);
 
-                    const currentPie = document.querySelector('.pie[data-id]');
-                    if (currentPie) {
-                        updateSectionProgress(currentPie.dataset.id);
+                    if (sectionId) {
+                        updateSectionProgress(sectionId);
                     }
                 });
 
                 courseState.getInitialStatePromise().then(function() {
-                    const currentPie = document.querySelector('.pie[data-id]');
-                    if (currentPie) {
-                        updateSectionProgress(currentPie.dataset.id);
+                    const currentProgress = document.querySelector('.pie[data-id]');
+                    if (currentProgress) {
+                        updateSectionProgress(currentProgress.dataset.id);
                     }
                 });
             }
 
             // Count done items in one section, then pass the totals to the UI.
             function updateSectionProgress(sectionId) {
-                if (!sectionId) {
-                    return;
-                }
-
                 const section = courseState.get('section', sectionId);
                 if (!section) {
                     return;

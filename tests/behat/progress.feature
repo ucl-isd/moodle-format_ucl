@@ -62,17 +62,11 @@ Feature: TOC progress is shown on load and updates after manual completion
 
   Scenario: Initial TOC progress is rendered on page load
     Given I am on the "C1" "Course" page logged in as "student1"
-    And I click on "Section 2" "link" in the "#toc" "css_element"
-    And I click on "Activity sample 1" "link"
-    And I wait until "Mark as done" "button" exists
-    And I am on the "C1" "Course" page
     Then "0 of 1 complete" "text" should exist in the "#toc .progress-indicator .sr-only" "css_element"
     And the "data-percentage" attribute of "#toc .pie[data-id]" "css_element" should contain "0"
 
   Scenario: Initial TOC progress is rendered as complete on page load
-    Given I am on the "C1" "Course" page logged in as "student1"
-    And I click on "Section 2" "link" in the "#toc" "css_element"
-    And I click on "Activity sample 1" "link"
+    Given I am on the "page1" "Activity" page logged in as "student1"
     And I wait until "Mark as done" "button" exists
     When I press "Mark as done"
     And I wait until "Done" "button" exists
@@ -82,9 +76,7 @@ Feature: TOC progress is shown on load and updates after manual completion
     And the "data-percentage" attribute of "#toc .pie[data-id]" "css_element" should contain "100"
 
   Scenario: TOC progress updates after manual completion
-    Given I am on the "C1" "Course" page logged in as "student1"
-    And I click on "Section 2" "link" in the "#toc" "css_element"
-    And I click on "Activity sample 1" "link"
+    Given I am on the "page1" "Activity" page logged in as "student1"
     And I wait until "Mark as done" "button" exists
     When I press "Mark as done"
     And I wait until "Done" "button" exists

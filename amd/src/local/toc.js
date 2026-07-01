@@ -40,10 +40,10 @@ export default class Component extends BaseComponent {
     }
 
     /**
-     * Static method to create a component instance from the mustache template.
+     * Build this TOC component for the template markup.
      *
-     * @param {element|string} target the DOM main element or its ID
-     * @param {object} selectors optional css selector overrides
+     * @param {element|string} target the main DOM element, or its ID
+     * @param {object} selectors optional CSS selector overrides
      * @return {Component}
      */
     static init(target, selectors) {
@@ -119,42 +119,44 @@ export default class Component extends BaseComponent {
             }
         });
 
-        this._renderProgress(sectionId, total, done);
+        this._renderProgress({sectionId, total, done});
     }
 
     /**
      * Update the progress label and animate it to the new percentage.
      *
-     * @param {string|number} sectionId the section id
-     * @param {number} total total number of completable items
-     * @param {number} done number of completed items
+     * @param {Object} progress progress details
+     * @param {string|number} progress.sectionId the section id
+     * @param {number} progress.total total number of completable items
+     * @param {number} progress.done number of completed items
      */
-    _renderProgress(sectionId, total, done) {
-        const progress = this.element.querySelector(`.pie[data-id="${sectionId}"]`);
-        if (!progress || total <= 0) {
+    _renderProgress(progress) {
+        const {sectionId, total, done} = progress;
+        const progressElement = this.element.querySelector(`.pie[data-id="${sectionId}"]`);
+        if (!progressElement || total <= 0) {
             return;
         }
 
         const percentage = Math.round((done / total) * 100);
-        const currentPercentage = Number(progress.getAttribute('data-percentage')) || 0;
+        const currentPercentage = Number(progressElement.getAttribute('data-percentage')) || 0;
 
         if (currentPercentage === percentage) {
             return;
         }
 
         const tooltip = `${done} of ${total} complete`;
-        progress.setAttribute('data-original-title', tooltip);
-        progress.setAttribute('aria-label', tooltip);
+        progressElement.setAttribute('data-original-title', tooltip);
+        progressElement.setAttribute('aria-label', tooltip);
 
         // Mark fully complete sections for styling.
-        progress.classList.toggle('complete', percentage === 100);
+        progressElement.classList.toggle('complete', percentage === 100);
 
         // Animate from the current value to the new value.
         let value = currentPercentage;
         const interval = setInterval(() => {
             value += percentage > value ? 1 : -1;
-            progress.style.setProperty('--p', value);
-            progress.setAttribute('data-percentage', value);
+            progressElement.style.setProperty('--p', value);
+            progressElement.setAttribute('data-percentage', value);
 
             // Stop once we hit the target.
             if (value === percentage) {
@@ -187,17 +189,23 @@ export default class Component extends BaseComponent {
             return;
         }
 
-        this._fixOrder(this.element, sectionlist, this.sections);
+        this._updateOrder({
+            container: this.element,
+            neworder: sectionlist,
+            allitems: this.sections,
+        });
     }
 
     /**
-     * Fix or reorder the section order.
+     * Reorder section elements to match the latest section ID order.
      *
-     * @param {Element} container the HTML element to reorder.
-     * @param {Array} neworder an array with the ids order
-     * @param {Array} allitems the list of html elements that can be placed in the container
+     * @param {Object} orderData order details
+     * @param {Element} orderData.container the parent list element
+     * @param {Array} orderData.neworder ordered section IDs
+     * @param {Array} orderData.allitems section elements keyed by section ID
      */
-    _fixOrder(container, neworder, allitems) {
+    _updateOrder(orderData) {
+        const {container, neworder, allitems} = orderData;
 
         // Empty lists should not be visible.
         if (!neworder.length) {

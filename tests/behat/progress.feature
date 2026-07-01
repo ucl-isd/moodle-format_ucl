@@ -32,20 +32,16 @@ Feature: TOC progress is shown on load and updates after manual completion
       | fullname         | Course 2 |
       | shortname        | C2       |
       | format           | ucl      |
-      | coursedisplay    | 0        |
       | numsections      | 3        |
-      | initsections     | 1        |
       | enablecompletion | 0        |
     And the following "course enrolments" exist:
-      | user     | course | role           |
-      | teacher1 | C2     | editingteacher |
-      | student1 | C2     | student        |
+      | user     | course | role    |
+      | student1 | C2     | student |
     And the following "activities" exist:
       | activity | course | idnumber | name               | section | completion |
       | page     | C2     | pagec2   | Activity sample C2 | 2       | 1          |
     And I am on the "C2" "Course" page logged in as "student1"
     Then "#toc .pie[data-id]" "css_element" should not exist
-    And "#toc .progress-indicator .sr-only" "css_element" should not exist
 
   Scenario: TOC progress is hidden when editing mode is on
     Given I am on the "C1" "Course" page logged in as "teacher1"

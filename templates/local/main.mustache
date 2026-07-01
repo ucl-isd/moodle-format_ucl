@@ -43,7 +43,7 @@
     {{/toc}}
 
     <div id="ucl-course-content" class="col-lg-9">
-        
+
         {{! Mobile toc. }}
         {{> format_ucl/widgets/toc/mobiletoc }}
 
@@ -78,92 +78,109 @@
 {{! Js for progress when not editing. }}
 {{^isediting}}
     {{#js}}
-        require(['jquery'], function($) {
-            // Section progress.
-            // Timeout so course-index can load.
-            setTimeout(() => {
-                // Select the node that will be observed for mutations.
-                const targetNode = document.getElementById('course-index');
-                // Config.
-                const config = {attributes: true, childList: true, subtree: true};
+        require(['core_course/events', 'core_courseformat/courseeditor'], function(CourseEvents, CourseEditor) {
+            const courseState = CourseEditor.getCurrentCourseEditor();
 
-                // Callback.
-                // eslint-disable-next-line no-unused-vars
-                const callback = function(mutationList, observer) {
-                    // Use traditional 'for loops' for IE 11
-                    for (const mutation of mutationList) {
-                        if (mutation.type === 'childList') {
-                            updateSectionProgress();
-                        }
+            // Start progress updates on load and when completion is toggled.
+            function initSectionProgress() {
+                if (!courseState) {
+                    return;
+                }
+
+                const manualCompletionEvent = (CourseEvents && CourseEvents.manualCompletionToggled)
+                    || 'core_course:manualcompletiontoggled';
+                document.addEventListener(manualCompletionEvent, function(event) {
+                    const detail = event.detail || {};
+                    const itemLabel = detail.activityname || ('cmid ' + (detail.cmid || 'unknown'));
+                    const statusLabel = detail.completed ? 'marked as done' : 'marked as not done';
+                    console.log(itemLabel + ' ' + statusLabel);
+
+                    const cm = courseState.get('cm', detail.cmid);
+                    if (cm && cm.sectionid) {
+                        updateSectionProgress(cm.sectionid);
+                        return;
                     }
-                };
 
-                // Create observer instance linked to callback function.
-                const observer = new MutationObserver(callback);
+                    const currentPie = document.querySelector('.pie[data-id]');
+                    if (currentPie) {
+                        updateSectionProgress(currentPie.dataset.id);
+                    }
+                });
 
-                // Start observing.
-                observer.observe(targetNode, config);
-            }, 1000);
-
-            function updateSectionProgress() {
-                // Loop through sections and calculate progress.
-                // eslint-disable-next-line no-unused-vars
-                $('#course-index .courseindex-section').each(function(i) {
-                    const id = $(this).data('id');
-                    const total = $(this).find('.completioninfo:not(.completion_none)').length;
-                    // Check we have mods to complete.
-                    const validTotal = parseInt(total, 10) || 0;
-
-                    // Only update if section has mods to complete.
-                    if (validTotal > 0) {
-                        const done = $(this).find('.completion_complete').length;
-                        const validDone = parseInt(done, 10) || 0;
-                        updateSectionPie(id, validTotal, validDone);
+                courseState.getInitialStatePromise().then(function() {
+                    const currentPie = document.querySelector('.pie[data-id]');
+                    if (currentPie) {
+                        updateSectionProgress(currentPie.dataset.id);
                     }
                 });
             }
 
-            function updateSectionPie(id, total, done) {
-                const pie = $('.pie[data-id="' + id + '"]');
-                const percentage = Math.round((done / total) * 100);
+            // Count done items in one section, then pass the totals to the UI.
+            function updateSectionProgress(sectionId) {
+                if (!sectionId) {
+                    return;
+                }
 
-                // Ensure current percentage is a valid number.
-                let currentPercentage = parseInt($(pie).attr('data-percentage'), 10) || 0;
+                const section = courseState.get('section', sectionId);
+                if (!section) {
+                    return;
+                }
 
-                // Check if an update is needed.
-                if (currentPercentage !== percentage) {
-                    const tooltip = '' + done + ' of ' + total + ' complete';
+                const cmlist = section.cmlist || [];
+                let total = 0;
+                let done = 0;
 
-                    // Set tooltip and aria-label
-                    $(pie).attr({
-                        'data-original-title': tooltip,
-                        'aria-label': tooltip
-                    });
-
-                    // Update pie class based on completion.
-                    if (percentage === 100) {
-                        $(pie).addClass('complete').removeClass('animate');
-                    } else {
-                        $(pie).removeClass('complete').addClass('animate');
+                cmlist.forEach((cmId) => {
+                    const cm = courseState.get('cm', cmId);
+                    if (!cm || typeof cm.completionstate === 'undefined') {
+                        return;
                     }
 
-                    // Animate pie to target percentage.
-                    const interval = setInterval(() => {
-                        const direction = percentage > currentPercentage ? 1 : -1;
-                        currentPercentage += direction;
+                    total += 1;
+                    if (cm.isoverallcomplete === true || cm.completionstate === 1 || cm.completionstate === 2) {
+                        done += 1;
+                    }
+                });
 
-                        $(pie).attr({
-                            'style': `--p:${currentPercentage};--c:green`,
-                            'data-percentage': currentPercentage
-                        });
-
-                        if (currentPercentage === percentage) {
-                            clearInterval(interval);
-                        }
-                    }, 10); // Timing.
-                }
+                renderProgress(sectionId, total, done);
             }
+
+            // Update the progress label and animate it to the new percentage.
+            function renderProgress(sectionId, total, done) {
+                const progress = document.querySelector('.pie[data-id="' + sectionId + '"]');
+                if (!progress || total <= 0) {
+                    return;
+                }
+
+                const percentage = Math.round((done / total) * 100);
+                const currentPercentage = Number(progress.getAttribute('data-percentage')) || 0;
+
+                if (currentPercentage === percentage) {
+                    return;
+                }
+
+                const tooltip = done + ' of ' + total + ' complete';
+                progress.setAttribute('data-original-title', tooltip);
+                progress.setAttribute('aria-label', tooltip);
+
+                // Mark fully complete sections for styling.
+                progress.classList.toggle('complete', percentage === 100);
+
+                // Animate from the current value to the new value.
+                let value = currentPercentage;
+                const interval = setInterval(() => {
+                    value += percentage > value ? 1 : -1;
+                    progress.style.setProperty('--p', value);
+                    progress.setAttribute('data-percentage', value);
+
+                    // Stop once we hit the target.
+                    if (value === percentage) {
+                        clearInterval(interval);
+                    }
+                }, 20);
+            }
+
+            initSectionProgress();
         });
     {{/js}}
 {{/isediting}}
-

@@ -24,7 +24,9 @@
  */
 
 import {BaseComponent} from 'core/reactive';
+import CourseEvents from 'core_course/events';
 import {getCurrentCourseEditor} from 'core_courseformat/courseeditor';
+import {get_string as getString} from 'core/str';
 
 export default class Component extends BaseComponent {
 
@@ -34,25 +36,15 @@ export default class Component extends BaseComponent {
     create() {
         // Optional component name for debugging.
         this.name = 'toc';
-        // Default query selectors.
-        this.selectors = {
-            SECTION: `[data-for='tocsection']`,
-        };
-        // Default classes to toggle on refresh.
-        this.classes = {
-            SECTIONHIDDEN: 'dimmed',
-            SECTIONCURRENT: 'current',
-            SHOW: `show`,
-        };
-        // Arrays to keep cms and sections elements.
+        // Keep section elements by section id.
         this.sections = {};
     }
 
     /**
-     * Static method to create a component instance form the mustache template.
+     * Build this TOC component for the template markup.
      *
-     * @param {element|string} target the DOM main element or its ID
-     * @param {object} selectors optional css selector overrides
+     * @param {element|string} target the main DOM element, or its ID
+     * @param {object} selectors optional CSS selector overrides
      * @return {Component}
      */
     static init(target, selectors) {
@@ -67,11 +59,121 @@ export default class Component extends BaseComponent {
      * Initial state ready method.
      */
     stateReady() {
-        // Get cms and sections elements.
-        const sections = this.getElements(this.selectors.SECTION);
+        // Get sections.
+        const sections = this.getElements(`[data-for='tocsection']`);
         sections.forEach((section) => {
             this.sections[section.dataset.id] = section;
         });
+
+        this._initSectionProgress();
+    }
+
+    /**
+     * Section progress updates on load and when completion is toggled.
+     */
+    _initSectionProgress() {
+        // Core stuff.
+        const manualCompletionEvent = (CourseEvents && CourseEvents.manualCompletionToggled)
+            || 'core_course:manualcompletiontoggled';
+
+        document.addEventListener(manualCompletionEvent, (event) => {
+            const detail = event.detail || {};
+            const cm = this.reactive.get('cm', detail.cmid);
+            const currentProgress = this.element.querySelector(`.pie[data-id]`);
+            const sectionId = (cm && cm.sectionid) || (currentProgress && currentProgress.dataset.id);
+
+            if (sectionId) {
+                this._updateSectionProgress(sectionId);
+            }
+        });
+
+        const currentProgress = this.element.querySelector(`.pie[data-id]`);
+        if (currentProgress) {
+            this._updateSectionProgress(currentProgress.dataset.id);
+        }
+    }
+
+    /**
+     * Count done items in one section, then pass the totals to the UI.
+     *
+     * @param {string|number} sectionId the section id
+     */
+    _updateSectionProgress(sectionId) {
+        const section = this.reactive.get('section', sectionId);
+        if (!section) {
+            return;
+        }
+
+        const cmlist = section.cmlist || [];
+        let total = 0;
+        let done = 0;
+
+        cmlist.forEach((cmId) => {
+            const cm = this.reactive.get('cm', cmId);
+            if (!cm || typeof cm.completionstate === 'undefined') {
+                return;
+            }
+
+            total += 1;
+            if (cm.isoverallcomplete === true || cm.completionstate === 1 || cm.completionstate === 2) {
+                done += 1;
+            }
+        });
+
+        this._renderProgress({sectionId, total, done});
+    }
+
+    /**
+     * Update the progress label and animate it to the new percentage.
+     *
+     * @param {Object} progress progress details
+     * @param {string|number} progress.sectionId the section id
+     * @param {number} progress.total total number of completable items
+     * @param {number} progress.done number of completed items
+     */
+    _renderProgress(progress) {
+        const {sectionId, total, done} = progress;
+        const progressElement = this.element.querySelector(`.pie[data-id="${sectionId}"]`);
+        if (!progressElement || total <= 0) {
+            return;
+        }
+
+        const percentage = Math.round((done / total) * 100);
+        const currentPercentage = Number(progressElement.getAttribute('data-percentage')) || 0;
+
+        if (currentPercentage === percentage) {
+            return;
+        }
+
+        const fallbackTooltip = `${done} of ${total} complete`;
+        progressElement.setAttribute('title', fallbackTooltip);
+        progressElement.setAttribute('aria-label', fallbackTooltip);
+
+        getString('xofycomplete', 'format_ucl', {complete: done, total})
+            .then((tooltip) => {
+                progressElement.setAttribute('title', tooltip);
+                progressElement.setAttribute('aria-label', tooltip);
+                return tooltip;
+            })
+            .catch(() => {
+                // Keep fallback tooltip when language string lookup fails.
+            });
+
+        // Mark fully complete sections for styling.
+        progressElement.classList.toggle('complete', percentage === 100);
+
+        // Animate from the current value to the new value.
+        let value = currentPercentage;
+        const interval = setInterval(() => {
+            value += percentage > value ? 1 : -1;
+            progressElement.style.setProperty('--p', value);
+            progressElement.setAttribute('data-percentage', value);
+
+            // Stop once we hit the target.
+            if (value === percentage) {
+                clearInterval(interval);
+            }
+        }, 20);
     }
 
     getWatchers() {
@@ -90,17 +192,31 @@ export default class Component extends BaseComponent {
      */
     _refreshCourseToc({state}) {
         const sectionlist = this.reactive.getExporter().listedSectionIds(state);
-        this._fixOrder(this.element, sectionlist, this.sections);
+
+        if (
+            sectionlist.length === this.element.children.length
+            && sectionlist.every((sectionid, index) => this.element.children[index]?.dataset.id === String(sectionid))
+        ) {
+            return;
+        }
+
+        this._updateOrder({
+            container: this.element,
+            neworder: sectionlist,
+            allitems: this.sections,
+        });
     }
 
     /**
-     * Fix/reorder the section or cms order.
+     * Reorder section elements to match the latest section ID order.
      *
-     * @param {Element} container the HTML element to reorder.
-     * @param {Array} neworder an array with the ids order
-     * @param {Array} allitems the list of html elements that can be placed in the container
+     * @param {Object} orderData order details
+     * @param {Element} orderData.container the parent list element
+     * @param {Array} orderData.neworder ordered section IDs
+     * @param {Array} orderData.allitems section elements keyed by section ID
      */
-    _fixOrder(container, neworder, allitems) {
+    _updateOrder(orderData) {
+        const {container, neworder, allitems} = orderData;
 
         // Empty lists should not be visible.
         if (!neworder.length) {
@@ -109,7 +225,7 @@ export default class Component extends BaseComponent {
             return;
         }
 
-        // Grant the list is visible (in case it was empty).
+        // Ensure the list is visible.
         container.classList.remove('hidden');
 
         // Move the elements in order at the beginning of the list.
@@ -117,7 +233,7 @@ export default class Component extends BaseComponent {
             const item = allitems[itemid];
             // Get the current element at that position.
             const currentitem = container.children[index];
-            if (currentitem === undefined && item != undefined) {
+            if (currentitem === undefined && item !== undefined) {
                 container.append(item);
                 return;
             }

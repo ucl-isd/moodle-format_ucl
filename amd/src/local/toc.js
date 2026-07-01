@@ -26,6 +26,7 @@
 import {BaseComponent} from 'core/reactive';
 import CourseEvents from 'core_course/events';
 import {getCurrentCourseEditor} from 'core_courseformat/courseeditor';
+import {get_string as getString} from 'core/str';
 
 export default class Component extends BaseComponent {
 
@@ -144,9 +145,18 @@ export default class Component extends BaseComponent {
             return;
         }
 
-        const tooltip = `${done} of ${total} complete`;
-        progressElement.setAttribute('data-original-title', tooltip);
-        progressElement.setAttribute('aria-label', tooltip);
+        const fallbackTooltip = `${done} of ${total} complete`;
+        progressElement.setAttribute('data-original-title', fallbackTooltip);
+        progressElement.setAttribute('aria-label', fallbackTooltip);
+
+        getString('xofycomplete', 'format_ucl', {complete: done, total})
+            .then((tooltip) => {
+                progressElement.setAttribute('data-original-title', tooltip);
+                progressElement.setAttribute('aria-label', tooltip);
+            })
+            .catch(() => {
+                // Keep fallback tooltip when language string lookup fails.
+            });
 
         // Mark fully complete sections for styling.
         progressElement.classList.toggle('complete', percentage === 100);

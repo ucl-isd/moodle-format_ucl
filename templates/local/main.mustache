@@ -12,16 +12,34 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template format_ucl/local/content
-    Template purpose and description.
+    @template format_ucl/local/main
+
+    Main course format layout for UCL.
+
     Classes required for JS:
     * none
+
     Data attributes required for JS:
     * none
+
     Context variables required for this template:
-    * attributes Array of name / value pairs.
+    * initialsection bool Whether warnings should be shown.
+    * toc bool Whether the desktop TOC should be shown.
+    * sectionname string Current section title.
+    * sectionactions string HTML for section action menu.
+    * id int Section id for action menu targeting.
+    * singleedit bool Whether to show single-page edit button.
+    * editurl string URL for single-page edit button.
+
     Example context (json):
     {
+        "initialsection": true,
+        "toc": true,
+        "sectionname": "Week 1",
+        "sectionactions": "<button class=\"btn btn-secondary\">Actions</button>",
+        "id": 12,
+        "singleedit": false,
+        "editurl": ""
     }
 }}
 {{!

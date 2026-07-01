@@ -146,12 +146,12 @@ export default class Component extends BaseComponent {
         }
 
         const fallbackTooltip = `${done} of ${total} complete`;
-        progressElement.setAttribute('data-original-title', fallbackTooltip);
+        progressElement.setAttribute('title', fallbackTooltip);
         progressElement.setAttribute('aria-label', fallbackTooltip);
 
         getString('xofycomplete', 'format_ucl', {complete: done, total})
             .then((tooltip) => {
-                progressElement.setAttribute('data-original-title', tooltip);
+                progressElement.setAttribute('title', tooltip);
                 progressElement.setAttribute('aria-label', tooltip);
                 return tooltip;
             })

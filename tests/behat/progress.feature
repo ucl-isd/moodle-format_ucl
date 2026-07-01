@@ -24,6 +24,7 @@ Feature: TOC progress is shown on load and updates after manual completion
     And the following "activities" exist:
       | activity | course | idnumber | name               | section | completion |
       | page     | C1     | page1    | Activity sample 1  | 2       | 1          |
+      | page     | C1     | page2    | Activity sample 2  | 2       | 1          |
     And I change window size to "large"
 
   Scenario: TOC progress is not output when course completion is disabled
@@ -66,6 +67,6 @@ Feature: TOC progress is shown on load and updates after manual completion
     And the "data-percentage" attribute of "#toc [data-section='2'] .pie[data-id]" "css_element" should contain "0"
     When I press "Mark as done"
     And I wait until "Done" "button" exists
-    Then the "data-percentage" attribute of "#toc [data-section='2'] .pie[data-id]" "css_element" should contain "100"
+    Then the "data-percentage" attribute of "#toc [data-section='2'] .pie[data-id]" "css_element" should contain "50"
     When I reload the page
-    Then the "data-percentage" attribute of "#toc [data-section='2'] .pie[data-id]" "css_element" should contain "100"
+    Then the "data-percentage" attribute of "#toc [data-section='2'] .pie[data-id]" "css_element" should contain "50"

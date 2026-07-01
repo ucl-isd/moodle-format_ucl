@@ -153,6 +153,7 @@ export default class Component extends BaseComponent {
             .then((tooltip) => {
                 progressElement.setAttribute('data-original-title', tooltip);
                 progressElement.setAttribute('aria-label', tooltip);
+                return tooltip;
             })
             .catch(() => {
                 // Keep fallback tooltip when language string lookup fails.

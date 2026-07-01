@@ -24,6 +24,7 @@
  */
 
 import {BaseComponent} from 'core/reactive';
+import CourseEvents from 'core_course/events';
 import {getCurrentCourseEditor} from 'core_courseformat/courseeditor';
 
 export default class Component extends BaseComponent {
@@ -34,22 +35,12 @@ export default class Component extends BaseComponent {
     create() {
         // Optional component name for debugging.
         this.name = 'toc';
-        // Default query selectors.
-        this.selectors = {
-            SECTION: `[data-for='tocsection']`,
-        };
-        // Default classes to toggle on refresh.
-        this.classes = {
-            SECTIONHIDDEN: 'dimmed',
-            SECTIONCURRENT: 'current',
-            SHOW: `show`,
-        };
-        // Arrays to keep cms and sections elements.
+        // Keep section elements by section id.
         this.sections = {};
     }
 
     /**
-     * Static method to create a component instance form the mustache template.
+     * Static method to create a component instance from the mustache template.
      *
      * @param {element|string} target the DOM main element or its ID
      * @param {object} selectors optional css selector overrides
@@ -67,11 +58,109 @@ export default class Component extends BaseComponent {
      * Initial state ready method.
      */
     stateReady() {
-        // Get cms and sections elements.
-        const sections = this.getElements(this.selectors.SECTION);
+        // Get sections.
+        const sections = this.getElements(`[data-for='tocsection']`);
         sections.forEach((section) => {
             this.sections[section.dataset.id] = section;
         });
+
+        this._initSectionProgress();
+    }
+
+    /**
+     * Section progress updates on load and when completion is toggled.
+     */
+    _initSectionProgress() {
+        // Core stuff.
+        const manualCompletionEvent = (CourseEvents && CourseEvents.manualCompletionToggled)
+            || 'core_course:manualcompletiontoggled';
+
+        document.addEventListener(manualCompletionEvent, (event) => {
+            const detail = event.detail || {};
+            const cm = this.reactive.get('cm', detail.cmid);
+            const currentProgress = this.element.querySelector(`.pie[data-id]`);
+            const sectionId = (cm && cm.sectionid) || (currentProgress && currentProgress.dataset.id);
+
+            if (sectionId) {
+                this._updateSectionProgress(sectionId);
+            }
+        });
+
+        const currentProgress = this.element.querySelector(`.pie[data-id]`);
+        if (currentProgress) {
+            this._updateSectionProgress(currentProgress.dataset.id);
+        }
+    }
+
+    /**
+     * Count done items in one section, then pass the totals to the UI.
+     *
+     * @param {string|number} sectionId the section id
+     */
+    _updateSectionProgress(sectionId) {
+        const section = this.reactive.get('section', sectionId);
+        if (!section) {
+            return;
+        }
+
+        const cmlist = section.cmlist || [];
+        let total = 0;
+        let done = 0;
+
+        cmlist.forEach((cmId) => {
+            const cm = this.reactive.get('cm', cmId);
+            if (!cm || typeof cm.completionstate === 'undefined') {
+                return;
+            }
+
+            total += 1;
+            if (cm.isoverallcomplete === true || cm.completionstate === 1 || cm.completionstate === 2) {
+                done += 1;
+            }
+        });
+
+        this._renderProgress(sectionId, total, done);
+    }
+
+    /**
+     * Update the progress label and animate it to the new percentage.
+     *
+     * @param {string|number} sectionId the section id
+     * @param {number} total total number of completable items
+     * @param {number} done number of completed items
+     */
+    _renderProgress(sectionId, total, done) {
+        const progress = this.element.querySelector(`.pie[data-id="${sectionId}"]`);
+        if (!progress || total <= 0) {
+            return;
+        }
+
+        const percentage = Math.round((done / total) * 100);
+        const currentPercentage = Number(progress.getAttribute('data-percentage')) || 0;
+
+        if (currentPercentage === percentage) {
+            return;
+        }
+
+        const tooltip = `${done} of ${total} complete`;
+        progress.setAttribute('data-original-title', tooltip);
+        progress.setAttribute('aria-label', tooltip);
+
+        // Mark fully complete sections for styling.
+        progress.classList.toggle('complete', percentage === 100);
+
+        // Animate from the current value to the new value.
+        let value = currentPercentage;
+        const interval = setInterval(() => {
+            value += percentage > value ? 1 : -1;
+            progress.style.setProperty('--p', value);
+            progress.setAttribute('data-percentage', value);
+
+            // Stop once we hit the target.
+            if (value === percentage) {
+                clearInterval(interval);
+            }
+        }, 20);
     }
 
     getWatchers() {
@@ -90,11 +179,19 @@ export default class Component extends BaseComponent {
      */
     _refreshCourseToc({state}) {
         const sectionlist = this.reactive.getExporter().listedSectionIds(state);
+
+        if (
+            sectionlist.length === this.element.children.length
+            && sectionlist.every((sectionid, index) => this.element.children[index]?.dataset.id === String(sectionid))
+        ) {
+            return;
+        }
+
         this._fixOrder(this.element, sectionlist, this.sections);
     }
 
     /**
-     * Fix/reorder the section or cms order.
+     * Fix or reorder the section order.
      *
      * @param {Element} container the HTML element to reorder.
      * @param {Array} neworder an array with the ids order
@@ -109,7 +206,7 @@ export default class Component extends BaseComponent {
             return;
         }
 
-        // Grant the list is visible (in case it was empty).
+        // Ensure the list is visible.
         container.classList.remove('hidden');
 
         // Move the elements in order at the beginning of the list.
@@ -117,7 +214,7 @@ export default class Component extends BaseComponent {
             const item = allitems[itemid];
             // Get the current element at that position.
             const currentitem = container.children[index];
-            if (currentitem === undefined && item != undefined) {
+            if (currentitem === undefined && item !== undefined) {
                 container.append(item);
                 return;
             }

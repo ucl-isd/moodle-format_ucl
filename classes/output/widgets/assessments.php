@@ -52,7 +52,9 @@ class assessments implements renderable, templatable {
      * @return array|stdClass The template data.
      */
     public function export_for_template(renderer_base $output) {
-        global $USER, $COURSE;
+        global $USER;
+
+        $course = $this->format->get_course();
 
         // Exit early if assess_type plugin is not installed.
         if (!class_exists(assess_type::class)) {
@@ -60,9 +62,9 @@ class assessments implements renderable, templatable {
         }
 
         // 1 = summative assessments only.
-        $summatives = assess_type::get_assess_type_records_by_courseid($COURSE->id, "1");
+        $summatives = assess_type::get_assess_type_records_by_courseid($course->id, "1");
         if ($summatives) {
-            $modinfo = get_fast_modinfo($COURSE->id, $USER->id);
+            $modinfo = get_fast_modinfo($course->id, $USER->id);
             $mods = $modinfo->get_cms();
 
             if (empty($mods)) {
@@ -76,7 +78,7 @@ class assessments implements renderable, templatable {
             $template->assessments = [];
 
             foreach ($summatives as $summative) {
-                $assessitem = $this->build_assess_item($summative, $mods);
+                $assessitem = $this->build_assess_item($summative, $mods, $course);
                 if ($assessitem) {
                     $template->assessments[] = $assessitem;
                 }
@@ -104,10 +106,10 @@ class assessments implements renderable, templatable {
      *
      * @param stdClass $summative The summative assessment record.
      * @param array $mods The course modules map.
+     * @param stdClass $course The current course.
      * @return stdClass|null The assessment item, or null if it should be skipped.
      */
-    private function build_assess_item(stdClass $summative, array $mods): ?stdClass {
-        global $COURSE;
+    private function build_assess_item(stdClass $summative, array $mods, stdClass $course): ?stdClass {
 
         // We use isset just in case turnitin added something weird.
         if (!isset($mods[$summative->cmid])) {
@@ -132,7 +134,7 @@ class assessments implements renderable, templatable {
         $assess->url = new moodle_url('/mod/' . $mod->modname . '/view.php', ['id' => $mod->id]);
         $assess->name = $summative->displayname ?? $mod->name;
         $assess->icon = $mod->get_icon_url()->out(false);
-        $assess->section = get_section_name($COURSE, $mod->get_section_info());
+        $assess->section = get_section_name($course, $mod->get_section_info());
 
         return $assess;
     }

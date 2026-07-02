@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\ExpectationException;
+use Moodle\BehatExtension\Exception\SkippedException;
 use local_assess_type\assess_type;
 
 require_once(__DIR__ . '/../../../../../lib/behat/behat_base.php');
@@ -68,7 +69,7 @@ class behat_format_ucl extends behat_base {
     /**
      * Mark an activity as summative in local_assess_type.
      *
-     * @Given /^the activity with idnumber "(?P<idnumber>(?:[^"\\]|\\.)*)" in course "(?P<courseshortname>(?:[^"\\]|\\.)*)" is marked as summative$/
+     * @Given /^the activity with idnumber "(?P<idnumber>[^"]*)" in course "(?P<courseshortname>[^"]*)" is marked as summative$/
      * @param string $idnumber
      * @param string $courseshortname
      */
@@ -76,13 +77,13 @@ class behat_format_ucl extends behat_base {
         global $DB;
 
         if (!class_exists(assess_type::class)) {
-            throw new \RuntimeException('local_assess_type plugin is required for this step.');
+            throw new SkippedException('local_assess_type plugin is not installed in this environment.');
         }
 
         $course = $DB->get_record('course', ['shortname' => $courseshortname], 'id', MUST_EXIST);
         $cm = $DB->get_record('course_modules', ['course' => $course->id, 'idnumber' => $idnumber], 'id', MUST_EXIST);
 
-        // 1 = summative (local_assess_type\assess_type::ASSESS_TYPE_SUMMATIVE).
+        // Type 1 means summative.
         assess_type::update_type((int)$course->id, 1, (int)$cm->id);
     }
 }

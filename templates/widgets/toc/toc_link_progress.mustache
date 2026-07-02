@@ -13,13 +13,18 @@
 }}
 {{!
     @template format_ucl/widgets/toc/toc_link_progress
-    Template purpose and description.
+    Progress indicator for a TOC. Can be updated with JS.
     Classes required for JS:
-    * none
+    * .pie
+    * .sr-only
     Data attributes required for JS:
-    * none
+    * data-id on .progress-indicator
     Context variables required for this template:
-    * attributes Array of name / value pairs.
+    * id Section id.
+    * total Number of completable activities in section.
+    * complete Number of completed activities in section.
+    * percentage Completion percentage.
+    * done Whether the section is fully complete.
     Example context (json):
     {
         "id": 42,
@@ -29,15 +34,14 @@
         "done": true
     }
 }}
-<div class="progress-indicator ml-auto" style="max-height: 36px;">
+<div class="progress-indicator ml-auto" style="max-height: 36px;" data-id="{{id}}">
     {{#total}}
-    <div data-id="{{id}}"
-        data-percentage="{{percentage}}"
-        class="pie animate {{#done}} complete {{/done}}"
+    <div class="pie animate {{#done}} complete {{/done}}"
         style="--p:{{percentage}};--c:green"
         data-toggle="tooltip" data-placement="right"
         title='{{#str}} xofycomplete, format_ucl, { "complete" : "{{complete}}", "total": "{{total}}" } {{/str}}'
-        aria-hidden="true">
+        aria-hidden="true"
+        data-behat-percentage="{{percentage}}">
             <i class="fa-solid fa-check fa-xs text-white"></i>
     </div>
 

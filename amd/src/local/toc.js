@@ -79,7 +79,7 @@ export default class Component extends BaseComponent {
         document.addEventListener(manualCompletionEvent, (event) => {
             const detail = event.detail || {};
             const cm = this.reactive.get('cm', detail.cmid);
-            const currentProgress = this.element.querySelector(`.pie[data-id]`);
+            const currentProgress = this.element.querySelector(`.progress-indicator[data-id]`);
             const sectionId = (cm && cm.sectionid) || (currentProgress && currentProgress.dataset.id);
 
             if (sectionId) {
@@ -87,7 +87,7 @@ export default class Component extends BaseComponent {
             }
         });
 
-        const currentProgress = this.element.querySelector(`.pie[data-id]`);
+        const currentProgress = this.element.querySelector(`.progress-indicator[data-id]`);
         if (currentProgress) {
             this._updateSectionProgress(currentProgress.dataset.id);
         }
@@ -133,26 +133,28 @@ export default class Component extends BaseComponent {
      */
     _renderProgress(progress) {
         const {sectionId, total, done} = progress;
-        const progressElement = this.element.querySelector(`.pie[data-id="${sectionId}"]`);
+        const progressContainer = this.element.querySelector(`.progress-indicator[data-id="${sectionId}"]`);
+        const progressElement = progressContainer?.querySelector('.pie');
         if (!progressElement || total <= 0) {
             return;
         }
 
         const percentage = Math.round((done / total) * 100);
-        const currentPercentage = Number(progressElement.getAttribute('data-percentage')) || 0;
+        const currentPercentage = Number(progressElement.getAttribute('data-behat-percentage')) || 0;
 
         if (currentPercentage === percentage) {
             return;
         }
 
+        const srOnlyElement = progressContainer?.querySelector('.sr-only');
         const fallbackTooltip = `${done} of ${total} complete`;
         progressElement.setAttribute('title', fallbackTooltip);
-        progressElement.setAttribute('aria-label', fallbackTooltip);
+        srOnlyElement.textContent = fallbackTooltip;
 
         getString('xofycomplete', 'format_ucl', {complete: done, total})
             .then((tooltip) => {
                 progressElement.setAttribute('title', tooltip);
-                progressElement.setAttribute('aria-label', tooltip);
+                srOnlyElement.textContent = tooltip;
                 return tooltip;
             })
             .catch(() => {
@@ -162,12 +164,14 @@ export default class Component extends BaseComponent {
         // Mark fully complete sections for styling.
         progressElement.classList.toggle('complete', percentage === 100);
 
+        // Add the percentage value for Behat.
+        progressElement.setAttribute('data-behat-percentage', percentage);
+
         // Animate from the current value to the new value.
         let value = currentPercentage;
         const interval = setInterval(() => {
             value += percentage > value ? 1 : -1;
             progressElement.style.setProperty('--p', value);
-            progressElement.setAttribute('data-percentage', value);
 
             // Stop once we hit the target.
             if (value === percentage) {

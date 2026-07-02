@@ -13,13 +13,26 @@
 }}
 {{!
     @template format_ucl/widgets/toc/toc_link
-    Template purpose and description.
+    Single TOC section link item.
     Classes required for JS:
-    * none
+    * .current
+    * .dimmed
     Data attributes required for JS:
-    * none
+    * data-for="tocsection" on the list item
+    * data-id on the list item
+    * data-for="section_title" on the title element
+    * data-section on the list item (used by Behat selectors)
+    Element IDs required for JS:
+    * id="tocsection-{{id}}" on the list item
     Context variables required for this template:
-    * attributes Array of name / value pairs.
+    * id Section id.
+    * section Section number.
+    * name Section display name.
+    * url Section link URL.
+    * highlight Whether this section is highlighted as current.
+    * visible Whether this section is visible to students.
+    * active Whether this section is the currently viewed section.
+    * progress Optional context for the toc_link_progress partial.
     Example context (json):
     {
         "id": 3,

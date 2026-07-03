@@ -169,6 +169,8 @@ class content extends content_base {
             // Set first section to enable adding ucl metadata.
             $data->initialsection = $section;
             $data->hookdataintrohtml = '';
+            // Inert property populated by external plugins via the after_export_for_template hook.
+            $data->assessments = null;
         }
         return $data;
     }

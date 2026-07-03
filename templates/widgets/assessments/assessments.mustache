@@ -1,0 +1,82 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template format_ucl/widgets/assessments/assessments
+
+    Display assessment information grouped by delivery.
+
+    The property is populated by an external plugin (e.g. local_ucl_hooks) via the
+    after_export_for_template hook. This format only presents the supplied data. Each delivery
+    lists its assessment components (name and weighting).
+
+    Classes required for JS:
+    * none
+    Data attributes required for JS:
+    * none
+    Context variables required for this template:
+    * deliveries Array of deliveries, each with a key, name and a components array.
+
+    Example context (json):
+    {
+        "deliveries": [
+            {
+                "key": "STEP0025-A7P-T2-2025",
+                "name": "Climate, Innovation and Sustainability Policy",
+                "components": [
+                    {
+                        "name": "In Class Presentation",
+                        "weight": 25
+                    },
+                    {
+                        "name": "Policy Analysis Paper",
+                        "weight": 75
+                    }
+                ]
+            }
+        ]
+    }
+}}
+<div class="behat-ucl-assessments mt-4">
+    <h3>{{#str}} assessments, format_ucl {{/str}}</h3>
+
+    {{#deliveries}}
+        <div class="behat-ucl-assessments-group mb-3">
+            <h4 class="h5 mb-0 behat-ucl-assessments-group-name">{{name}}</h4>
+            <div class="small text-muted mb-2 behat-ucl-assessments-group-key">{{key}}</div>
+
+            <table class="table table-sm behat-ucl-assessments-table">
+                <thead>
+                    <tr>
+                        <th scope="col">{{#str}} assessments:name, format_ucl {{/str}}</th>
+                        <th scope="col">{{#str}} assessments:weight, format_ucl {{/str}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#components}}
+                        <tr class="behat-ucl-assessments-row">
+                            <td class="behat-ucl-assessments-cell-name">{{name}}</td>
+                            <td>{{#weight}}{{weight}}%{{/weight}}{{^weight}}&mdash;{{/weight}}</td>
+                        </tr>
+                    {{/components}}
+                </tbody>
+            </table>
+        </div>
+    {{/deliveries}}
+
+    {{^deliveries}}
+        <div class="alert alert-info behat-ucl-assessments-none">
+            {{#str}} assessments:none, format_ucl {{/str}}
+        </div>
+    {{/deliveries}}
+</div>

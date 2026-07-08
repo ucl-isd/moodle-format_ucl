@@ -147,11 +147,13 @@ export default class Component extends BaseComponent {
         const srOnlyElement = progressContainer?.querySelector('.sr-only');
         const fallbackTooltip = `${done} of ${total} complete`;
         progressElement.setAttribute('title', fallbackTooltip);
+        progressElement.setAttribute('data-original-title', fallbackTooltip);
         srOnlyElement.textContent = fallbackTooltip;
 
         getString('xofycomplete', 'format_ucl', {complete: done, total})
             .then((tooltip) => {
                 progressElement.setAttribute('title', tooltip);
+                progressElement.setAttribute('data-original-title', tooltip);
                 srOnlyElement.textContent = tooltip;
                 return tooltip;
             })

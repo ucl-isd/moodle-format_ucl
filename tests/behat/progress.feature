@@ -11,7 +11,7 @@ Feature: TOC progress is shown on load and updates after manual completion
       | student1 | Student   | 1        | student1@example.com |
     And the following "course" exists:
       | fullname         | Course 1 |
-      | shortname        | C1       |
+      | shortname        | PROG1    |
       | format           | ucl      |
       | coursedisplay    | 0        |
       | numsections      | 3        |
@@ -19,44 +19,44 @@ Feature: TOC progress is shown on load and updates after manual completion
       | enablecompletion | 1        |
     And the following "course enrolments" exist:
       | user     | course | role           |
-      | teacher1 | C1     | editingteacher |
-      | student1 | C1     | student        |
+      | teacher1 | PROG1  | editingteacher |
+      | student1 | PROG1  | student        |
     And the following "activities" exist:
       | activity | course | idnumber | name               | section | completion |
-      | page     | C1     | page1    | Activity sample 1  | 2       | 1          |
-      | page     | C1     | page2    | Activity sample 2  | 2       | 1          |
+      | page     | PROG1  | page1    | Activity sample 1  | 2       | 1          |
+      | page     | PROG1  | page2    | Activity sample 2  | 2       | 1          |
     And I change window size to "large"
 
   Scenario: TOC progress is not output when course completion is disabled
     Given the following "course" exists:
       | fullname         | Course 2 |
-      | shortname        | C2       |
+      | shortname        | PROG2    |
       | format           | ucl      |
       | numsections      | 3        |
       | enablecompletion | 0        |
     And the following "course enrolments" exist:
       | user     | course | role    |
-      | student1 | C2     | student |
+      | student1 | PROG2  | student |
     And the following "activities" exist:
       | activity | course | idnumber | name               | section | completion |
-      | page     | C2     | pagec2   | Activity sample C2 | 2       | 1          |
-    And I am on the "C2" "Course" page logged in as "student1"
+      | page     | PROG2  | pagec2   | Activity sample C2 | 2       | 1          |
+    And I am on the "PROG2" "Course" page logged in as "student1"
     Then "#toc .progress-indicator[data-id] .pie" "css_element" should not exist
 
   Scenario: TOC progress is hidden when editing mode is on
-    Given I am on the "C1" "Course" page logged in as "teacher1"
+    Given I am on the "PROG1" "Course" page logged in as "teacher1"
     And I turn editing mode on
     Then "#toc .progress-indicator[data-id] .pie" "css_element" should not exist
 
   Scenario: TOC progress is not output for a section with no completable activities
     Given the following "activities" exist:
       | activity | course | idnumber | name                        | section | completion |
-      | page     | C1     | page2    | Activity without completion | 3       | 0          |
-    And I am on the "C1" "Course" page logged in as "student1"
+      | page     | PROG1  | page2    | Activity without completion | 3       | 0          |
+    And I am on the "PROG1" "Course" page logged in as "student1"
     Then "[data-section='3'] .progress-indicator[data-id] .pie" "css_element" should not exist in the "#toc" "css_element"
 
   Scenario: TOC progress updates after manual completion
-    Given I am on the "C1" "Course" page logged in as "student1"
+    Given I am on the "PROG1" "Course" page logged in as "student1"
     And I click on "Section 2" "link" in the "#toc" "css_element"
     And "#toc [data-section='2'] .progress-indicator[data-id] .pie" "css_element" should exist
     And I wait until "Mark as done" "button" exists

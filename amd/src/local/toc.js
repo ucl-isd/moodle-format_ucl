@@ -72,10 +72,22 @@ export default class Component extends BaseComponent {
      * Section progress updates on load and when completion is toggled.
      */
     _initSectionProgress() {
-        document.addEventListener(CourseEvents.manualCompletionEvent, (event) => {
+        const manualCompletionEvent = CourseEvents.manualCompletionEvent
+            || CourseEvents.manualCompletionToggled
+            || 'core_course:manualcompletiontoggled';
+
+        document.addEventListener(manualCompletionEvent, (event) => {
             const detail = event.detail || {};
             const cm = this.reactive.get('cm', detail.cmid);
+            if (!cm?.sectionid) {
+                return;
+            }
+
             this._updateSectionProgress(cm.sectionid);
+        });
+
+        this.element.querySelectorAll('.progress-indicator[data-id]').forEach((indicator) => {
+            this._updateSectionProgress(indicator.dataset.id);
         });
     }
 

@@ -72,25 +72,11 @@ export default class Component extends BaseComponent {
      * Section progress updates on load and when completion is toggled.
      */
     _initSectionProgress() {
-        // Core stuff.
-        const manualCompletionEvent = (CourseEvents && CourseEvents.manualCompletionToggled)
-            || 'core_course:manualcompletiontoggled';
-
-        document.addEventListener(manualCompletionEvent, (event) => {
+        document.addEventListener(CourseEvents.manualCompletionEvent, (event) => {
             const detail = event.detail || {};
             const cm = this.reactive.get('cm', detail.cmid);
-            const currentProgress = this.element.querySelector(`.progress-indicator[data-id]`);
-            const sectionId = (cm && cm.sectionid) || (currentProgress && currentProgress.dataset.id);
-
-            if (sectionId) {
-                this._updateSectionProgress(sectionId);
-            }
+            this._updateSectionProgress(cm.sectionid);
         });
-
-        const currentProgress = this.element.querySelector(`.progress-indicator[data-id]`);
-        if (currentProgress) {
-            this._updateSectionProgress(currentProgress.dataset.id);
-        }
     }
 
     /**
@@ -204,23 +190,17 @@ export default class Component extends BaseComponent {
             return;
         }
 
-        this._updateOrder({
-            container: this.element,
-            neworder: sectionlist,
-            allitems: this.sections,
-        });
+        this._updateOrder(this.element, sectionlist, this.sections);
     }
 
     /**
      * Reorder section elements to match the latest section ID order.
      *
-     * @param {Object} orderData order details
-     * @param {Element} orderData.container the parent list element
-     * @param {Array} orderData.neworder ordered section IDs
-     * @param {Array} orderData.allitems section elements keyed by section ID
+     * @param {Element} container the parent list element
+     * @param {Array} neworder ordered section IDs
+     * @param {Array} allitems section elements keyed by section ID
      */
-    _updateOrder(orderData) {
-        const {container, neworder, allitems} = orderData;
+    _updateOrder(container, neworder, allitems) {
 
         // Empty lists should not be visible.
         if (!neworder.length) {

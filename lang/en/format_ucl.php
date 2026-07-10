@@ -59,6 +59,11 @@ $string['forcontact'] = 'for contact {$a}';
 $string['hiddenfromstudents'] = 'Hidden from students';
 $string['hidefromothers'] = 'Hide';
 $string['highlight'] = 'Highlight';
+$string['linktoguidance'] = "For more information see: 
+<a 
+href=\"https://liveuclac.sharepoint.com/sites/ISDDigitalEducationBaseline/SitePages/Moodle-structure-and-navigation(1).aspx?csf=1&web=1&e=ScGCHI&CID=184f4f72-7f29-4562-b1be-0e033bd07b51&TeamsCID=28b7955e-a9f6-4ed1-a951-88d9d2e1c47d&linkOpenTime=1780417585708#guidance-how-to-structure-content-in-a-moodle-course\"
+target=\"_blank\">
+How to structure content</a>";
 $string['messageprovider:expiry'] = 'Expiry message';
 $string['messageprovider:submission'] = 'Submission message';
 $string['name'] = 'Name';

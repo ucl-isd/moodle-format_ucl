@@ -25,6 +25,7 @@ Feature: TOC progress is shown on load and updates after manual completion
       | activity | course | idnumber | name               | section | completion |
       | page     | PROG1  | page1    | Activity sample 1  | 2       | 1          |
       | page     | PROG1  | page2    | Activity sample 2  | 2       | 1          |
+      | page     | PROG1  | page0    | Activity sample 0  | 0       | 1          |
     And I change window size to "large"
 
   Scenario: TOC progress is not output when course completion is disabled
@@ -66,3 +67,14 @@ Feature: TOC progress is shown on load and updates after manual completion
     Then the "data-behat-percentage" attribute of "#toc [data-section='2'] .progress-indicator[data-id] .pie" "css_element" should contain "50"
     When I reload the page
     Then the "data-behat-percentage" attribute of "#toc [data-section='2'] .progress-indicator[data-id] .pie" "css_element" should contain "50"
+
+  Scenario: TOC progress in section 0 updates after manual completion
+    Given I am on the "PROG1" "Course" page logged in as "student1"
+    And "#toc [data-section='0'] .progress-indicator[data-id] .pie" "css_element" should exist
+    And I wait until "Mark as done" "button" exists
+    And the "data-behat-percentage" attribute of "#toc [data-section='0'] .progress-indicator[data-id] .pie" "css_element" should contain "0"
+    When I press "Mark as done"
+    And I wait until "Done" "button" exists
+    Then the "data-behat-percentage" attribute of "#toc [data-section='0'] .progress-indicator[data-id] .pie" "css_element" should contain "100"
+    When I reload the page
+    Then the "data-behat-percentage" attribute of "#toc [data-section='0'] .progress-indicator[data-id] .pie" "css_element" should contain "100"

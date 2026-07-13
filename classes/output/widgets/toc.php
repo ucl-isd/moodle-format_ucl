@@ -163,6 +163,10 @@ class toc implements renderable, templatable {
             $data->modcount = $modcount;
         }
 
+        // Only show if link is set.
+        $data->linktoguidance = format_ucl\config::instance()->get_link_to_guidance();
+        $data->showguidance = $data->showguidance && $data->linktoguidance;
+
         // Course image check.
         if (!course_summary_exporter::get_course_image($course)) {
             $data->showwarning = true;

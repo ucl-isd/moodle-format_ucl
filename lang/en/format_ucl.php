@@ -35,6 +35,8 @@ $string['addsections'] = 'Add section';
 $string['addtextmedia'] = 'Add text and media';
 $string['config:displaycontacts'] = 'Display course contacts';
 $string['config:displaycontacts:desc'] = 'Display course contacts';
+$string['config:linktoguidance'] = 'Link to baseline guidance';
+$string['config:linktoguidance:desc'] = 'Use this setting to add a link to guidance for course design';
 $string['config:recommendedmaxsections'] = 'Number of sections to suggest as Tip';
 $string['config:recommendedmaxsections:desc'] = 'The format gives the user a tip when they create more sections than advised. This setting determines the maximum number of sections that the tip recommends.';
 $string['coursecontacts'] = 'Course contacts';
@@ -59,11 +61,7 @@ $string['forcontact'] = 'for contact {$a}';
 $string['hiddenfromstudents'] = 'Hidden from students';
 $string['hidefromothers'] = 'Hide';
 $string['highlight'] = 'Highlight';
-$string['linktoguidance'] = "For more information see:
-<a
-href=\"https://liveuclac.sharepoint.com/sites/ISDDigitalEducationBaseline/SitePages/Moodle-structure-and-navigation(1).aspx?csf=1&web=1&e=ScGCHI&CID=184f4f72-7f29-4562-b1be-0e033bd07b51&TeamsCID=28b7955e-a9f6-4ed1-a951-88d9d2e1c47d&linkOpenTime=1780417585708#guidance-how-to-structure-content-in-a-moodle-course\"
-target=\"_blank\">
-How to structure content</a>";
+$string['linktoguidance'] = 'For more information see: <a href="{$a}" target="_blank">How to structure content</a>';
 $string['messageprovider:expiry'] = 'Expiry message';
 $string['messageprovider:submission'] = 'Submission message';
 $string['name'] = 'Name';

@@ -33,6 +33,15 @@ if ($hassiteconfig) {
 
     // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
     if ($ADMIN->fulltree) {
+        // Link to guidance.
+        $settings->add(new admin_setting_configtext(
+            'format_ucl/linktoguidance',
+            get_string('config:linktoguidance', 'format_ucl'),
+            get_string('config:linktoguidance:desc', 'format_ucl'),
+            'https://example.com/guidance',
+            PARAM_INT,
+            2
+        ));
         // Advisory number of sections for Tip.
         $settings->add(new admin_setting_configtext(
             'format_ucl/recommendedmaxsections',

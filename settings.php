@@ -39,8 +39,7 @@ if ($hassiteconfig) {
             get_string('config:linktoguidance', 'format_ucl'),
             get_string('config:linktoguidance:desc', 'format_ucl'),
             'https://example.com/guidance',
-            PARAM_INT,
-            2
+            PARAM_URL
         ));
         // Advisory number of sections for Tip.
         $settings->add(new admin_setting_configtext(

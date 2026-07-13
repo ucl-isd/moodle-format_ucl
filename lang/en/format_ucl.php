@@ -48,6 +48,7 @@ $string['deletepresetconfirm'] = 'Are you sure you want to delete the section "{
 $string['deletesection'] = 'Delete';
 $string['description'] = 'Description';
 $string['description:placeholder'] = 'e.g. Course support enquiries';
+$string['due'] = 'Due';
 $string['duplicate'] = 'Duplicate';
 $string['editcourseroles'] = 'Edit course roles';
 $string['editcustomcontact'] = 'Edit custom contact';

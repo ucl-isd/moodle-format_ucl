@@ -124,6 +124,3 @@ Feature: Appropriate Tips are shown to user
     And ".behat-toomanysections" "css_element" should exist
     And ".behat-toofewmods" "css_element" should exist
     And ".behat-linktoguidance" "css_element" should exist
-
-
-

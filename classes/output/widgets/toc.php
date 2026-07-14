@@ -61,7 +61,7 @@ class toc implements renderable, templatable {
 
         $activesection = optional_param('id', 0, PARAM_INT);
         $context = context_course::instance($course->id);
-        $caneditcourse = has_capability('moodle/course:update', $context);
+        $canviewhidden = has_capability('moodle/course:update', $context);
         $coursesections = $this->format->get_sections();
         $currentsectionnum = $this->format->get_sectionnum();
 
@@ -71,7 +71,34 @@ class toc implements renderable, templatable {
 
         $data = new stdClass();
         foreach ($coursesections as $section) {
-            if ($section->uservisible || $caneditcourse) {
+            // Editor warning data.
+            if ($canviewhidden) {
+                if ($section->section) { // Don't count section 0.
+                    if ($section->visible) {
+                        $visiblecount++;
+
+                        // Sections without a name.
+                        if (!$section->name) {
+                            $namecount++;
+                        }
+
+                        // Sections with one or less mods.
+                        $modinfo = $this->format->get_modinfo();
+                        $cmids = $modinfo->sections[$section->section] ?? [];
+                        if (count($cmids) < 2) {
+                            $modcount++;
+                        }
+
+                        // Sections with lots of mods, and no labels.
+                        // phpcs:disable Generic.CodeAnalysis.EmptyStatement.DetectedIf
+                        if (count($cmids) > 5) {
+                            // TODO - not sure yet.
+                        }
+                    }
+                }
+            }
+
+            if ($section->uservisible || $canviewhidden) {
                 $s = new stdClass();
                 $s->id = $section->id;
                 $s->section = $section->section;
@@ -94,45 +121,13 @@ class toc implements renderable, templatable {
                 // Progress.
                 if ($course->enablecompletion) {
                     if (!$USER->editing) {
-                        $s->progress = $this->format_ucl_section_progress($section);
+                        $s->progress = self::format_ucl_section_progress($section, $course);
                     }
                 }
 
                 // Add to template data.
                 $data->coursesection[] = $s;
             }
-
-            // Editor warning data.
-            if (!$caneditcourse) {
-                continue;
-            }
-            if ($section->section) { // Don't count section 0.
-                if ($section->visible) {
-                    $visiblecount++;
-
-                    // Sections without a name.
-                    if (!$section->name) {
-                        $namecount++;
-                    }
-
-                    // Sections with one or less mods.
-                    $modinfo = $this->format->get_modinfo();
-                    $cmids = $modinfo->sections[$section->section] ?? [];
-                    if (count($cmids) < 2) {
-                        $modcount++;
-                    }
-
-                    // Sections with lots of mods, and no labels.
-                    // phpcs:disable Generic.CodeAnalysis.EmptyStatement.DetectedIf
-                    if (count($cmids) > 5) {
-                        // TODO - not sure yet.
-                    }
-                }
-            }
-        }
-
-        if (!$caneditcourse) {
-            return $data;
         }
 
         // Editor warnings.
@@ -205,46 +200,60 @@ class toc implements renderable, templatable {
      * Given a section, return the data for progress.
      *
      * @param section_info $section
-     * @return stdClass
+     * @param stdClass $course
+     * @param int|null $userid
+     * @return stdClass|null
      */
-    public function format_ucl_section_progress(section_info $section): stdClass {
-        $course = $this->format->get_course();
-        // Get all the Moodle things.
-        $modinfo = $this->format->get_modinfo();
-        $completioninfo = new completion_info($course);
-        $cmids = $modinfo->sections[$section->section] ?? [];
+    public static function format_ucl_section_progress(
+        section_info $section,
+        stdClass $course,
+        ?int $userid = null
+    ): ?stdClass {
+        global $USER;
 
-        // Count vars.
-        $total = 0;
-        $complete = 0;
-
-        // Loop through cm in this section.
-        foreach ($cmids as $cmid) {
-            $thismod = $modinfo->cms[$cmid];
-            if ($thismod->uservisible) {
-                if ($completioninfo->is_enabled($thismod) != COMPLETION_TRACKING_NONE) {
-                    $total++;
-                    $completiondata = $completioninfo->get_data($thismod, true);
-                    if (
-                        $completiondata->completionstate == COMPLETION_COMPLETE ||
-                        $completiondata->completionstate == COMPLETION_COMPLETE_PASS
-                    ) {
-                        $complete++;
-                    }
-                }
-            }
+        // Make sure we continue with a valid userid.
+        if (empty($userid)) {
+            $userid = $USER->id;
         }
+
+        // Get all the Moodle things.
+        $cmids = explode(',', $section->sequence);
+        $completion = new \completion_info($course);
+
+        // First, let's make sure completion is enabled.
+        if (!$completion->is_enabled()) {
+            return null;
+        }
+
+        if (!$completion->is_tracked_user($userid)) {
+            return null;
+        }
+
+        static $activitieswithcompletion = null;
+
+        // Get the modules that support completion.
+        if (is_null($activitieswithcompletion)) {
+            $activitieswithcompletion = $completion->get_user_activities_with_completion($userid);
+        }
+
+        // Only include the modules in this section.
+        $modules = array_intersect_key($activitieswithcompletion, array_flip($cmids));
+
+        if (!$total = count($modules)) {
+            return null;
+        }
+
+        // Get the number of modules that have been completed.
+        $complete = $completion->count_modules_completed($userid, array_keys($modules));
 
         // Return data.
         $data = new stdClass();
-        if ($total) {
-            $data->id = $section->id;
-            $data->total = $total;
-            $data->complete = $complete;
-            $data->percentage = round(($complete / $total) * 100);
-            if ($data->percentage == 100) {
-                $data->done = true;
-            }
+        $data->id = $section->id;
+        $data->total = $total;
+        $data->complete = $complete;
+        $data->percentage = round(($complete / $total) * 100);
+        if ($data->percentage == 100) {
+            $data->done = true;
         }
         return $data;
     }

@@ -24,6 +24,7 @@
  * @author      Amanda Doughty <m.doughty@ucl.ac.uk>
  */
 
+use format_ucl\external\get_section_progress;
 use format_ucl\external\set_contact_visibility;
 
 defined('MOODLE_INTERNAL') || die();
@@ -33,6 +34,12 @@ $functions = [
         'classname' => set_contact_visibility::class,
         'description' => '',
         'type' => 'write',
+        'ajax' => true,
+    ],
+    'format_ucl_get_section_progress' => [
+        'classname' => get_section_progress::class,
+        'description' => '',
+        'type' => 'read',
         'ajax' => true,
     ],
 ];

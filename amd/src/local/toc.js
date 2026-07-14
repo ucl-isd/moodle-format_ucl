@@ -24,9 +24,9 @@
  */
 
 import {BaseComponent} from 'core/reactive';
-import CourseEvents from 'core_course/events';
 import {getCurrentCourseEditor} from 'core_courseformat/courseeditor';
 import {get_string as getString} from 'core/str';
+import Ajax from 'core/ajax';
 
 export default class Component extends BaseComponent {
 
@@ -64,59 +64,34 @@ export default class Component extends BaseComponent {
         sections.forEach((section) => {
             this.sections[section.dataset.id] = section;
         });
+    }
 
-        this._initSectionProgress();
+    getWatchers() {
+        return [
+            {watch: `section:deleted`, handler: this._deleteSection},
+            // Sections and cm sorting.
+            {watch: `course.sectionlist:updated`, handler: this._refreshCourseToc},
+            // Progress updates.
+            {watch: `cm.completionstate:updated`, handler: this._refreshCompletion},
+        ];
     }
 
     /**
-     * Section progress updates on load and when completion is toggled.
-     */
-    _initSectionProgress() {
-        const manualCompletionEvent = CourseEvents.manualCompletionEvent
-            || CourseEvents.manualCompletionToggled
-            || 'core_course:manualcompletiontoggled';
-
-        document.addEventListener(manualCompletionEvent, (event) => {
-            const detail = event.detail || {};
-            const cm = this.reactive.get('cm', detail.cmid);
-            if (!cm?.sectionid) {
-                return;
-            }
-
-            this._updateSectionProgress(cm.sectionid);
-        });
-
-        this.element.querySelectorAll('.progress-indicator[data-id]').forEach((indicator) => {
-            this._updateSectionProgress(indicator.dataset.id);
-        });
-    }
-
-    /**
-     * Count done items in one section, then pass the totals to the UI.
+     * Section progress updates when completion is toggled.
      *
-     * @param {string|number} sectionId the section id
+     * @param {Object} details the update details.
+     * @param {Object} details.element the element data.
      */
-    _updateSectionProgress(sectionId) {
-        const section = this.reactive.get('section', sectionId);
-        if (!section) {
-            return;
-        }
+    async _refreshCompletion({element}) {
+        const cm = this.reactive.get('cm', element.id);
+        const sectionId = cm.sectionid;
+        const progress = await Ajax.call([{
+            methodname: 'format_ucl_get_section_progress',
+            args: {sectionid: sectionId}
+        }])[0];
 
-        const cmlist = section.cmlist || [];
-        let total = 0;
-        let done = 0;
-
-        cmlist.forEach((cmId) => {
-            const cm = this.reactive.get('cm', cmId);
-            if (!cm || typeof cm.completionstate === 'undefined') {
-                return;
-            }
-
-            total++;
-            if (cm.isoverallcomplete === true || cm.completionstate === 1 || cm.completionstate === 2) {
-                done++;
-            }
-        });
+        const total = progress.total;
+        const done = progress.completed;
 
         this._renderProgress({sectionId, total, done});
     }
@@ -178,14 +153,6 @@ export default class Component extends BaseComponent {
                 clearInterval(interval);
             }
         }, 20);
-    }
-
-    getWatchers() {
-        return [
-            {watch: `section:deleted`, handler: this._deleteSection},
-            // Sections and cm sorting.
-            {watch: `course.sectionlist:updated`, handler: this._refreshCourseToc},
-        ];
     }
 
     /**

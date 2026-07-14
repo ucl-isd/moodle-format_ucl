@@ -63,10 +63,7 @@ class config {
         if (empty($this->config->linktoguidance)) {
             return null;
         }
-        if (!$value = clean_param($this->config->linktoguidance, PARAM_URL)) {
-            return null;
-        }
-        return $value;
+        return $this->config->linktoguidance;
     }
 
     /**

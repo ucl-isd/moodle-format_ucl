@@ -7,7 +7,7 @@ Feature: Appropriate Tips are shown to user
   Background:
     Given the following "courses" exist:
       | fullname | shortname | format | coursedisplay | numsections | startdate     |
-      | Course 1 | C1        | ucl    | 0             | 5           | ##yesterday## |
+      | Course 1 | C1        | ucl    | 0             | 1           | ##yesterday## |
       | Course 2 | C2        | ucl    | 0             | 17          | ##yesterday## |
 
   Scenario: Tips do not appear on section pages
@@ -31,14 +31,19 @@ Feature: Appropriate Tips are shown to user
 
   @javascript
   Scenario: Section name tip is shown for unnamed sections
+    Given I am on the "C1" "Course" page logged in as "admin"
+    # "1 unnamed section"
+    Then ".behat-unnamedsections" "css_element" should exist
+    And I should see "1" in the ".behat-namecount" "css_element"
+
+  @javascript
+  Scenario: Section name tip is not shown when all sections are named
     Given I log in as "admin"
     And I am on the "Course 1 > New section" "course > section" page
     And I turn editing mode on
     When I set the field "Edit section name" in the ".ucl-section-name" "css_element" to "Stamptown"
     And I am on "Course 1" course homepage
-    # "4 unnamed sections"
-    Then ".behat-unnamedsections" "css_element" should exist
-    And I should see "4" in the ".behat-namecount" "css_element"
+    Then ".behat-unnamedsections" "css_element" should not exist
 
   Scenario: Number of sections Tip is not shown when suggested max is not exceeded
     When I am on the "C1" "Course" page logged in as "admin"
@@ -54,12 +59,11 @@ Feature: Appropriate Tips are shown to user
     Given I log in as "admin"
     And I navigate to "Plugins > Course formats > UCL Format" in site administration
     And I set the following fields to these values:
-      | Number of sections to suggest as Tip | 4 |
+      | Number of sections to suggest as Tip | 20 |
     And I press "Save changes"
-    When I am on the "C1" "Course" page logged in as "admin"
+    When I am on the "C2" "Course" page logged in as "admin"
     # "Courses should have a maximum of 4 sections"
-    Then ".behat-toomanysections" "css_element" should exist
-    And I should see "4" in the ".behat-sectioncount" "css_element"
+    Then ".behat-toomanysections" "css_element" should not exist
 
   Scenario: Section content tip is shown for sections with less than 2 activities/resources
     Given the following "activities" exist:
@@ -75,3 +79,51 @@ Feature: Appropriate Tips are shown to user
     # "3 sections have one or less activities/resources"
     Then ".behat-toofewmods" "css_element" should exist
     And I should see "3" in the ".behat-modcount" "css_element"
+
+  Scenario: Section content tip is shown for sections with less than 2 activities/resources
+    Given the following "activities" exist:
+      | activity | name                 | intro                       | course | section | idnumber  |
+      | assign   | Test assignment name | Test assignment description | C2     | 1       | assign1   |
+      | book     | Test book name       | Test book description       | C2     | 2       | book1     |
+      | choice   | Test choice name     | Test choice description     | C2     | 3       | choice1   |
+      | data     | Test database name   | Test database description   | C2     | 3       | data1     |
+      | feedback | Test feedback name   | Test feedback description   | C2     | 4       | feedback1 |
+      | folder   | Test folder name     | Test folder description     | C2     | 5       | folder1   |
+      | glossary | Test glossary name   | Test glossary description   | C2     | 5       | glossary1 |
+    When I am on the "C2" "Course" page logged in as "admin"
+    # "15 sections have one or less activities/resources"
+    Then ".behat-toofewmods" "css_element" should exist
+    And I should see "15" in the ".behat-modcount" "css_element"
+
+  @javascript
+  Scenario: Link to guidance is shown if any other warning (excluding no course image) is shown
+    Given the following "activities" exist:
+      | activity | name                 | intro                       | course | section | idnumber  |
+      | assign   | Test assignment name | Test assignment description | C1     | 1       | assign1   |
+      | book     | Test book name       | Test book description       | C1     | 1       | book1     |
+      | choice   | Test choice name     | Test choice description     | C1     | 1       | choice1   |
+    And I log in as "admin"
+    And I navigate to "Plugins > Course formats > UCL Format" in site administration
+    And I set the following fields to these values:
+      | Number of sections to suggest as Tip | 1 |
+    And I press "Save changes"
+    And I am on the "Course 1 > New section" "course > section" page
+    And I turn editing mode on
+    And I set the field "Edit section name" in the ".ucl-section-name" "css_element" to "Stamptown"
+    And I am on "Course 1" course homepage
+    # Only the no course image warning should exist
+    Then ".behat-nocourseimg" "css_element" should exist
+    And ".behat-unnamedsections" "css_element" should not exist
+    And ".behat-toomanysections" "css_element" should not exist
+    And ".behat-toofewmods" "css_element" should not exist
+    And ".behat-linktoguidance" "css_element" should not exist
+
+    When I click on ".behat-add-section" "css_element"
+    And I press "Save changes"
+    Then ".behat-unnamedsections" "css_element" should exist
+    And ".behat-toomanysections" "css_element" should exist
+    And ".behat-toofewmods" "css_element" should exist
+    And ".behat-linktoguidance" "css_element" should exist
+
+
+

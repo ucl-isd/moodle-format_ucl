@@ -138,7 +138,7 @@ class toc implements renderable, templatable {
         $data->showguidance = false;
 
         // Sections names check.
-        if ($namecount > 1) {
+        if ($namecount > 0) {
             $data->showwarning = true;
             $data->showguidance = true;
             $data->shownunnamedsections = true;
@@ -156,7 +156,7 @@ class toc implements renderable, templatable {
         }
 
         // Activites per section in check.
-        if ($modcount > 1) {
+        if ($modcount > 0) {
             $data->showwarning = true;
             $data->showguidance = true;
             $data->showtoofewmods = true;

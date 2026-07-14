@@ -55,6 +55,18 @@ class config {
     }
 
     /**
+     * Return the link to guidance
+     *
+     * @return string|null
+     */
+    public function get_link_to_guidance(): ?string {
+        if (empty($this->config->linktoguidance)) {
+            return null;
+        }
+        return $this->config->linktoguidance;
+    }
+
+    /**
      * Return the maximum number of sections for the tip
      *
      * @return int

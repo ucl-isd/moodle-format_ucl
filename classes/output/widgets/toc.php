@@ -135,10 +135,12 @@ class toc implements renderable, templatable {
 
         // Editor warnings.
         $data->showwarning = false;
+        $data->showguidance = false;
 
         // Sections names check.
-        if ($namecount > 1) {
+        if ($namecount > 0) {
             $data->showwarning = true;
+            $data->showguidance = true;
             $data->shownunnamedsections = true;
             $data->namecount = $namecount;
         }
@@ -147,17 +149,23 @@ class toc implements renderable, templatable {
         $recommendedmaxsections = format_ucl\config::instance()->get_recommended_max_sections();
         if ($visiblecount > $recommendedmaxsections) {
             $data->showwarning = true;
+            $data->showguidance = true;
             $data->showtoomanysections = true;
             $data->visiblecount = $visiblecount;
             $data->recommendedmaxsections = '<span class="behat-sectioncount">' . $recommendedmaxsections . '</span>';
         }
 
         // Activites per section in check.
-        if ($modcount > 1) {
+        if ($modcount > 0) {
             $data->showwarning = true;
+            $data->showguidance = true;
             $data->showtoofewmods = true;
             $data->modcount = $modcount;
         }
+
+        // Only show if link is set.
+        $data->linktoguidance = format_ucl\config::instance()->get_link_to_guidance();
+        $data->showguidance = $data->showguidance && $data->linktoguidance;
 
         // Course image check.
         if (!course_summary_exporter::get_course_image($course)) {

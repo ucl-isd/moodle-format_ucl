@@ -9,6 +9,14 @@ Feature: Appropriate Tips are shown to user
       | fullname | shortname | format | coursedisplay | numsections | startdate     |
       | Course 1 | C1        | ucl    | 0             | 1           | ##yesterday## |
       | Course 2 | C2        | ucl    | 0             | 17          | ##yesterday## |
+    And the following "users" exist:
+      | username | firstname | lastname | email                |
+      | teacher1 | Teacher   | 1        | teacher1@example.com |
+      | student1 | Student   | 1        | student1@example.com |
+    And the following "course enrolments" exist:
+      | user     | course | role           |
+      | teacher1 | C2     | editingteacher |
+      | student1 | C2     | student        |
 
   Scenario: Tips do not appear on section pages
     When I am on the "C1" "Course" page logged in as "admin"
@@ -68,21 +76,6 @@ Feature: Appropriate Tips are shown to user
   Scenario: Section content tip is shown for sections with less than 2 activities/resources
     Given the following "activities" exist:
       | activity | name                 | intro                       | course | section | idnumber  |
-      | assign   | Test assignment name | Test assignment description | C1     | 1       | assign1   |
-      | book     | Test book name       | Test book description       | C1     | 2       | book1     |
-      | choice   | Test choice name     | Test choice description     | C1     | 3       | choice1   |
-      | data     | Test database name   | Test database description   | C1     | 3       | data1     |
-      | feedback | Test feedback name   | Test feedback description   | C1     | 4       | feedback1 |
-      | folder   | Test folder name     | Test folder description     | C1     | 5       | folder1   |
-      | glossary | Test glossary name   | Test glossary description   | C1     | 5       | glossary1 |
-    When I am on the "C1" "Course" page logged in as "admin"
-    # "3 sections have one or less activities/resources"
-    Then ".behat-toofewmods" "css_element" should exist
-    And I should see "3" in the ".behat-modcount" "css_element"
-
-  Scenario: Section content tip is shown for sections with less than 2 activities/resources
-    Given the following "activities" exist:
-      | activity | name                 | intro                       | course | section | idnumber  |
       | assign   | Test assignment name | Test assignment description | C2     | 1       | assign1   |
       | book     | Test book name       | Test book description       | C2     | 2       | book1     |
       | choice   | Test choice name     | Test choice description     | C2     | 3       | choice1   |
@@ -98,10 +91,10 @@ Feature: Appropriate Tips are shown to user
   @javascript
   Scenario: Link to guidance is shown if any other warning (excluding no course image) is shown
     Given the following "activities" exist:
-      | activity | name                 | intro                       | course | section | idnumber  |
-      | assign   | Test assignment name | Test assignment description | C1     | 1       | assign1   |
-      | book     | Test book name       | Test book description       | C1     | 1       | book1     |
-      | choice   | Test choice name     | Test choice description     | C1     | 1       | choice1   |
+      | activity | name                 | intro                       | course | section | idnumber |
+      | assign   | Test assignment name | Test assignment description | C1     | 1       | assign1  |
+      | book     | Test book name       | Test book description       | C1     | 1       | book1    |
+      | choice   | Test choice name     | Test choice description     | C1     | 1       | choice1  |
     And I log in as "admin"
     And I navigate to "Plugins > Course formats > UCL Format" in site administration
     And I set the following fields to these values:
@@ -124,3 +117,15 @@ Feature: Appropriate Tips are shown to user
     And ".behat-toomanysections" "css_element" should exist
     And ".behat-toofewmods" "css_element" should exist
     And ".behat-linktoguidance" "css_element" should exist
+
+  Scenario: Users without capability 'moodle/course:update' do not see warnings
+    When I am on the "C2" course page logged in as "teacher1"
+    Then ".behat-unnamedsections" "css_element" should exist
+    And ".behat-toomanysections" "css_element" should exist
+    And ".behat-toofewmods" "css_element" should exist
+    And ".behat-linktoguidance" "css_element" should exist
+    When I am on the "C2" course page logged in as "student1"
+    Then ".behat-unnamedsections" "css_element" should not exist
+    And ".behat-toomanysections" "css_element" should not exist
+    And ".behat-toofewmods" "css_element" should not exist
+    And ".behat-linktoguidance" "css_element" should not exist

@@ -22,7 +22,6 @@ use core\output\renderable;
 use core\output\renderer_base;
 use core\output\templatable;
 use core_course\external\course_summary_exporter;
-use core_courseformat\base;
 use format_ucl;
 use moodle_url;
 use section_info;
@@ -61,11 +60,9 @@ class toc implements renderable, templatable {
         }
 
         $activesection = optional_param('id', 0, PARAM_INT);
-        $format = course_get_format($course);
         $context = context_course::instance($course->id);
-        $numsections = $format->get_last_section_number();
-        $canviewhidden = has_capability('moodle/course:update', $context);
-        $coursesections = $format->get_sections();
+        $caneditcourse= has_capability('moodle/course:update', $context);
+        $coursesections = $this->format->get_sections();
         $currentsectionnum = $this->format->get_sectionnum();
 
         $visiblecount = 0;
@@ -74,39 +71,12 @@ class toc implements renderable, templatable {
 
         $data = new stdClass();
         foreach ($coursesections as $section) {
-            // Editor warning data.
-            if ($canviewhidden) {
-                if ($section->section) { // Don't count section 0.
-                    if ($section->visible) {
-                        $visiblecount++;
-
-                        // Sections without a name.
-                        if (!$section->name) {
-                            $namecount++;
-                        }
-
-                        // Sections with one or less mods.
-                        $modinfo = $format->get_modinfo();
-                        $cmids = $modinfo->sections[$section->section] ?? [];
-                        if (count($cmids) < 2) {
-                            $modcount++;
-                        }
-
-                        // Sections with lots of mods, and no labels.
-                        // phpcs:disable Generic.CodeAnalysis.EmptyStatement.DetectedIf
-                        if (count($cmids) > 5) {
-                            // TODO - not sure yet.
-                        }
-                    }
-                }
-            }
-
-            if ($section->uservisible || $canviewhidden) {
+            if ($section->uservisible || $caneditcourse) {
                 $s = new stdClass();
                 $s->id = $section->id;
                 $s->section = $section->section;
-                $s->name = $format->get_section_name($section);
-                $s->url = $format->get_view_url($section, ['sr' => $section->section]);
+                $s->name = $this->format->get_section_name($section);
+                $s->url = $this->format->get_view_url($section, ['sr' => $section->section]);
                 $s->visible = $section->visible;
 
                 // Active section - either the section in the URL, or section 0 if on the course home page.
@@ -131,6 +101,38 @@ class toc implements renderable, templatable {
                 // Add to template data.
                 $data->coursesection[] = $s;
             }
+
+            // Editor warning data.
+            if (!$caneditcourse) {
+                continue;
+            }
+            if ($section->section) { // Don't count section 0.
+                if ($section->visible) {
+                    $visiblecount++;
+
+                    // Sections without a name.
+                    if (!$section->name) {
+                        $namecount++;
+                    }
+
+                    // Sections with one or less mods.
+                    $modinfo = $this->format->get_modinfo();
+                    $cmids = $modinfo->sections[$section->section] ?? [];
+                    if (count($cmids) < 2) {
+                        $modcount++;
+                    }
+
+                    // Sections with lots of mods, and no labels.
+                    // phpcs:disable Generic.CodeAnalysis.EmptyStatement.DetectedIf
+                    if (count($cmids) > 5) {
+                        // TODO - not sure yet.
+                    }
+                }
+            }
+        }
+
+        if (!$caneditcourse) {
+            return $data;
         }
 
         // Editor warnings.
@@ -176,27 +178,26 @@ class toc implements renderable, templatable {
             $data->url = $url;
         }
 
-        if (has_any_capability(['moodle/course:manageactivities'], $PAGE->context)) {
-            $returnurl = new moodle_url(
-                '/course/format/ucl/newsectionredirect.php',
-                [
-                    'course' => $course->id,
-                    'section' => count($coursesections),
-                ]
-            );
+        $returnurl = new moodle_url(
+            '/course/format/ucl/newsectionredirect.php',
+            [
+                'course' => $course->id,
+                'section' => count($coursesections),
+            ]
+        );
 
-            $params = [
-                'courseid' => $course->id,
-                'insertsection' => 0,
-                'sesskey' => sesskey(),
-                'returnurl' => $returnurl,
-            ];
+        $params = [
+            'courseid' => $course->id,
+            'insertsection' => 0,
+            'sesskey' => sesskey(),
+            'returnurl' => $returnurl,
+        ];
 
-            $data->addsections = (object) [
-                'url' => new moodle_url('/course/changenumsections.php', $params),
-                'title' => "Add new section",
-            ];
-        }
+        $data->addsections = (object)[
+            'url' => new moodle_url('/course/changenumsections.php', $params),
+            'title' => "Add new section",
+        ];
+
         return $data;
     }
 

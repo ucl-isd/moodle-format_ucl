@@ -61,7 +61,7 @@ class toc implements renderable, templatable {
 
         $activesection = optional_param('id', 0, PARAM_INT);
         $context = context_course::instance($course->id);
-        $caneditcourse= has_capability('moodle/course:update', $context);
+        $caneditcourse = has_capability('moodle/course:update', $context);
         $coursesections = $this->format->get_sections();
         $currentsectionnum = $this->format->get_sectionnum();
 

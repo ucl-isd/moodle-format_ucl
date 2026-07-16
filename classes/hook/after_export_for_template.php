@@ -27,10 +27,10 @@ namespace format_ucl\hook;
  */
 final class after_export_for_template implements \core\hook\described_hook {
     /** @var array|string[] template variables which can be edited */
-    private array $editableproperties = ['contactdata', 'assessments'];
+    private array $editableproperties = ['contactdata'];
 
     /** @var array|string[] template variables which can be augmented */
-    private array $augmentableproperties = ['hookdataintrohtml'];
+    private array $augmentableproperties = ['hookdataintrohtml', 'assessments'];
 
     /**
      * Allows subscribers to edit a subset of template variables.

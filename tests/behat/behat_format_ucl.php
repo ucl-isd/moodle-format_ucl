@@ -18,6 +18,7 @@ declare(strict_types=1);
 
 // NOTE: no MOODLE_INTERNAL test here, this file may be required by behat before including /config.php.
 
+use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\ExpectationException;
 
 require_once(__DIR__ . '/../../../../../lib/behat/behat_base.php');

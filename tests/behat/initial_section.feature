@@ -31,6 +31,8 @@ Feature: Initial section has custom layout
   Scenario: Initial section summary appears above main section content
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
+    # Ensure the button is scrolled into view to prevent help button from interrupting the click.
+    And I change window size to "1366x968"
     And I click on "Edit" "link"
     And I set the field "Description" to "Welcome to Stamptown"
     And I press "Save changes"

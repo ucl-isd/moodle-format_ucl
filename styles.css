@@ -261,3 +261,10 @@ body.format-ucl {
         }
     }
 }
+
+/* WIP - status icons for assessments. */
+.status-icon {
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid currentColor;
+}

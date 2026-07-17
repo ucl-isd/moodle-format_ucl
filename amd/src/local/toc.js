@@ -112,9 +112,9 @@ export default class Component extends BaseComponent {
                 return;
             }
 
-            total += 1;
+            total++;
             if (cm.isoverallcomplete === true || cm.completionstate === 1 || cm.completionstate === 2) {
-                done += 1;
+                done++;
             }
         });
 
@@ -144,7 +144,7 @@ export default class Component extends BaseComponent {
             return;
         }
 
-        const srOnlyElement = progressContainer?.querySelector('.sr-only');
+        const srOnlyElement = progressContainer.querySelector('.sr-only');
         const fallbackTooltip = `${done} of ${total} complete`;
         progressElement.setAttribute('title', fallbackTooltip);
         progressElement.setAttribute('data-original-title', fallbackTooltip);

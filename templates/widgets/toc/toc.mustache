@@ -12,14 +12,18 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template format_ucl/widgets/toc
-    Template purpose and description.
+    @template format_ucl/widgets/toc/toc
+    TOC wrapper containing a list of section links.
     Classes required for JS:
-    * none
+    * .hidden (toggled on #toc when empty)
     Data attributes required for JS:
     * none
+    Element IDs required for JS:
+    * id="toc" on the ordered list
     Context variables required for this template:
-    * attributes Array of name / value pairs.
+    * coursesection Array of section link contexts for the toc_link partial.
+    * isediting Whether editing controls should be displayed.
+    * addsections Object containing url when isediting is true.
     Example context (json):
     {
         "coursesection": [

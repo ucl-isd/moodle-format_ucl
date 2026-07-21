@@ -76,7 +76,7 @@
         {{#str}} coursecontacts, format_ucl {{/str}}
     </h3>
 
-    {{ Contacts content. }} 
+    {{! Contacts content. }}
     <div id="ucl-format-contacts">
 
         {{#hascontacts}}
@@ -92,17 +92,15 @@
             </div>
             {{/isediting}}
 
-        {{#contacts}}
-        {{> format_ucl/widgets/contacts/contact }}
-        <hr>
-        {{/contacts}}
+            {{#contacts}}
+            {{> format_ucl/widgets/contacts/contact }}
+            <hr>
+            {{/contacts}}
 
-        {{#customcontacts}}
-        {{> format_ucl/widgets/contacts/contact }}
-        <hr>
-        {{/customcontacts}}
-
-
+            {{#customcontacts}}
+            {{> format_ucl/widgets/contacts/contact }}
+            <hr>
+            {{/customcontacts}}
         {{/hascontacts}}
 
         {{#isediting}}
@@ -120,24 +118,21 @@
                     {{#str}} addcustomcontact, format_ucl {{/str}}
                 </a>
             </div>
-            
+
             {{> format_ucl/widgets/contacts/customcontact_form }}
 
             <hr>
-        
         {{/isediting}}
 
-    </div>   
+    </div>
 </div>
 
-
-
 {{#isediting}}
-{{#js}}
-require(['format_ucl/local/contacts'], function(component) {
-    component.init({{courseid}});
-});
-{{/js}}
+    {{#js}}
+        require(['format_ucl/local/contacts'], function(component) {
+            component.init({{courseid}});
+        });
+    {{/js}}
 {{/isediting}}
 
 {{/showcontacts}}

@@ -176,7 +176,7 @@ class content extends content_base {
 
     /**
      * Return template data for next visible section - only called by section 0.
-     * By default section 0 dosn't have the previous/next to output in the mustache template.
+     * By default, section 0 doesn't have the previous/next to output in the mustache template.
      *
      */
     public function get_ucl_next_section(): stdClass {

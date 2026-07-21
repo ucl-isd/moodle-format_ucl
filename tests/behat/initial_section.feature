@@ -63,11 +63,12 @@ Feature: Initial section has custom layout
     And "Teacher 4" "link" should not exist
 
   Scenario: Course contacts appear in initial section when editing is off and contact is checked
-    When I log in as "teacher1"
+    Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     And I click on "Show Teacher 1 to students" "checkbox"
     And I click on "Show Teacher 5 to students" "checkbox"
-    And I turn editing mode off
+    And I log out
+    When I am on the "C1" course page logged in as "student1"
     Then "Teacher 1" "link" should exist in the "#ucl-course-content" "css_element"
     And "teacher1@example.com" "link" should exist in the "#ucl-course-content" "css_element"
     And "Teacher 2" "link" should not exist

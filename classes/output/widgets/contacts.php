@@ -93,13 +93,24 @@ class contacts implements renderable, templatable {
      * @return array
      */
     public function get_course_contacts(renderer_base $output): array {
-        global $USER, $CFG;
+        global $USER, $CFG, $DB;
 
         // Course contacts.
         $course = $this->format->get_course();
         $courselement = new core_course_list_element($course);
         $contacts = $courselement->get_course_contacts();
         $allcontacts = [];
+        $visiblecontactids = [];
+
+        if ($group = groups_get_group_by_idnumber($course->id, course_contacts::GROUP_IDNUMBER)) {
+            $visiblecontactids = $DB->get_records('groups_members', ['groupid' => $group->id], '', 'userid');
+            $visiblecontactids = array_keys($visiblecontactids);
+        }
+
+        if (!$visiblecontactids && !$USER->editing) {
+            // No contacts to show.
+            return [];
+        }
 
         foreach ($contacts as $c) {
             $roleid = $c['role']->id;
@@ -113,12 +124,7 @@ class contacts implements renderable, templatable {
             $user = core_user::get_user($userobj->id, '*', MUST_EXIST);
             $usercontext = context_user::instance($user->id);
             $contact->id = $user->id;
-
-            if (!$group = groups_get_group_by_idnumber($course->id, course_contacts::GROUP_IDNUMBER)) {
-                $contact->show = false;
-            } else {
-                $contact->show = groups_is_member($group->id, $contact->id);
-            }
+            $contact->show = in_array($contact->id, $visiblecontactids);
 
             // If hidden and not editing, don't show.
             if (!$contact->show && !$USER->editing) {

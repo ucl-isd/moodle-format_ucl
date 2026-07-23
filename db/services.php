@@ -38,8 +38,10 @@ $functions = [
     ],
     'format_ucl_get_section_progress' => [
         'classname' => get_section_progress::class,
-        'description' => '',
+        'description' => 'Gets the total number and number completed of visible activities
+                          that are not restricted by group',
         'type' => 'read',
         'ajax' => true,
+        'readonlysession' => true,
     ],
 ];

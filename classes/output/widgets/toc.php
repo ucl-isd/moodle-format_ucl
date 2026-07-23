@@ -54,7 +54,7 @@ class toc implements renderable, templatable {
      * @param renderer_base $output
      */
     public function export_for_template(renderer_base $output) {
-        global $PAGE, $USER, $CFG;
+        global $USER, $CFG;
         if (!$course = $this->format->get_course()) {
             return [];
         }
@@ -72,29 +72,26 @@ class toc implements renderable, templatable {
         $data = new stdClass();
         foreach ($coursesections as $section) {
             // Editor warning data.
-            if ($canviewhidden) {
-                if ($section->section) { // Don't count section 0.
-                    if ($section->visible) {
-                        $visiblecount++;
+            // Don't count section 0.
+            if ($canviewhidden && $section->section && $section->visible) {
+                $visiblecount++;
 
-                        // Sections without a name.
-                        if (!$section->name) {
-                            $namecount++;
-                        }
+                // Sections without a name.
+                if (!$section->name) {
+                    $namecount++;
+                }
 
-                        // Sections with one or less mods.
-                        $modinfo = $this->format->get_modinfo();
-                        $cmids = $modinfo->sections[$section->section] ?? [];
-                        if (count($cmids) < 2) {
-                            $modcount++;
-                        }
+                // Sections with one or less mods.
+                $modinfo = $this->format->get_modinfo();
+                $cmids = $modinfo->sections[$section->section] ?? [];
+                if (count($cmids) < 2) {
+                    $modcount++;
+                }
 
-                        // Sections with lots of mods, and no labels.
-                        // phpcs:disable Generic.CodeAnalysis.EmptyStatement.DetectedIf
-                        if (count($cmids) > 5) {
-                            // TODO - not sure yet.
-                        }
-                    }
+                // Sections with lots of mods, and no labels.
+                // phpcs:disable Generic.CodeAnalysis.EmptyStatement.DetectedIf
+                if (count($cmids) > 5) {
+                    // TODO - not sure yet.
                 }
             }
 

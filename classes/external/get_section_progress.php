@@ -50,7 +50,7 @@ class get_section_progress extends external_api {
      * @return array
      */
     public static function execute(int $sectionid): array {
-        global $USER, $DB;
+        global $DB;
         // Clean params.
         ['sectionid' => $sectionid] =
             self::validate_parameters(

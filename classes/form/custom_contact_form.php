@@ -120,8 +120,10 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
             $attributes = [
                 'formnovalidate' => 'formnovalidate',
                 'data-confirmation' => 'modal',
-                'data-confirmation-title-str' => json_encode(["customcontact", "format_ucl"]),
-                'data-confirmation-content-str' => json_encode(["deletecustomcontact", "format_ucl"]),
+                'data-confirmation-title-str' => json_encode(
+                    ["deletecustomcontact", "format_ucl", $this->get_persistent()->get('name')]
+                ),
+                'data-confirmation-content-str' => json_encode(["deletecustomcontact:desc", "format_ucl"]),
                 'data-confirmation-yes-button-str' => json_encode(["delete"]),
                 'data-confirmation-destination' => $url->out(false),
             ];

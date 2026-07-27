@@ -24,6 +24,7 @@
  * @author      Amanda Doughty <m.doughty@ucl.ac.uk>
  */
 
+use format_ucl\external\get_section_progress;
 use format_ucl\external\set_contact_visibility;
 
 defined('MOODLE_INTERNAL') || die();
@@ -34,5 +35,13 @@ $functions = [
         'description' => '',
         'type' => 'write',
         'ajax' => true,
+    ],
+    'format_ucl_get_section_progress' => [
+        'classname' => get_section_progress::class,
+        'description' => 'Gets the total number and number completed of visible activities
+                          that are not restricted by group',
+        'type' => 'read',
+        'ajax' => true,
+        'readonlysession' => true,
     ],
 ];

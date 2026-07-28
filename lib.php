@@ -187,7 +187,8 @@ class format_ucl extends core_courseformat\base {
      * @return array of options
      */
     public function course_format_options($foreditform = false) {
-        $hook = new \format_ucl\hook\extend_format_ucl_settings([], $foreditform);
+        $course = $this->get_course();
+        $hook = new \format_ucl\hook\extend_format_ucl_settings([], $foreditform, $course);
         \core\di::get(\core\hook\manager::class)->dispatch($hook);
         return $hook->course_format_options();
     }

@@ -34,6 +34,7 @@ final class extend_format_ucl_settings implements \core\hook\described_hook {
      *
      * @param bool|array $courseformatoptions
      * @param bool $foreditform
+     * @param \stdClass $course
      */
     public function __construct(
         /** @var bool|array $courseformatoptions */

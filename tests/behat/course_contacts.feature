@@ -1,8 +1,8 @@
 @format @format_ucl @javascript
-Feature: Initial section has custom layout
-  In order to to quickly find important course information
+Feature: Users can view and edit course contacts
+  In order to quickly find key course contacts
   As a user
-  I need to see a consistent layout in the initial section
+  I need to see course contacts and custom contacts
 
   Background:
     Given the following "courses" exist:

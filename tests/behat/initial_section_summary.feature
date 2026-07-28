@@ -9,11 +9,13 @@ Feature: Initial section has custom layout
       | fullname | shortname | format | coursedisplay | numsections |
       | Course 1 | C1        | ucl    | 0             | 5           |
     And the following "users" exist:
-      | username | firstname | lastname | email                | maildisplay |
-      | teacher1 | Teacher   | 1        | teacher1@example.com | 1           |
+      | username | firstname | lastname | email                |
+      | teacher1 | Teacher   | 1        | teacher1@example.com |
+      | student1 | Student   | 1        | student1@example.com |
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
+      | student1 | C1     | student        |
 
   Scenario: Initial section summary appears above main section content
     Given I log in as "teacher1"

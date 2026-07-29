@@ -72,14 +72,22 @@ final class after_export_for_template implements \core\hook\described_hook {
      * @throws \moodle_exception
      */
     public function set_property(string $name, mixed $value): void {
-        $iseditable = in_array($name, $this->editableproperties, true);
-        $isaugmentable = in_array($name, $this->augmentableproperties, true);
-        if (!$iseditable && !$isaugmentable) {
-            throw new \moodle_exception('The property "' . $name . '" is not writable.');
+        if (!property_exists($this->data, $name)) {
+            debugging('The property "' . $name . '" does not exist', DEBUG_DEVELOPER);
+            return;
         }
 
-        if (!property_exists($this->data, $name)) {
-            throw new \moodle_exception('The property "' . $name . '" does not exist');
+        $iseditable = in_array($name, $this->editableproperties, true);
+        $isaugmentable = in_array($name, $this->augmentableproperties, true);
+
+        if (!$iseditable && !$isaugmentable) {
+            debugging('The property "' . $name . '" is not writable.', DEBUG_DEVELOPER);
+            return;
+        }
+
+        if ($isaugmentable && !is_string($value)) {
+            debugging('The property "' . $name . '" is not a string.', DEBUG_DEVELOPER);
+            return;
         }
 
         $this->data->$name = $iseditable ? $value : $this->data->$name . $value;

@@ -29,9 +29,6 @@ use format_ucl\config;
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-    $settings = new admin_settingpage('format_ucl_settings', new lang_string('pluginname', 'format_ucl'));
-
-    // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
     if ($ADMIN->fulltree) {
         // Link to guidance.
         $settings->add(new admin_setting_configtext(

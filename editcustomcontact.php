@@ -24,6 +24,7 @@
  * @author      Amanda Doughty <m.doughty@ucl.ac.uk>
  */
 
+use core\output\notification;
 use format_ucl\form\custom_contact_form;
 use format_ucl\local\data\custom_contact;
 
@@ -52,7 +53,12 @@ $customcontact = custom_contact::get_record($data) ?: new custom_contact();
 if ($contactid && $action == custom_contact_form::DELETE) {
     require_sesskey();
     $customcontact->delete();
-    redirect($redirect);
+    redirect(
+        $redirect,
+        get_string('deletesuccess', 'format_ucl', $customcontact->get('name')),
+        null,
+        notification::NOTIFY_SUCCESS
+    );
 }
 
 $customdata = ['persistent' => $customcontact];

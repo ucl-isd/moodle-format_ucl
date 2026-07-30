@@ -1,8 +1,8 @@
 @format @format_ucl @javascript
-Feature: Initial section has custom layout
-  In order to to quickly find important course information
+Feature: Users can view and edit course contacts
+  In order to quickly find key course contacts
   As a user
-  I need to see a consistent layout in the initial section
+  I need to see course contacts and custom contacts
 
   Background:
     Given the following "courses" exist:
@@ -27,20 +27,6 @@ Feature: Initial section has custom layout
       | student1 | C1     | student        |
     And the following config values are set as admin:
       | displaycontacts | 1 | format_ucl |
-
-  Scenario: Initial section summary appears above main section content
-    Given I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
-    # Ensure the button is scrolled into view to prevent help button from interrupting the click.
-    And I change window size to "1366x968"
-    And I click on "Edit" "link"
-    And I set the field "Description" to "Welcome to Stamptown"
-    And I press "Save changes"
-    And I log out
-    When I log in as "student1"
-    And I am on "Course 1" course homepage
-    And "Welcome to Stamptown" "text" should exist in the ".behat-ucl-section-description" "css_element"
-    And "Welcome to Stamptown" "text" should not exist in the ".section-item .content" "css_element"
 
   Scenario: Course contacts appear in initial section when editing is on
     When I log in as "teacher1"
@@ -161,9 +147,10 @@ Feature: Initial section has custom layout
     And I press "Save"
     And I click on "Edit custom contact Jack Tucker" "link"
     And I press "Delete"
-    And I click on "Delete" "button" in the "Custom contact" "dialogue"
+    And I click on "Delete" "button" in the "Delete Jack Tucker?" "dialogue"
+    Then I should see "Jack Tucker has been deleted"
     And I should not see "Ring Master"
-    And I should not see "Jack Tucker"
+    And I should not see "Jack Tucker" in the "#ucl-format-contacts" "css_element"
     And I should not see "zzucker@example.com"
     And I should not see "Clown king"
     And I switch editing mode off

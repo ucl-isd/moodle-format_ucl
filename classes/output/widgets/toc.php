@@ -259,7 +259,8 @@ class toc implements renderable, templatable {
      * Return the number of modules completed by a user in one specific course.
      *
      * @param int $userid The User ID.
-     * @return int Total number of modules completed by a user
+     * @param int $sectionid
+     * @return int Total number of modules completed by a user in the section
      */
     public static function count_modules_completed_in_section(int $userid, int $sectionid): int {
         global $DB;

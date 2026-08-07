@@ -34,9 +34,11 @@ class sectionactions extends sectionactions_base {
      *
      * This method returns a section record, not a section_info object. This prevents the regeneration
      * of the modinfo object each time we create a section.
+     *
+     * @param stdClass|null $data
      * @return stdClass created section object
      */
-    public function create_from_form($data): stdClass {
+    public function create_from_form(?stdClass $data): stdClass {
         return $this->create_from_object($data, true);
     }
 }

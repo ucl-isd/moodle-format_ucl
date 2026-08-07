@@ -230,7 +230,7 @@ class toc implements renderable, templatable {
 
         // Get the modules that support completion.
         if (is_null($activitieswithcompletion)) {
-            $activitieswithcompletion = $completion->get_user_activities_with_completion($userid);
+            $activitieswithcompletion = $completion->get_activities();
         }
 
         // Only include the modules in this section.
@@ -241,7 +241,7 @@ class toc implements renderable, templatable {
         }
 
         // Get the number of modules that have been completed.
-        $complete = $completion->count_modules_completed($userid, array_keys($modules));
+        $complete = self::count_modules_completed_in_section($userid, $section->id);
 
         // Return data.
         $data = new stdClass();
@@ -253,5 +253,27 @@ class toc implements renderable, templatable {
             $data->done = true;
         }
         return $data;
+    }
+
+    /**
+     * Return the number of modules completed by a user in one specific course.
+     *
+     * @param int $userid The User ID.
+     * @param int $sectionid
+     * @return int Total number of modules completed by a user in the section
+     */
+    public static function count_modules_completed_in_section(int $userid, int $sectionid): int {
+        global $DB;
+
+        $sql = "SELECT COUNT(1)
+                  FROM {course_modules} cm
+                  JOIN {course_modules_completion} cmc ON cm.id = cmc.coursemoduleid
+                 WHERE cm.section = :sectionid
+                   AND cmc.userid = :userid
+                   AND (cmc.completionstate = " . COMPLETION_COMPLETE . "
+                    OR cmc.completionstate = " . COMPLETION_COMPLETE_PASS . ")";
+        $params = ['sectionid' => $sectionid, 'userid' => $userid];
+
+        return $DB->count_records_sql($sql, $params);
     }
 }

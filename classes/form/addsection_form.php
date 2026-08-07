@@ -53,6 +53,7 @@ class addsection_form extends dynamic_form {
         );
         $mform->setType('name', PARAM_RAW);
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        $mform->addRule('name', null, 'required', null, 'client');
 
         $mform->addElement('hidden', 'courseid', 0);
         $mform->setType('courseid', PARAM_INT);

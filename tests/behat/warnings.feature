@@ -112,7 +112,8 @@ Feature: Appropriate Tips are shown to user
     And ".behat-linktoguidance" "css_element" should not exist
 
     When I click on ".behat-add-section" "css_element"
-    And I press "Save changes"
+    And I click on "Add" "button" in the "Add a new section" "dialogue"
+    And I am on "Course 1" course homepage
     Then ".behat-unnamedsections" "css_element" should exist
     And ".behat-toomanysections" "css_element" should exist
     And ".behat-toofewmods" "css_element" should exist

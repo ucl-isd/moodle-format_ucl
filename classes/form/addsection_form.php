@@ -52,7 +52,6 @@ class addsection_form extends dynamic_form {
             ],
         );
         $mform->setType('name', PARAM_RAW);
-        $mform->setDefault('name', $defaultsectionname);
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 
         $mform->addElement('hidden', 'courseid', 0);

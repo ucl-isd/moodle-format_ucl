@@ -230,7 +230,7 @@ class toc implements renderable, templatable {
 
         // Get the modules that support completion.
         if (is_null($activitieswithcompletion)) {
-            $activitieswithcompletion = $completion->get_user_activities_with_completion($userid);
+            $activitieswithcompletion = $completion->get_activities();
         }
 
         // Only include the modules in this section.
@@ -241,7 +241,7 @@ class toc implements renderable, templatable {
         }
 
         // Get the number of modules that have been completed.
-        $complete = $completion->count_modules_completed($userid, array_keys($modules));
+        $complete = $completion->count_modules_completed($userid);
 
         // Return data.
         $data = new stdClass();

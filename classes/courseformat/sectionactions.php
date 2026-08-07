@@ -14,8 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace format_ucl\courseformat;
+
+use core_courseformat\local\sectionactions as sectionactions_base;
+use stdClass;
+
 /**
- * Hook callbacks for format_ucl
+ * Contains the core course state actions specific to ucl format.
  *
  * @package     format_ucl
  * @copyright   2026 onwards University College London {@link https://www.ucl.ac.uk/}
@@ -23,13 +28,17 @@
  * @author      Stuart Lamour <s.lamour@ucl.ac.uk>
  * @author      Amanda Doughty <m.doughty@ucl.ac.uk>
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-$callbacks = [
-    [
-        'hook' => core\hook\output\before_http_headers::class,
-        'callback' => \format_ucl\local\hook_callbacks::class . '::before_http_headers',
-        'priority' => '0',
-    ],
-];
+class sectionactions extends sectionactions_base {
+    /**
+     * Creates a course section and adds it to the end
+     *
+     * This method returns a section record, not a section_info object. This prevents the regeneration
+     * of the modinfo object each time we create a section.
+     *
+     * @param stdClass|null $data
+     * @return stdClass created section object
+     */
+    public function create_from_form(?stdClass $data): stdClass {
+        return $this->create_from_object($data, true);
+    }
+}

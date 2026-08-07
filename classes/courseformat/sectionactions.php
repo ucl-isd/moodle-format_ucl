@@ -14,8 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace format_ucl\courseformat;
+
+use core_courseformat\local\sectionactions as sectionactions_base;
+use stdClass;
+
 /**
- * Intermediate page to redirect to edit section page with new section ID
+ * Contains the core course state actions specific to ucl format.
  *
  * @package     format_ucl
  * @copyright   2026 onwards University College London {@link https://www.ucl.ac.uk/}
@@ -23,24 +28,15 @@
  * @author      Stuart Lamour <s.lamour@ucl.ac.uk>
  * @author      Amanda Doughty <m.doughty@ucl.ac.uk>
  */
-
-require_once("../../../config.php");
-
-global $PAGE, $DB;
-
-$courseid = required_param('course', PARAM_INT);
-$sectionnum = optional_param('section', null, PARAM_INT);
-
-$course = get_course($courseid);
-$params = ['course' => $course->id, 'section' => $sectionnum];
-$PAGE->set_url('/course/format/ucl/newsectionredirect.php', $params);
-
-if (!$section = $DB->get_record('course_sections', $params, '*')) {
-    redirect(course_get_url($course));
+class sectionactions extends sectionactions_base {
+    /**
+     * Creates a course section and adds it to the end
+     *
+     * This method returns a section record, not a section_info object. This prevents the regeneration
+     * of the modinfo object each time we create a section.
+     * @return stdClass created section object
+     */
+    public function create_from_form($data): stdClass {
+        return $this->create_from_object($data, true);
+    }
 }
-
-require_login($course);
-$context = context_course::instance($course->id);
-require_capability('moodle/course:update', $context);
-
-redirect(new moodle_url('/course/editsection.php', ['id' => $section->id]));

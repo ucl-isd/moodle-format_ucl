@@ -190,6 +190,9 @@ class toc implements renderable, templatable {
             'title' => "Add new section",
         ];
 
+        $data->courseid = $course->id;
+        $data->sectionreturn = $currentsectionnum;
+
         return $data;
     }
 

@@ -26,6 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['add'] = 'Add';
 $string['addactivity'] = 'Add activity or resource';
 $string['addcustomcontact'] = 'Add custom contact';
 $string['adddescription'] = 'Add description';

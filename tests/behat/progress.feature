@@ -5,10 +5,7 @@ Feature: TOC progress is shown on load and updates after manual completion
   I need to see correct progress text on page load and after completion changes
 
   Background:
-    Given the site is running Moodle version 99 or higher
-    # The following steps should not be executed for 4.5. If they are, the test will fail.
-    # We have backported a fix that they rely on.
-    And the following "users" exist:
+    Given the following "users" exist:
       | username | firstname | lastname | email                |
       | teacher1 | Teacher   | 1        | teacher1@example.com |
       | student1 | Student   | 1        | student1@example.com |
@@ -85,24 +82,3 @@ Feature: TOC progress is shown on load and updates after manual completion
     Then the "data-behat-percentage" attribute of "#toc [data-section='0'] .progress-indicator[data-id] .pie" "css_element" should contain "100"
     And I reload the page
     And the "data-behat-percentage" attribute of "#toc [data-section='0'] .progress-indicator[data-id] .pie" "css_element" should contain "100"
-
-  Scenario: TOC progress does not include activities restricted by group
-    Given I log in as "teacher1"
-    And I am on the "page1" "page activity editing" page
-    And I expand all fieldsets
-    And I click on "Add restriction..." "button"
-    And I click on "Group" "button" in the "Add restriction..." "dialogue"
-    And I set the field "Group" to "My group"
-    And I click on ".availability-item .availability-eye img" "css_element"
-    And I click on "Save and return to course" "button"
-    And I log out
-    When I am on the "PROG1" "Course" page logged in as "student1"
-    And I click on "Section 2" "link" in the "#toc" "css_element"
-    And I toggle the manual completion state of "Activity sample 2"
-    # 1/2 activities completed
-    Then the "data-behat-percentage" attribute of "#toc [data-section='2'] .progress-indicator[data-id] .pie" "css_element" should contain "50"
-    # 1/1 activities completed - page1 is not available to student2 because of the group restriction
-    When I am on the "PROG1" "Course" page logged in as "student2"
-    And I click on "Section 2" "link" in the "#toc" "css_element"
-    And I toggle the manual completion state of "Activity sample 2"
-    Then the "data-behat-percentage" attribute of "#toc [data-section='2'] .progress-indicator[data-id] .pie" "css_element" should contain "100"

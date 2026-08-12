@@ -120,11 +120,13 @@ Feature: Appropriate Tips are shown to user
 
   Scenario: Users without capability 'moodle/course:update' do not see warnings
     When I am on the "C2" course page logged in as "teacher1"
-    Then ".behat-unnamedsections" "css_element" should exist
+    Then ".behat-nocourseimg" "css_element" should exist
+    And ".behat-unnamedsections" "css_element" should exist
     And ".behat-toomanysections" "css_element" should exist
     And ".behat-toofewmods" "css_element" should exist
     And ".behat-linktoguidance" "css_element" should exist
     When I am on the "C2" course page logged in as "student1"
+    And ".behat-nocourseimg" "css_element" should not exist
     Then ".behat-unnamedsections" "css_element" should not exist
     And ".behat-toomanysections" "css_element" should not exist
     And ".behat-toofewmods" "css_element" should not exist

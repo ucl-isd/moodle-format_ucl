@@ -61,7 +61,7 @@ class toc implements renderable, templatable {
 
         $activesection = optional_param('id', 0, PARAM_INT);
         $context = context_course::instance($course->id);
-        $canviewhidden = has_capability('moodle/course:update', $context);
+        $caneditcourse = has_capability('moodle/course:update', $context);
         $coursesections = $this->format->get_sections();
         $currentsectionnum = $this->format->get_sectionnum();
 
@@ -71,31 +71,7 @@ class toc implements renderable, templatable {
 
         $data = new stdClass();
         foreach ($coursesections as $section) {
-            // Editor warning data.
-            // Don't count section 0.
-            if ($canviewhidden && $section->section && $section->visible) {
-                $visiblecount++;
-
-                // Sections without a name.
-                if (!$section->name) {
-                    $namecount++;
-                }
-
-                // Sections with one or less mods.
-                $modinfo = $this->format->get_modinfo();
-                $cmids = $modinfo->sections[$section->section] ?? [];
-                if (count($cmids) < 2) {
-                    $modcount++;
-                }
-
-                // Sections with lots of mods, and no labels.
-                // phpcs:disable Generic.CodeAnalysis.EmptyStatement.DetectedIf
-                if (count($cmids) > 5) {
-                    // TODO - not sure yet.
-                }
-            }
-
-            if ($section->uservisible || $canviewhidden) {
+            if ($section->uservisible || $caneditcourse) {
                 $s = new stdClass();
                 $s->id = $section->id;
                 $s->section = $section->section;
@@ -125,8 +101,39 @@ class toc implements renderable, templatable {
                 // Add to template data.
                 $data->coursesection[] = $s;
             }
+
+            // Editor warning data.
+            if (!$caneditcourse) {
+                continue;
+            }
+            if ($section->section) { // Don't count section 0.
+                if ($section->visible) {
+                    $visiblecount++;
+
+                    // Sections without a name.
+                    if (!$section->name) {
+                        $namecount++;
+                    }
+
+                    // Sections with one or less mods.
+                    $modinfo = $this->format->get_modinfo();
+                    $cmids = $modinfo->sections[$section->section] ?? [];
+                    if (count($cmids) < 2) {
+                        $modcount++;
+                    }
+
+                    // Sections with lots of mods, and no labels.
+                    // phpcs:disable Generic.CodeAnalysis.EmptyStatement.DetectedIf
+                    if (count($cmids) > 5) {
+                        // TODO - not sure yet.
+                    }
+                }
+            }
         }
 
+        if (!$caneditcourse) {
+            return $data;
+        }
         // Editor warnings.
         $data->showwarning = false;
         $data->showguidance = false;

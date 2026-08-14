@@ -52,6 +52,8 @@
                 "progress": false
             }
         ],
+        "courseid": 1,
+        "sectionreturn": 0,
         "isediting": true,
         "addsections": {
             "url": "https://www.example.com/moodle/course/changenumsections.php?courseid=2&insertsection=0&sesskey=abc123"
@@ -71,7 +73,12 @@
       {{#isediting}}
         {{#addsections}}
         <div class="p-2 bg-primary-light text-center">
-          <a class="btn btn-add-content bg-white behat-add-section" href="{{{url}}}">
+          <a
+              class="btn btn-add-content bg-white behat-add-section"
+              href="{{{url}}}"
+              data-courseid="{{courseid}}"
+              data-sectionreturn="{{sectionreturn}}"
+          >
             <i class="fa-solid fa-circle-plus mr-2"></i>
             {{#str}} addnewsection, format_ucl {{/str}}
           </a>
@@ -85,5 +92,9 @@
 {{#js}}
   require(['format_ucl/local/toc'], function(component) {
         component.init('toc');
-    });
+  });
+
+  require(['format_ucl/addsection'], function(modal) {
+        modal.init();
+  });
 {{/js}}

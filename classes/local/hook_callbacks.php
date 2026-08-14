@@ -50,17 +50,6 @@ class hook_callbacks {
             return;
         }
 
-        $newsectionredirect = new \moodle_url('/course/format/ucl/newsectionredirect.php');
-        if ($PAGE->has_set_url() && $PAGE->url->compare($newsectionredirect, URL_MATCH_BASE)) {
-            $sectionnum = $PAGE->url->get_param('section');
-            $courseid = $PAGE->url->get_param('courseid');
-            $modinfo = get_fast_modinfo($courseid);
-            if (!$sectioninfo = $modinfo->get_section_info($sectionnum)) {
-                redirect(new moodle_url('/course/view.php', ['id' => $courseid]));
-            }
-            redirect(new moodle_url('/course/editsection.php', ['id' => $sectioninfo->id]));
-        }
-
         $sectionurl = new \moodle_url('/course/section.php');
         if ($PAGE->has_set_url() && $PAGE->url->compare($sectionurl, URL_MATCH_BASE)) {
             $PAGE->set_heading('');

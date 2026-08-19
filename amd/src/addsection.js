@@ -31,39 +31,44 @@ import {getString} from 'core/str';
  * Initialize module
  */
 export const init = () => {
-    const triggerElement = document.querySelector('.behat-add-section');
+    document.addEventListener('click', e => {
+        if (!e || !e.target || (typeof e.target.closest === "undefined")) {
+            return;
+        }
 
-    triggerElement.addEventListener('click', event => {
-        event.preventDefault();
+        const triggerElement = e.target.closest('.behat-add-section');
+        if (triggerElement) {
+            event.preventDefault();
 
-        const args = {
-            courseid: triggerElement.dataset.courseid,
-            sectionreturn: triggerElement.dataset.sectionreturn,
-        };
+            const args = {
+                courseid: triggerElement.dataset.courseid,
+                sectionreturn: triggerElement.dataset.sectionreturn,
+            };
 
-        const modalForm = new ModalForm({
-            modalConfig: {
-                title: getString('addnewsection', 'format_ucl'),
-            },
-            formClass: 'format_ucl\\form\\addsection_form',
-            saveButtonText: getString('add', 'format_ucl'),
-            returnFocus: triggerElement,
-            args: args,
-        });
+            const modalForm = new ModalForm({
+                modalConfig: {
+                    title: getString('addnewsection', 'format_ucl'),
+                },
+                formClass: 'format_ucl\\form\\addsection_form',
+                saveButtonText: getString('add', 'format_ucl'),
+                returnFocus: triggerElement,
+                args: args,
+            });
 
-        // Redirect to the new section when the form is submitted.
-        modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, event => {
-            if (event.detail.result) {
-                window.location.assign(event.detail.url);
-            } else {
-                const warningMessages = event.detail.warnings.map(warning => warning.message);
-                Notification.addNotification({
-                    type: 'error',
-                    message: warningMessages.join('<br>')
-                });
-            }
-        });
+            // Redirect to the new section when the form is submitted.
+            modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, event => {
+                if (event.detail.result) {
+                    window.location.assign(event.detail.url);
+                } else {
+                    const warningMessages = event.detail.warnings.map(warning => warning.message);
+                    Notification.addNotification({
+                        type: 'error',
+                        message: warningMessages.join('<br>')
+                    });
+                }
+            });
 
-        modalForm.show();
+            modalForm.show();
+        }
     });
 };

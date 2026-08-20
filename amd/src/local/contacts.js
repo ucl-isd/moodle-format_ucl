@@ -37,10 +37,9 @@ export let init = (courseid) => {
             return;
         }
 
-        const input = e.target.closest('.custom-switch input');
+        const input = e.target.closest('.contact-hide-toggle');
         if (input) {
-            let coursecontact = input.closest('.ucl-format-coursecontact');
-            let userid = coursecontact.dataset.userid;
+            let userid = input.dataset.userid;
             let action = input.dataset.action;
             if (!userid || !action) {
                 return;

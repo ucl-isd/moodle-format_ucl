@@ -62,10 +62,13 @@ jobs:
           echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
 
       - name: Install moodle-plugin-ci
-        run: moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
+        run: |
+          moodle-plugin-ci add-plugin -b main --clone https://aspark21:"$GHA_MOODLE_READ_ACCESS"@github.com/ucl-isd/moodle-local_ucl_hooks.git
+          moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
+          GHA_MOODLE_READ_ACCESS: ${{ secrets.GHA_MOODLE_READ_ACCESS }}
           MUSTACHE_IGNORE_PATHS: 'templates/local/content/**'
           # Uncomment this to run Behat tests using the Moodle App.
           # MOODLE_APP: 'true'

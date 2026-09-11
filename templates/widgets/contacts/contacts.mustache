@@ -82,25 +82,20 @@
         {{#hascontacts}}
             {{#isediting}}
             {{! Editing instructions. }}
-            <div class="d-flex align-items-end small pb-2">
-                <div>
-                    {{#str}} coursecontacts:desc, format_ucl {{/str}}
-                </div>
-                <div class="ml-auto">
-                    {{#str}} showcontact, format_ucl {{/str}}
-                </div>
-            </div>
+            <p>
+                {{#str}} coursecontacts:desc, format_ucl {{/str}}
+            </p>
             {{/isediting}}
 
-            {{#contacts}}
-            {{> format_ucl/widgets/contacts/contact }}
-            <hr>
-            {{/contacts}}
+            <div class="row">
+                {{#contacts}}
+                    {{> format_ucl/widgets/contacts/contact }}
+                {{/contacts}}
 
-            {{#customcontacts}}
-            {{> format_ucl/widgets/contacts/contact }}
-            <hr>
-            {{/customcontacts}}
+                {{#customcontacts}}
+                    {{> format_ucl/widgets/contacts/contact }}
+                {{/customcontacts}}
+            </div>
         {{/hascontacts}}
 
         {{#isediting}}
@@ -120,12 +115,11 @@
             </div>
 
             {{> format_ucl/widgets/contacts/customcontact_form }}
-
-            <hr>
         {{/isediting}}
 
     </div>
 </div>
+<hr>
 
 {{#isediting}}
     {{#js}}
@@ -136,3 +130,26 @@
 {{/isediting}}
 
 {{/showcontacts}}
+
+<style>
+.ucl-format-coursecontact-wrapper {
+    position: relative;
+}
+
+.ucl-format-contact-popover {
+    position: absolute;
+    position-area: bottom center;
+    padding: 1rem;
+    width: 300px;
+}
+</style>
+<script>
+document.querySelectorAll('[popover]').forEach(popover => {
+    const trigger = document.querySelector(`[popovertarget="${popover.id}"]`);
+    if (!trigger) return;
+
+    popover.addEventListener('toggle', (e) => {
+        trigger.setAttribute('aria-expanded', e.newState === 'open');
+    });
+});
+</script>

@@ -225,7 +225,7 @@ body.format-ucl {
         }
 
         /* Contact is hidden - show hidden icon, hide userpic. */
-        .ucl-format-coursecontact:has(.contact-hide-toggle:not(:checked)) {
+        .ucl-format-coursecontact-wrapper:has(.contact-hide-toggle:not(:checked)) {
             .ucl-format-image-hidden {
                 display: flex !important; /* stylelint-disable-line declaration-no-important */
             }
@@ -260,11 +260,4 @@ body.format-ucl {
             }
         }
     }
-}
-
-/* WIP - status icons for assessments. */
-.status-icon {
-    width: 2rem;
-    height: 2rem;
-    border: 1px solid currentColor;
 }

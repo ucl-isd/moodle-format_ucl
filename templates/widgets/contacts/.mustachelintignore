@@ -1,0 +1,4 @@
+# Exclude all the templates here from HTML validity checks
+# Linting does not like modern html for popover.
+contact.mustache
+contacts.mustache

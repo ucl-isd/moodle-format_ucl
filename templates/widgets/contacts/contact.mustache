@@ -43,8 +43,12 @@
 }}
 
 {{! Contact. }}
-<div class="ucl-format-coursecontact-wrapper col-md-4 col-6 mb-2" data-userid="{{id}}">
-    <button class="btn btn-link ucl-format-contact-trigger d-flex text-left" type="button" popovertarget="popover-{{id}}" aria-expanded="false" style="anchor-name: --contact-{{id}};">
+<div class="ucl-format-coursecontact-wrapper col-md-4 col-sm-6 mb-2 position-relative" data-userid="{{id}}">
+    {{! Contact button. }}
+    <button class="btn btn-link ucl-format-contact-trigger d-flex text-left"
+    type="button" popovertarget="popover-{{id}}" style="anchor-name: --contact-{{id}};"
+    aria-expanded="false" aria-controls="popover-{{id}}">
+
         {{! Image. }}
         <div class="ucl-format-coursecontact-picture position-relative mr-2">
             {{{picture}}}
@@ -66,21 +70,57 @@
             {{/custom}}
         </div>
 
-        {{! Name. }}
+        {{! Data. }}
         <div>
             <span class="ucl-format-contact-name">
                 {{{name}}}
             </span>
             {{#role}}
-            <div class="small text-muted">
-                {{{.}}}
-            </div>
-        {{/role}}
+                <div class="small text-muted">
+                    {{{.}}}
+                </div>
+            {{/role}}
         </div>
     </button>
 
+    {{! Editing. }}
+    {{#isediting}}
+        <div class="pl-3 pb-3 border-bottom">
+            {{^custom}}
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" id="switch-{{id}}"
+                        class="contact-hide-toggle custom-control-input"
+                        data-userid="{{id}}"
+                        data-action="{{#show}}hide{{/show}}{{^show}}show{{/show}}"
+                        {{#show}} checked {{/show}}
+                    >
+                    <label class="custom-control-label" for="switch-{{id}}">
+                        <small>{{#str}} showtostudents, format_ucl, {{{name}}}{{/str}}</small>
+                    </label>
+                </div>
+            {{/custom}}
+
+            {{#custom}}
+                <div>
+                    <a href="#ucl-format-customcontact-form-{{contactid}}"
+                        role="button"
+                        class="btn btn-sm text-nowrap btn-add-content"
+                        data-toggle="collapse"
+                        aria-expanded="false"
+                        aria-controls="ucl-format-customcontact-form-{{contactid}}"
+                    >
+                        <i class="fa-regular fa-circle-user mr-2"></i>
+                        {{#str}} editcustomcontact, format_ucl {{/str}}
+                        <span class="sr-only">{{{name}}}</span>
+                    </a>
+                </div>
+            {{/custom}}
+        </div>
+    {{/isediting}}
+
     {{! Popover Card. }}
-    <div id="popover-{{id}}" popover="auto" class="ucl-format-contact-popover ucl-box-shadow animate-down scale-up" style="position-anchor: --contact-{{id}};">
+    <div id="popover-{{id}}" class="ucl-format-contact-popover position-absolute p-3 mx-1 ucl-box-shadow animate-down scalein-up"
+    popover="auto"  style="position-anchor: --contact-{{id}};">
 
         <div class="d-flex">
             {{#picture}}
@@ -108,7 +148,7 @@
 
         {{! Description. }}
         {{#description}}
-            <div class="small mt-2 py-2 border-top">{{{.}}}</div>
+            <div class="small mt-2 pt-3 border-top">{{{.}}}</div>
         {{/description}}
 
         {{^custom}}
@@ -126,49 +166,12 @@
         {{! Email. }}
         {{#email}}
         <div class="mt-2 py-2 border-top">
-            {{#str}} email{{/str}}:
+            <div class="small text-muted">{{#str}} email {{/str}}</div>
             <a href="mailto:{{{email}}}?subject={{{subject}}}" target="_blank" class="text-break">
                 {{{email}}}
             </a>
         </div>
         {{/email}}
-
-        {{! Editing. }}
-        {{#isediting}}
-        <div class="mt-2 py-2 border-top">
-            {{^custom}}
-            <div class="custom-control custom-switch">
-                <input type="checkbox" id="switch-{{id}}"
-                    class="contact-hide-toggle custom-control-input"
-                    data-userid="{{id}}"
-                    data-action="{{#show}}hide{{/show}}{{^show}}show{{/show}}"
-                    {{#show}} checked {{/show}}
-                >
-                <label class="custom-control-label"
-                    for="switch-{{id}}"
-                    title="{{#str}} showtostudents, format_ucl, {{{name}}}{{/str}}"
-                ><small>{{#str}} showtostudents, format_ucl, {{{name}}}{{/str}}</small>
-                </label>
-            </div>
-            {{/custom}}
-
-            {{#custom}}
-            <div>
-                <a href="#ucl-format-customcontact-form-{{contactid}}"
-                    role="button"
-                    class="btn btn-sm text-nowrap btn-add-content"
-                    data-toggle="collapse"
-                    aria-expanded="false"
-                    aria-controls="ucl-format-customcontact-form-{{contactid}}"
-                >
-                    <i class="fa-regular fa-circle-user mr-2"></i>
-                    {{#str}} editcustomcontact, format_ucl {{/str}}
-                    <span class="sr-only">{{{name}}}</span>
-                </a>
-            </div>
-            {{/custom}}
-        </div>
-        {{/isediting}}
     </div>
 </div>
 

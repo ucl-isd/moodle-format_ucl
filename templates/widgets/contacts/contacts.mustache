@@ -72,7 +72,7 @@
 {{#showcontacts}}
 <div id="format-ucl-contacts-widget">
     <hr>
-    <h3 class="py-2">
+    <h3 class="pt-2">
         {{#str}} coursecontacts, format_ucl {{/str}}
     </h3>
 
@@ -82,7 +82,7 @@
         {{#hascontacts}}
             {{#isediting}}
             {{! Editing instructions. }}
-            <p>
+            <p class="small">
                 {{#str}} coursecontacts:desc, format_ucl {{/str}}
             </p>
             {{/isediting}}
@@ -131,18 +131,7 @@
 
 {{/showcontacts}}
 
-<style>
-.ucl-format-coursecontact-wrapper {
-    position: relative;
-}
 
-.ucl-format-contact-popover {
-    position: absolute;
-    position-area: bottom center;
-    padding: 1rem;
-    width: 300px;
-}
-</style>
 <script>
 document.querySelectorAll('[popover]').forEach(popover => {
     const trigger = document.querySelector(`[popovertarget="${popover.id}"]`);

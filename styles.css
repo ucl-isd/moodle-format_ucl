@@ -236,6 +236,13 @@ body.format-ucl {
             }
         }
 
+        /* Contact popover. */
+        .ucl-format-contact-popover {
+            position-area: block-end;
+            width: 300px;
+            max-width: 95vw;
+        }
+
         /* Custom contact form. */
         div[id^="ucl-format-customcontact-form"] {
             .fitem,

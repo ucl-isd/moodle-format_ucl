@@ -130,15 +130,3 @@
 {{/isediting}}
 
 {{/showcontacts}}
-
-
-<script>
-document.querySelectorAll('[popover]').forEach(popover => {
-    const trigger = document.querySelector(`[popovertarget="${popover.id}"]`);
-    if (!trigger) return;
-
-    popover.addEventListener('toggle', (e) => {
-        trigger.setAttribute('aria-expanded', e.newState === 'open');
-    });
-});
-</script>

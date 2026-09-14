@@ -26,7 +26,7 @@
         "contactid": 10,
         "name": "John Doe",
         "custom": false,
-        "picture": "<img src='path/to/picture.jpg' alt='John Doe' class='userpicture' />",
+        "picture": "<img src='path/to/picture.jpg' alt='John Doe' class='userpicture'>",
         "url": "/user/view.php?id=1",
         "role": "Course teacher",
         "description": "Course lead and primary contact.",
@@ -72,13 +72,13 @@
 
         {{! Data. }}
         <span>
-            <span class="ucl-format-contact-name">
+            <span class="ucl-format-contact-name d-block">
                 {{{name}}}
             </span>
             {{#role}}
-                <div class="small text-muted">
+                <span class="small text-muted">
                     {{{.}}}
-                </div>
+                </span>
             {{/role}}
         </span>
     </button>

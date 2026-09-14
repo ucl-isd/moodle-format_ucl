@@ -108,6 +108,7 @@ Feature: Users can view and edit course contacts
     And "Course contacts" "text" should exist
     And I should see "Ring Master"
     And I should see "Jack Tucker"
+    And I click on "Jack Tucker" "button"
     And I should see "zzucker@example.com"
     And I should see "Clown king"
 
@@ -132,6 +133,7 @@ Feature: Users can view and edit course contacts
     And I should not see "Ring Master"
     And I should see "Director"
     And I should see "Jonny Woolley"
+    And I click on "Jonny Woolley" "button"
     And I should see "jwoolley@example.com"
     And I should see "Clown king"
 

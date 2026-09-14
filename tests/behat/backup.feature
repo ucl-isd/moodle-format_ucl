@@ -39,5 +39,6 @@ Feature: Custom contacts are backed up and restored
     Then "Course contacts" "text" should exist
     And I should see "Ring Master"
     And I should see "Jack Tucker"
+    And I click on "Jack Tucker" "button"
     And I should see "zzucker@example.com"
     And I should see "Clown king"

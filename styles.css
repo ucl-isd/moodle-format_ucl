@@ -238,7 +238,7 @@ body.format-ucl {
 
         /* Contact popover. */
         .ucl-format-contact-popover {
-            position-area: block-end;
+            position-area: block-end; /* stylelint-disable-line */
             width: 300px;
             max-width: 95vw;
         }

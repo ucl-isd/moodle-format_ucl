@@ -50,28 +50,28 @@
     aria-expanded="false" aria-controls="popover-{{id}}">
 
         {{! Image. }}
-        <div class="ucl-format-coursecontact-picture position-relative mr-2">
+        <span class="ucl-format-coursecontact-picture mr-2">
             {{{picture}}}
 
             {{^custom}}
-            <div
+            <span
                 class="ucl-format-image-hidden rounded-circle bg-warning d-flex align-items-center justify-content-center"
                 title="{{#str}}hiddenfromstudents, format_ucl{{/str}}"
             >
                 <i class="fa-regular fa-solid fa-eye-slash text-dark"></i>
-            </div>
+            </span>
             {{/custom}}
 
             {{! Custom contact image.}}
             {{#custom}}
-            <div class="userinitials">
+            <span class="userinitials">
                 <i class="fa-regular fa-envelope fa-lg"></i>
-            </div>
+            </span>
             {{/custom}}
-        </div>
+        </span>
 
         {{! Data. }}
-        <div>
+        <span>
             <span class="ucl-format-contact-name">
                 {{{name}}}
             </span>
@@ -80,7 +80,7 @@
                     {{{.}}}
                 </div>
             {{/role}}
-        </div>
+        </span>
     </button>
 
     {{! Editing. }}

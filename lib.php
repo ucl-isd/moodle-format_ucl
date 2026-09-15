@@ -104,6 +104,49 @@ class format_ucl extends core_courseformat\base {
     }
 
     /**
+     * Callback used in WS core_course_edit_section when teacher performs an AJAX action on a section (show/hide).
+     *
+     * Access to the course is already validated in the WS but the callback has to make sure
+     * that particular action is allowed by checking capabilities
+     *
+     * Course formats should register.
+     *
+     * @param section_info|stdClass $section
+     * @param string $action
+     * @param int $sr
+     * @return null|array any data for the Javascript post-processor (must be json-encodeable)
+     */
+    public function section_action($section, $action, $sr) {
+        global $PAGE;
+
+        if ($section->section && ($action === 'setmarker' || $action === 'removemarker')) {
+            // Format 'ucl' allows to set and remove markers in addition to common section actions.
+            require_capability('moodle/course:setcurrentsection', context_course::instance($this->courseid));
+            if ($action === 'setmarker') {
+                $sectioninfo = get_fast_modinfo($this->courseid)->get_section_info($section->section);
+                \core_courseformat\formatactions::section($this->courseid)->set_marker($sectioninfo, true);
+            } else {
+                \core_courseformat\formatactions::section($this->courseid)->remove_all_markers();
+            }
+            return null;
+        }
+
+        // For show/hide actions call the parent method and return the new content for .section_availability element.
+        $rv = parent::section_action($section, $action, $sr);
+        $renderer = $PAGE->get_renderer('format_ucl');
+
+        if (!($section instanceof section_info)) {
+            $modinfo = course_modinfo::instance($this->courseid);
+            $section = $modinfo->get_section_info($section->section);
+        }
+        $elementclass = $this->get_output_classname('content\\section\\availability');
+        $availability = new $elementclass($this, $section);
+
+        $rv['section_availability'] = $renderer->render($availability);
+        return $rv;
+    }
+
+    /**
      * Returns the display name of the given section that the course prefers.
      *
      * @param int|stdClass|section_info $section Section object from database or just field course_sections.section
@@ -284,7 +327,7 @@ function format_ucl_output_fragment_section_divider($args): string {
     }
 
     $renderer = $format->get_renderer($PAGE);
-    return $renderer->course_section_add_cm_control($course, $section->section, $section->section);
+    return $renderer->section_add_cm_controls($format, $section);
 }
 
 /**

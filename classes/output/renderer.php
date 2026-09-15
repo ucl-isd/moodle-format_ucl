@@ -64,46 +64,55 @@ class renderer extends section_renderer {
     }
 
     /**
-     * Renders HTML for the menus to add activities and resources to the current course
+     * Renders the controls to add activities and resources to the course.
      *
-     * Renders the ajax control (the link which when clicked produces the activity chooser modal). No noscript fallback.
-     *
-     * @param stdClass $course
-     * @param int $section relative section number (field course_sections.section)
-     * @param int $sectionreturn The section to link back to
-     * @param array $displayoptions additional display options, for example blocks add
-     *     option 'inblock' => true, suggesting to display controls vertically
-     * @return string
+     * @param course_format $format The course format.
+     * @param section_info $section The section to add controls to.
+     * @param \cm_info|null $mod The module before which the controls should be added.
+     * @return string HTML for the controls.
      */
-    public function course_section_add_cm_control($course, $section, $sectionreturn = null, $displayoptions = []) {
+    public function add_cm_controls(
+        course_format $format,
+        section_info $section,
+        ?\cm_info $mod = null,
+    ): string {
+        $courseid = $format->get_courseid();
+
         // Check to see if user can add menus.
         if (
-            !has_capability('moodle/course:manageactivities', context_course::instance($course->id))
+            !has_capability('moodle/course:manageactivities', context_course::instance($courseid))
             || !$this->page->user_is_editing()
         ) {
             return '';
         }
 
         // Load the JS for the modal.
-        $this->course_activitychooser($course->id);
-        $format = course_get_format($course);
-        $modinfo = $format->get_modinfo();
-        $sectioninfo = $modinfo->get_section_info($section, MUST_EXIST);
+        if (!$format->show_editor()) {
+            return '';
+        }
+
+        if ($this->page->requires->should_create_one_time_item_now('core_courseformat_modchooser')) {
+            $this->page->requires->js_call_amd(
+                'core_courseformat/activitychooser',
+                'init',
+                [$format->get_courseid()],
+            );
+        }
 
         return $this->render_from_template(
             'format_ucl/local/content/divider',
             [
-                'id' => $sectioninfo->id,
-                'section' => $section,
-                'courseid' => $course->id,
+                'id' => $section->id,
+                'section' => $section->section,
+                'courseid' => $courseid,
                 'labelurl' => new moodle_url(
                     '/course/mod.php',
                     [
-                        'id' => $course->id,
+                        'id' => $courseid,
                         'add' => 'label',
-                        'section' => $section,
+                        'section' => $section->section,
                         'beforemod' => '0',
-                        'sr' => $section,
+                        'sr' => $section->section,
                     ]
                 ),
             ]

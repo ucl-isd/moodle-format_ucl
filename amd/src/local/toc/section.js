@@ -64,7 +64,7 @@ export default class Component extends BaseComponent {
      */
     static init(target, selectors) {
         return new this({
-            element: document.getElementById(target),
+            element: document.querySelector(target),
             selectors,
         });
     }

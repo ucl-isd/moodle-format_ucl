@@ -60,4 +60,18 @@ class custom_contact extends persistent {
             ],
         ];
     }
+
+    /**
+     * Validate email.
+     *
+     * @param string $value Email address.
+     * @return true|\core\lang_string True when valid, otherwise a validation error.
+     */
+    protected function validate_email($value) {
+        if (!\validate_email($value)) {
+            return new \core\lang_string('invalidemail');
+        }
+
+        return true;
+    }
 }

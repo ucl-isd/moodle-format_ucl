@@ -44,7 +44,7 @@
 }}
 
 {{! Contact. }}
-<div class="ucl-format-coursecontact-wrapper col-md-4 col-sm-6 mb-2 position-relative" data-userid="{{id}}">
+<div class="ucl-format-coursecontact-wrapper col-md-4 col-sm-6 mb-2 position-relative">
     {{! Contact button. }}
     <button class="btn btn-link ucl-format-contact-trigger d-flex text-left"
     type="button" popovertarget="popover-{{domid}}" style="anchor-name: --contact-{{domid}};">
@@ -168,7 +168,7 @@
         {{#email}}
             <div class="mt-2 py-2 border-top">
                 <div class="small text-muted">{{#str}} email {{/str}}</div>
-                <a href="mailto:{{email}}?subject={{subject}}x" target="_blank" class="text-break">
+                <a href="mailto:{{email}}?subject={{subject}}" target="_blank" class="text-break">
                     {{{email}}}
                 </a>
             </div>

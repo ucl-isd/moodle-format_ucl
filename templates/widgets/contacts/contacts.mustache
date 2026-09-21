@@ -36,6 +36,7 @@
         "contacts": [
             {
                 "id": 1,
+                "domid": "user-1",
                 "name": "John Doe",
                 "show": true,
                 "email": "john.doe@example.com",
@@ -52,6 +53,7 @@
             {
                 "id": 10,
                 "contactid": 10,
+                "domid": "custom-10",
                 "name": "Course Administrator",
                 "custom": true,
                 "show": true,
@@ -72,7 +74,7 @@
 {{#showcontacts}}
 <div id="format-ucl-contacts-widget">
     <hr>
-    <h3 class="py-2">
+    <h3 class="pt-2">
         {{#str}} coursecontacts, format_ucl {{/str}}
     </h3>
 
@@ -82,25 +84,20 @@
         {{#hascontacts}}
             {{#isediting}}
             {{! Editing instructions. }}
-            <div class="d-flex align-items-end small pb-2">
-                <div>
-                    {{#str}} coursecontacts:desc, format_ucl {{/str}}
-                </div>
-                <div class="ml-auto">
-                    {{#str}} showcontact, format_ucl {{/str}}
-                </div>
-            </div>
+            <p class="small">
+                {{#str}} coursecontacts:desc, format_ucl {{/str}}
+            </p>
             {{/isediting}}
 
-            {{#contacts}}
-            {{> format_ucl/widgets/contacts/contact }}
-            <hr>
-            {{/contacts}}
+            <div class="row">
+                {{#contacts}}
+                    {{> format_ucl/widgets/contacts/contact }}
+                {{/contacts}}
 
-            {{#customcontacts}}
-            {{> format_ucl/widgets/contacts/contact }}
-            <hr>
-            {{/customcontacts}}
+                {{#customcontacts}}
+                    {{> format_ucl/widgets/contacts/contact }}
+                {{/customcontacts}}
+            </div>
         {{/hascontacts}}
 
         {{#isediting}}
@@ -120,12 +117,11 @@
             </div>
 
             {{> format_ucl/widgets/contacts/customcontact_form }}
-
-            <hr>
         {{/isediting}}
 
     </div>
 </div>
+<hr>
 
 {{#isediting}}
     {{#js}}

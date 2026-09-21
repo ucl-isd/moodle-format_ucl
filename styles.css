@@ -225,7 +225,7 @@ body.format-ucl {
         }
 
         /* Contact is hidden - show hidden icon, hide userpic. */
-        .ucl-format-coursecontact:has(.contact-hide-toggle:not(:checked)) {
+        .ucl-format-coursecontact-wrapper:has(.contact-hide-toggle:not(:checked)) {
             .ucl-format-image-hidden {
                 display: flex !important; /* stylelint-disable-line declaration-no-important */
             }
@@ -234,6 +234,13 @@ body.format-ucl {
             .userinitials {
                 display: none !important; /* stylelint-disable-line declaration-no-important */
             }
+        }
+
+        /* Contact popover. */
+        .ucl-format-contact-popover {
+            position-area: block-end; /* stylelint-disable-line */
+            width: 300px;
+            max-width: 95vw;
         }
 
         /* Custom contact form. */
@@ -260,11 +267,4 @@ body.format-ucl {
             }
         }
     }
-}
-
-/* WIP - status icons for assessments. */
-.status-icon {
-    width: 2rem;
-    height: 2rem;
-    border: 1px solid currentColor;
 }

@@ -13,7 +13,7 @@
 }}
 {{!
     @template format_ucl/widgets/contacts/contact
-    Template purpose and description.
+    Contact template for displaying individual course contacts.
     Classes required for JS:
     * none
     Data attributes required for JS:
@@ -24,9 +24,10 @@
     {
         "id": 1,
         "contactid": 10,
+        "domid": "user-1",
         "name": "John Doe",
         "custom": false,
-        "picture": "<img src='path/to/picture.jpg' alt='John Doe' class='userpicture' />",
+        "picture": "<img src='path/to/picture.jpg' alt='John Doe' class='userpicture'>",
         "url": "/user/view.php?id=1",
         "role": "Course teacher",
         "description": "Course lead and primary contact.",
@@ -43,121 +44,136 @@
 }}
 
 {{! Contact. }}
-<div class="ucl-format-coursecontact d-flex align-items-start ml-1" data-userid="{{id}}">
+<div class="ucl-format-coursecontact-wrapper col-md-4 col-sm-6 mb-2 position-relative">
+    {{! Contact button. }}
+    <button class="btn btn-link ucl-format-contact-trigger d-flex text-left"
+    type="button" popovertarget="popover-{{domid}}" style="anchor-name: --contact-{{domid}};">
 
-    {{! Image. }}
-    <div class="flex-0 mr-2 ucl-format-coursecontact-picture">
-        {{{picture}}}
+        {{! Image. }}
+        <span class="ucl-format-coursecontact-picture mr-2">
+            {{{picture}}}
 
-        {{^custom}}
-        <div
-            class="ucl-format-image-hidden rounded-circle bg-warning d-flex align-items-center justify-content-center"
-            title="{{#str}}hiddenfromstudents, format_ucl{{/str}}"
-        >
-            <i class="fa-regular fa-solid fa-eye-slash text-dark"></i>
-        </div>
-        {{/custom}}
+            {{^custom}}
+            <span
+                class="ucl-format-image-hidden rounded-circle bg-warning d-flex align-items-center justify-content-center"
+                title="{{#str}}hiddenfromstudents, format_ucl{{/str}}"
+            >
+                <i class="fa-regular fa-solid fa-eye-slash text-dark"></i>
+            </span>
+            {{/custom}}
 
-        {{! Custom contact image.}}
-        {{#custom}}
-        <div class="userinitials">
-            <i class="fa-regular fa-envelope fa-lg"></i>
-        </div>
-        {{/custom}}
-    </div>
-
-    {{! Details. }}
-    <div class="ml-2">
-
-        {{! Name. }}
-        <div>
-            {{#url}}
-            <a href="{{{url}}}">{{{name}}}</a>
-            {{/url}}
-            {{! Custom contact has no user profile link.}}
+            {{! Custom contact image.}}
             {{#custom}}
-            {{{name}}}
+            <span class="userinitials">
+                <i class="fa-regular fa-envelope fa-lg"></i>
+            </span>
+            {{/custom}}
+        </span>
+
+        {{! Data. }}
+        <span>
+            <span class="ucl-format-contact-name d-block">
+                {{{name}}}
+            </span>
+            {{#role}}
+                <span class="small text-muted">
+                    {{{.}}}
+                </span>
+            {{/role}}
+        </span>
+    </button>
+
+    {{! Editing. }}
+    {{#isediting}}
+        <div class="pl-3 pb-3 border-bottom">
+            {{^custom}}
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" id="switch-{{id}}"
+                        class="contact-hide-toggle custom-control-input"
+                        data-userid="{{id}}"
+                        data-action="{{#show}}hide{{/show}}{{^show}}show{{/show}}"
+                        {{#show}} checked {{/show}}
+                    >
+                    <label class="custom-control-label" for="switch-{{id}}">
+                        <small>{{#str}} showtostudents, format_ucl, {{{name}}}{{/str}}</small>
+                    </label>
+                </div>
+            {{/custom}}
+
+            {{#custom}}
+                <div>
+                    <a href="#ucl-format-customcontact-form-{{contactid}}"
+                        role="button"
+                        class="btn btn-sm text-nowrap btn-add-content"
+                        data-toggle="collapse"
+                        aria-expanded="false"
+                        aria-controls="ucl-format-customcontact-form-{{contactid}}"
+                    >
+                        <i class="fa-regular fa-circle-user mr-2"></i>
+                        {{#str}} editcustomcontact, format_ucl {{/str}}
+                        <span class="sr-only">{{{name}}}</span>
+                    </a>
+                </div>
             {{/custom}}
         </div>
+    {{/isediting}}
 
-        {{#role}}
-        <div class="small text-muted">
-            {{{.}}}
+    {{! Popover Card. }}
+    <div id="popover-{{domid}}" class="ucl-format-contact-popover position-absolute p-3 mx-1 ucl-box-shadow animate-down scalein-up"
+    popover="auto"  style="position-anchor: --contact-{{domid}};">
+
+        {{! Contact. }}
+        <div class="d-flex">
+            {{#picture}}
+                <div class="mr-2">
+                    {{{.}}}
+                </div>
+            {{/picture}}
+
+            <div>
+                {{#url}}
+                    <a href="{{{url}}}">{{{name}}}</a>
+                {{/url}}
+
+                {{#custom}}
+                    {{{name}}}
+                {{/custom}}
+
+                {{#role}}
+                    <div class="small text-muted">
+                        {{{.}}}
+                    </div>
+                {{/role}}
+            </div>
         </div>
-        {{/role}}
 
         {{! Description. }}
         {{#description}}
-        <div class="small pt-1">{{{.}}}</div>
+            <div class="small mt-2 pt-3 border-top">{{{.}}}</div>
         {{/description}}
 
         {{^custom}}
-        {{#caneditprofile}}
-        <div>
-            <a href="{{{editurl}}}" target="_blank" class="btn btn-add-content my-2">
-                <i class="fa-solid fa-circle-plus mr-2"></i>
-                {{#str}} adddescription, format_ucl{{/str}}
-                <span class="sr-only">{{#str}} forcontact, format_ucl, {{{name}}}{{/str}}</span>
-            </a>
-        </div>
-        {{/caneditprofile}}
+            {{#caneditprofile}}
+                <div class="py-3 border-top">
+                    <a href="{{{editurl}}}" target="_blank" class="btn btn-sm btn-add-content btn-block">
+                        <i class="fa-solid fa-circle-plus mr-2"></i>
+                        {{#str}} adddescription, format_ucl{{/str}}
+                        <span class="sr-only">{{#str}} forcontact, format_ucl, {{{name}}}{{/str}}</span>
+                    </a>
+                </div>
+            {{/caneditprofile}}
         {{/custom}}
 
         {{! Email. }}
         {{#email}}
-        <div>
-            {{#str}} email{{/str}}:
-            <a href="mailto:{{{email}}}?subject={{{subject}}}" target="_blank">
-                {{{email}}}
-            </a>
-        </div>
+            <div class="mt-2 py-2 border-top">
+                <div class="small text-muted">{{#str}} email {{/str}}</div>
+                <a href="mailto:{{email}}?subject={{subject}}" target="_blank" class="text-break">
+                    {{email}}
+                </a>
+            </div>
         {{/email}}
-
     </div>
-
-    {{! Editing. }}
-    {{#isediting}}
-    <div class="ml-auto">
-
-        {{! Hide/show contact. }}
-        {{^custom}}
-        <div class="custom-control custom-switch">
-            <input type="checkbox" id="switch-{{id}}"
-                class="contact-hide-toggle custom-control-input"
-                data-userid="{{id}}"
-                data-action="{{#show}}hide{{/show}}{{^show}}show{{/show}}"
-                {{#show}} checked {{/show}}
-            >
-            <label class="custom-control-label"
-                for="switch-{{id}}"
-                title="{{#str}} showtostudents, format_ucl, {{{name}}}{{/str}}"
-            >
-                <span class="sr-only">
-                    {{#str}} showtostudents, format_ucl, {{{name}}}{{/str}}
-                </span>
-            </label>
-        </div>
-        {{/custom}}
-
-        {{! Edit custom contact. }}
-        {{#custom}}
-        <div>
-            <a href="#ucl-format-customcontact-form-{{contactid}}"
-                role="button"
-                class="ml-2 btn text-nowrap btn-add-content"
-                data-toggle="collapse"
-                aria-expanded="false"
-                aria-controls="ucl-format-customcontact-form-{{contactid}}"
-            >
-                <i class="fa-regular fa-circle-user mr-2"></i>
-                {{#str}} editcustomcontact, format_ucl {{/str}}
-                <span class="sr-only">{{{name}}}</span>
-            </a>
-        </div>
-        {{/custom}}
-    </div>
-    {{/isediting}}
-
 </div>
 
 {{#isediting}}

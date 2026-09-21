@@ -51,7 +51,7 @@ class custom_contact extends persistent {
                 'type' => PARAM_TEXT,
             ],
             'email' => [
-                'type' => PARAM_NOTAGS,
+                'type' => PARAM_EMAIL,
             ],
             'description' => [
                 'type' => PARAM_TEXT,
@@ -59,5 +59,19 @@ class custom_contact extends persistent {
                 'default' => null,
             ],
         ];
+    }
+
+    /**
+     * Validate email.
+     *
+     * @param string $value Email address.
+     * @return true|\core\lang_string True when valid, otherwise a validation error.
+     */
+    protected function validate_email($value) {
+        if (!\validate_email($value)) {
+            return new \core\lang_string('invalidemail');
+        }
+
+        return true;
     }
 }

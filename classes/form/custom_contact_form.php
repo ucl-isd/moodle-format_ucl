@@ -79,10 +79,11 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
             'placeholder' => get_string('email:placeholder', 'format_ucl'),
             'class' => 'm-3 flex-fill',
             'required' => 'required',
-            'pattern' => "[^@\s]+@[^@\s]+\.[^@\s]+", // Email as pattern till moodle gets native input type=email.
+            'pattern' => '[^@\s]+@[^@\s]+\.[^@\s]+', // Email as pattern till moodle gets native input type=email.
         ];
         $mform->addElement('text', 'email', get_string('email'), $attributes);
-        $mform->setType('email', PARAM_NOTAGS);
+        $mform->setType('email', PARAM_RAW_TRIMMED);
+        $mform->addRule('email', get_string('required'), 'required');
 
         $mform->addElement('html', '</div>');
 
@@ -173,6 +174,24 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
             'formhtml' => $formhtml,
         ];
         return $context;
+    }
+
+    /**
+     * Extra validation for fields not covered by the persistent.
+     *
+     * @param stdClass $data Submitted data.
+     * @param array $files Submitted files.
+     * @param array $errors Errors found so far.
+     * @return array
+     */
+    protected function extra_validation($data, $files, array &$errors) {
+        $newerrors = [];
+
+        if (!empty($data->email) && !\validate_email($data->email)) {
+            $newerrors['email'] = get_string('invalidemail');
+        }
+
+        return $newerrors;
     }
 
     /**

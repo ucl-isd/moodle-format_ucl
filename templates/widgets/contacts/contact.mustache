@@ -24,6 +24,7 @@
     {
         "id": 1,
         "contactid": 10,
+        "domid": "user-1",
         "name": "John Doe",
         "custom": false,
         "picture": "<img src='path/to/picture.jpg' alt='John Doe' class='userpicture'>",
@@ -46,7 +47,7 @@
 <div class="ucl-format-coursecontact-wrapper col-md-4 col-sm-6 mb-2 position-relative" data-userid="{{id}}">
     {{! Contact button. }}
     <button class="btn btn-link ucl-format-contact-trigger d-flex text-left"
-    type="button" popovertarget="popover-{{id}}" style="anchor-name: --contact-{{id}};">
+    type="button" popovertarget="popover-{{domid}}" style="anchor-name: --contact-{{domid}};">
 
         {{! Image. }}
         <span class="ucl-format-coursecontact-picture mr-2">
@@ -118,8 +119,8 @@
     {{/isediting}}
 
     {{! Popover Card. }}
-    <div id="popover-{{id}}" class="ucl-format-contact-popover position-absolute p-3 mx-1 ucl-box-shadow animate-down scalein-up"
-    popover="auto"  style="position-anchor: --contact-{{id}};">
+    <div id="popover-{{domid}}" class="ucl-format-contact-popover position-absolute p-3 mx-1 ucl-box-shadow animate-down scalein-up"
+    popover="auto"  style="position-anchor: --contact-{{domid}};">
 
         {{! Contact. }}
         <div class="d-flex">

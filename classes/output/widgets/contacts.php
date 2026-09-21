@@ -124,6 +124,7 @@ class contacts implements renderable, templatable {
             $user = core_user::get_user($userobj->id, '*', MUST_EXIST);
             $usercontext = context_user::instance($user->id);
             $contact->id = $user->id;
+            $contact->domid = 'user-' . $user->id;
             $contact->show = in_array($contact->id, $visiblecontactids);
 
             // If hidden and not editing, don't show.
@@ -216,6 +217,7 @@ class contacts implements renderable, templatable {
             $customcontactform = $USER->editing ? self::get_custom_contact_form($course, $output, $customcontact) : null;
             $contact = $customcontact->to_record();
             $contact->contactid = $contact->id;
+            $contact->domid = 'custom-' . $contact->id;
             $contact->custom = true;
             $contact->show = true;
             $contact->subject = rawurlencode($course->fullname);

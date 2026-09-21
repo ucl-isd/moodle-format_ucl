@@ -82,7 +82,7 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
             'pattern' => "[^@\s]+@[^@\s]+\.[^@\s]+", // Email as pattern till moodle gets native input type=email.
         ];
         $mform->addElement('text', 'email', get_string('email'), $attributes);
-        $mform->setType('email', PARAM_NOTAGS);
+        $mform->setType('email', PARAM_EMAIL);
 
         $mform->addElement('html', '</div>');
 

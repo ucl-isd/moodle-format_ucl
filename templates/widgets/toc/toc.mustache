@@ -98,3 +98,23 @@
         modal.init();
   });
 {{/js}}
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const tocWrapper = document.querySelector('#ucl-format-toc')?.closest('.sticky-top');
+    const mainContent = document.querySelector('#ucl-course-content');
+
+    if (!tocWrapper || !mainContent) return;
+
+    const updateStickiness = () => {
+        const shouldRemoveSticky = tocWrapper.offsetHeight > window.innerHeight && mainContent.offsetHeight > tocWrapper.offsetHeight;
+        tocWrapper.classList.toggle('sticky-top', !shouldRemoveSticky);
+    };
+
+    // Run initially
+    updateStickiness();
+
+    // Listen for browser window resizing (viewport height changes)
+    window.addEventListener('resize', updateStickiness);
+});
+</script>

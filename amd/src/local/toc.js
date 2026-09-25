@@ -64,6 +64,29 @@ export default class Component extends BaseComponent {
         sections.forEach((section) => {
             this.sections[section.dataset.id] = section;
         });
+
+        this._unstickyTop();
+    }
+
+    /**
+     * Disable sticky positioning when the TOC is taller than the viewport.
+     */
+    _unstickyTop() {
+        const tocWrapper = this.element.closest('.sticky-top');
+        const mainContent = document.querySelector('#ucl-course-content');
+
+        if (!tocWrapper || !mainContent) {
+            return;
+        }
+
+        const updateStickiness = () => {
+            const shouldRemoveSticky = tocWrapper.offsetHeight > window.innerHeight
+                && mainContent.offsetHeight > tocWrapper.offsetHeight;
+            tocWrapper.classList.toggle('sticky-top', !shouldRemoveSticky);
+        };
+
+        updateStickiness();
+        window.addEventListener('resize', updateStickiness);
     }
 
     getWatchers() {

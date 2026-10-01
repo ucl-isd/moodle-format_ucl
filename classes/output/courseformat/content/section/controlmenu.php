@@ -100,8 +100,7 @@ class controlmenu extends controlmenu_base {
      *
      * @return link|null The menu item if applicable, otherwise null.
      */
-    protected function get_section_movesection_item(): ?link
-    {
+    protected function get_section_movesection_item(): ?link {
         if (
             $this->section->sectionnum == 0
             || !has_capability('moodle/course:movesections', $this->coursecontext)
@@ -135,8 +134,7 @@ class controlmenu extends controlmenu_base {
      *
      * @return link_secondary The menu item if applicable, otherwise null.
      */
-    protected function get_section_highlight_item(): link_secondary
-    {
+    protected function get_section_highlight_item(): link_secondary {
         $format = $this->format;
         $section = $this->section;
         $course = $format->get_course();
@@ -184,10 +182,10 @@ class controlmenu extends controlmenu_base {
         );
 
         return new link_secondary(
-                url: $url,
-                icon: new pix_icon($icon, ''),
-                text: $name,
-                attributes: $attributes,
+            url: $url,
+            icon: new pix_icon($icon, ''),
+            text: $name,
+            attributes: $attributes,
         );
     }
 
@@ -212,5 +210,4 @@ class controlmenu extends controlmenu_base {
         $url->param('sesskey', sesskey());
         return $url;
     }
-
 }

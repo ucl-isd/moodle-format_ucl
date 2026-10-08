@@ -197,7 +197,7 @@ class format_ucl extends core_courseformat\base {
      *     if null the course view page is returned
      * @param array $options options for view URL. At the moment core uses:
      *     'navigation' (bool) if true and section not empty, the function returns section page; otherwise, it returns course page.
-     *     'sr' (int) used by course formats to specify to which section to return
+     *     'pagesectionid' (int) used by course formats to specify to which section to return
      *     'expanded' (bool) if true the section will be shown expanded, true by default
      * @return null|moodle_url
      */
@@ -210,7 +210,7 @@ class format_ucl extends core_courseformat\base {
         } else {
             $sectionno = $section;
         }
-        if ((!empty($options['navigation']) || array_key_exists('sr', $options)) && (int)$sectionno > 0) {
+        if ((!empty($options['navigation']) || array_key_exists('pagesectionid', $options)) && (int)$sectionno > 0) {
             // Display section on separate page.
             $sectioninfo = $this->get_section($sectionno);
             return new moodle_url('/course/section.php', ['id' => $sectioninfo->id]);
@@ -275,7 +275,7 @@ function format_ucl_inplace_editable($itemtype, $itemid, $newvalue) {
 /**
  * Section navigation fragment renderer method.
  *
- * The fragment arguments are courseid, section id and sr (section return).
+ * The fragment arguments are courseid, section id and pagesectionid (section return).
  *
  * @param array $args The fragment arguments.
  * @return string The rendered section.
@@ -304,7 +304,7 @@ function format_ucl_output_fragment_section_navigation($args): string {
 /**
  * Section divider fragment renderer method.
  *
- * The fragment arguments are courseid, section id and sr (section return).
+ * The fragment arguments are courseid, section id and pagesectionid (section return).
  *
  * @param array $args The fragment arguments.
  * @return string The rendered section.
@@ -333,7 +333,7 @@ function format_ucl_output_fragment_section_divider($args): string {
 /**
  * Section actions fragment renderer method.
  *
- * The fragment arguments are courseid, section id and sr (section return).
+ * The fragment arguments are courseid, section id and pagesectionid (section return).
  *
  * @param array $args The fragment arguments.
  * @return string The rendered section.

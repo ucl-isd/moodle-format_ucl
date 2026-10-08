@@ -61,7 +61,7 @@ class cm extends cm_base {
                 'add' => 'label',
                 'section' => $section,
                 'beforemod' => $this->mod->id,
-                'sr' => $section,
+                'pagesectionid' => $section,
             ]
         );
 

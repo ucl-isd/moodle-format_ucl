@@ -272,14 +272,14 @@ final class format_ucl_test extends \advanced_testcase {
         $this->assertStringContainsString('course/view.php', $format->get_view_url(0));
         $this->assertStringContainsString('course/view.php', $format->get_view_url(1));
         $this->assertStringContainsString('course/section.php', $format->get_view_url(1, ['navigation' => 1]));
-        // When section and/or sr parameter is 0 (first section), the course page should be returned.
+        // When section and/or pagesectionid parameter is 0 (first section), the course page should be returned.
         $this->assertStringContainsString('course/view.php', $format->get_view_url(0, ['navigation' => 1]));
-        $this->assertStringContainsString('course/view.php', $format->get_view_url(0, ['sr' => 0]));
-        $this->assertStringContainsString('course/view.php', $format->get_view_url(0, ['sr' => 1]));
+        $this->assertStringContainsString('course/view.php', $format->get_view_url(0, ['pagesectionid' => 0]));
+        $this->assertStringContainsString('course/view.php', $format->get_view_url(0, ['pagesectionid' => 1]));
 
-        // When sr parameter is > 0, the section.php page should be returned.
-        $this->assertStringContainsString('course/section.php', $format->get_view_url(1, ['sr' => 0]));
-        $this->assertStringContainsString('course/section.php', $format->get_view_url(1, ['sr' => 1]));
+        // When pagesectionid parameter is > 0, the section.php page should be returned.
+        $this->assertStringContainsString('course/section.php', $format->get_view_url(1, ['pagesectionid' => 0]));
+        $this->assertStringContainsString('course/section.php', $format->get_view_url(1, ['pagesectionid' => 1]));
     }
 
     /**

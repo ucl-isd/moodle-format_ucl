@@ -77,7 +77,7 @@ class controlmenu extends controlmenu_base {
         }
 
         $sectionreturn = $this->format->get_sectionnum();
-        $returnparams = !is_null($sectionreturn) ? ['sr' => $sectionreturn] : [];
+        $returnparams = !is_null($sectionreturn) ? ['pagesectionid' => $sectionreturn] : [];
         $url = new url(
             '/course/editsection.php',
             array_merge(['id' => $this->section->id], $returnparams)

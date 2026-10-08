@@ -1,4 +1,4 @@
-@format @format_ucl
+@format @format_ucl @javascript
 Feature: A prompt appears if a section has no description
   In order to add a section description
   As a user

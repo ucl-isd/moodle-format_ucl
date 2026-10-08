@@ -112,7 +112,7 @@ class renderer extends section_renderer {
                         'add' => 'label',
                         'section' => $section->section,
                         'beforemod' => '0',
-                        'sr' => $section->section,
+                        'pagesectionid' => $section->section,
                     ]
                 ),
             ]

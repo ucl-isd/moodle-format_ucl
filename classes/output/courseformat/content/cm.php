@@ -54,6 +54,7 @@ class cm extends cm_base {
 
         $course = $this->format->get_course();
         $section = $this->format->get_sectionnum();
+        $sectioninfo = $this->format->get_modinfo()->get_section_info($section);
         $data->labelurl = new moodle_url(
             '/course/mod.php',
             [
@@ -61,7 +62,7 @@ class cm extends cm_base {
                 'add' => 'label',
                 'section' => $section,
                 'beforemod' => $this->mod->id,
-                'sr' => $section,
+                'returnoptions' => ['pagesectionid' => $sectioninfo->id],
             ]
         );
 

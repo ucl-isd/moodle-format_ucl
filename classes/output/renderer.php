@@ -19,6 +19,7 @@ namespace format_ucl\output;
 use context_course;
 use core_courseformat\base as course_format;
 use core_courseformat\output\section_renderer;
+use cm_info;
 use format_ucl\output\courseformat\content\section\controlmenu;
 use format_ucl\output\courseformat\content\sectionnavigation;
 use format_ucl\output\courseformat\content\sectionselector;
@@ -36,6 +37,26 @@ use section_info;
  */
 class renderer extends section_renderer {
     // Override any necessary renderer method here.
+
+    /**
+     * Render the format's section-level add controls instead of Moodle's default chooser button.
+     *
+     * @param course_format $format
+     * @param section_info $section
+     * @param cm_info|null $mod
+     * @return string
+     */
+    public function add_cm_controls(
+        course_format $format,
+        section_info $section,
+        ?cm_info $mod = null,
+    ): string {
+        if ($mod !== null) {
+            return parent::add_cm_controls($format, $section, $mod);
+        }
+
+        return $this->course_section_add_cm_control($format->get_course(), $section->section);
+    }
 
     /**
      * Generate the section title, wraps it in a link to the section page if page is to be displayed on a separate page.
@@ -84,8 +105,14 @@ class renderer extends section_renderer {
             return '';
         }
 
-        // Load the JS for the modal.
-        $this->course_activitychooser($course->id);
+        // Load the activity chooser once, as done by the core section renderer.
+        if ($this->page->requires->should_create_one_time_item_now('core_courseformat_modchooser')) {
+            $this->page->requires->js_call_amd(
+                'core_courseformat/activitychooser',
+                'init',
+                [$course->id],
+            );
+        }
         $format = course_get_format($course);
         $modinfo = $format->get_modinfo();
         $sectioninfo = $modinfo->get_section_info($section, MUST_EXIST);
@@ -103,7 +130,7 @@ class renderer extends section_renderer {
                         'add' => 'label',
                         'section' => $section,
                         'beforemod' => '0',
-                        'sr' => $section,
+                        'returnoptions' => ['pagesectionid' => $sectioninfo->id],
                     ]
                 ),
             ]

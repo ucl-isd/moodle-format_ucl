@@ -108,21 +108,22 @@ class controlmenu extends controlmenu_base {
         if (array_key_exists('edit', $controls)) {
             $control = $controls['edit'];
             // We want to use a different icon.
-            $control['icon'] = 'i/manual_item';
-            $actionlink = $this->format_control($control);
-            $menu->add($actionlink);
+            if (is_array($control)) {
+                $control['icon'] = 'i/manual_item';
+            } else if ($control instanceof \core\output\action_menu\link) {
+                $control->icon = new pix_icon('i/manual_item', '', null, ['class' => 'smallicon']);
+            }
+            $this->add_control($menu, $control);
         }
 
         if (array_key_exists('movepopup', $controls)) {
             $control = $controls['movepopup'];
-            $actionlink = $this->format_control($control);
-            $menu->add($actionlink);
+            $this->add_control($menu, $control);
         }
 
         if (array_key_exists('visibility', $controls)) {
             $control = $controls['visibility'];
-            $actionlink = $this->format_control($control);
-            $menu->add($actionlink);
+            $this->add_control($menu, $control);
         }
 
         $divider = new \action_menu_filler();
@@ -131,29 +132,38 @@ class controlmenu extends controlmenu_base {
 
         if (array_key_exists('highlight', $controls)) {
             $control = $controls['highlight'];
-            $actionlink = $this->format_control($control);
-            $menu->add($actionlink);
+            $this->add_control($menu, $control);
         }
 
         if (array_key_exists('unhighlight', $controls)) {
             $control = $controls['unhighlight'];
-            $actionlink = $this->format_control($control);
-            $menu->add($actionlink);
+            $this->add_control($menu, $control);
         }
 
         if (array_key_exists('duplicate', $controls)) {
             $control = $controls['duplicate'];
-            $actionlink = $this->format_control($control);
-            $menu->add($actionlink);
+            $this->add_control($menu, $control);
         }
 
         if (array_key_exists('delete', $controls)) {
             $control = $controls['delete'];
-            $actionlink = $this->format_control($control);
-            $menu->add($actionlink);
+            $this->add_control($menu, $control);
         }
 
         return $menu;
+    }
+
+    /**
+     * Add an action-menu object or normalize a legacy array control.
+     *
+     * @param action_menu $menu
+     * @param array|\core\output\action_menu\link|null $control
+     */
+    protected function add_control(action_menu $menu, $control): void {
+        if ($control === null) {
+            return;
+        }
+        $menu->add(is_array($control) ? $this->format_control($control) : $control);
     }
 
     /**

@@ -84,7 +84,10 @@ class content extends content_base {
         $data->hassummary = (bool)$data->singlesection?->summary?->summarytext;
         $data->addsectiondescurl = new moodle_url(
             '/course/editsection.php',
-            ['id' => $sectioninfo->id, 'sr' => $singlesectionnum]
+            [
+                'id' => $sectioninfo->id,
+                'returnoptions' => ['pagesectionid' => $sectioninfo->id],
+            ]
         );
         $data->addsectiondescurl->set_anchor('id_summary_editor');
 

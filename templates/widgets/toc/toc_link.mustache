@@ -62,7 +62,7 @@
     <div>
         {{! Highlighted section. }}
         <div class="flag-current">
-            <span class="badge badge-info badge-pill">
+            <span class="badge rounded-pill text-bg-info">
                 {{#str}} currentsection, format_ucl {{/str}}
             </span>
         </div>
@@ -75,21 +75,21 @@
 
         {{! Current section you are on, so not a link. }}
         {{#active}}
-        <span data-for="section_title" class="line-clamp-2 text-break font-weight-bold">
+        <span data-for="section_title" class="line-clamp-2 text-break fw-bold">
             {{{name}}}
         </span>
         {{/active}}
     </div>
 
     {{! Hidden from students. }}
-    <div class="flag-hidden ml-auto">
-        <div class="badge badge-warning rounded-circle p-2 m-1"
-            data-toggle="tooltip" data-html="true" data-placement="right"
+    <div class="flag-hidden ms-auto">
+        <div class="badge text-bg-warning rounded-circle p-2 m-1"
+            data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="right"
             title="{{#str}} hiddenfromstudents {{/str}}" aria-hidden="true">
             <i class="fa-solid fa-eye-slash"
             ></i>
         </div>
-        <div class="sr-only">{{#str}} hiddenfromstudents {{/str}}</div>
+        <div class="visually-hidden">{{#str}} hiddenfromstudents {{/str}}</div>
     </div>
 
     {{#progress}}

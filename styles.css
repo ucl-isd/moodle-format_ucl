@@ -6,25 +6,6 @@ body.format-ucl {
         background-position: center;
     }
 
-    /* Add content button. */
-    /* TODO - remove in Moodle 5 upgrade where this is in core. */
-    .btn-add-content {
-        border-radius: 1rem;
-        border: 2px dashed color-mix(in srgb, var(--primary) 20%, white);
-        color: var(--primary);
-        background-color: white;
-        font-size: .9rem;
-        font-weight: bold;
-        transition: all 1s;
-        &:hover,
-        &:focus {
-            background-color: color-mix(in srgb, var(--primary) 6%, white);
-            border-style: solid;
-            border-color: var(--primary);
-            color: color-mix(in srgb, var(--primary) 63%, black);
-        }
-    }
-
     /* Page width. */
     #page-header,
     .main-inner,

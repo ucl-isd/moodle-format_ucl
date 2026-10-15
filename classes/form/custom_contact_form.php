@@ -139,7 +139,7 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
             );
         }
 
-        $mform->addElement('html', '<div class="ml-auto">');
+        $mform->addElement('html', '<div class="ms-auto">');
 
         // Cancel button - closes the collapse.
         // Target collapse container - if contactid exists, target that specific form, otherwise target the generic form container.
@@ -148,7 +148,7 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
             'customclassoverride' => 'btn btn-secondary',
         ];
         $attributes = [
-            'data-toggle' => 'collapse',
+            'data-bs-toggle' => 'collapse',
             'href' => "#$targetid",
             'aria-expanded' => 'false',
             'aria-controls' => '$targetid',

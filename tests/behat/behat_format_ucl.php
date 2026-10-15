@@ -58,7 +58,7 @@ class behat_format_ucl extends behat_base {
         // Wait for section to be available, before clicking on the menu.
         $this->execute('behat_course::i_wait_until_section_is_available', [$section]);
 
-        $xpath = "//div[contains(@class, 'section-actions')]/descendant::a[@data-toggle='dropdown']";
+        $xpath = "//div[contains(@class, 'section-actions')]/descendant::a[@data-bs-toggle='dropdown']";
         $exception = new ExpectationException('Section "' . $section . '" was not found', $this->getSession());
         $menu = $this->find('xpath', $xpath, $exception);
         $menu->click();

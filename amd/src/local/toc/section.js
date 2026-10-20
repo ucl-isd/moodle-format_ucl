@@ -26,6 +26,7 @@
  */
 
 import {BaseComponent} from "core/reactive";
+import {getCurrentCourseEditor} from 'core_courseformat/courseeditor';
 
 export default class Component extends BaseComponent {
 
@@ -65,6 +66,7 @@ export default class Component extends BaseComponent {
     static init(target, selectors) {
         return new this({
             element: document.querySelector(target),
+            reactive: getCurrentCourseEditor(),
             selectors,
         });
     }

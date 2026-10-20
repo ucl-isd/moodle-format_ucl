@@ -28,30 +28,18 @@ Feature: UCL sections can be highlighted
     And I am on "Course 1" course homepage with editing mode on
 
   @javascript
-  Scenario: Highlight a section
+  Scenario: Highlight, move, and clear the highlighted section
     Given I click on "Section 2" "link" in the "#toc" "css_element"
     And I open ucl section "Section 2" edit menu
     When I click on "Highlight" "link" in the ".section-actions" "css_element"
     Then I should see "Highlighted" in the "[data-sectionname='Section 2']" "css_element"
-
-  @javascript
-  Scenario: Highlight a section when another section is already highlighted
     Given I click on "Section 3" "link" in the "#toc" "css_element"
     And I open ucl section "Section 3" edit menu
-    When I click on "Highlight" "link" in the ".section-actions" "css_element"
-    Then I should see "Highlighted" in the "[data-sectionname='Section 3']" "css_element"
-    And I click on "Section 2" "link" in the "#toc" "css_element"
-    And I open ucl section "Section 2" edit menu
     And I click on "Highlight" "link" in the ".section-actions" "css_element"
+    And I should see "Highlighted" in the "[data-sectionname='Section 3']" "css_element"
+    And I click on "Section 2" "link" in the "#toc" "css_element"
+    And I should not see "Highlighted" in the "[data-sectionname='Section 2']" "css_element"
     And I click on "Section 3" "link" in the "#toc" "css_element"
-    And I should not see "Highlighted" in the "[data-sectionname='Section 3']" "css_element"
-
-  @javascript
-  Scenario: Unhighlight a section
-    Given I click on "Section 3" "link" in the "#toc" "css_element"
-    And I open ucl section "Section 3" edit menu
-    When I click on "Highlight" "link" in the ".section-actions" "css_element"
-    Then I should see "Highlighted" in the "[data-sectionname='Section 3']" "css_element"
     And I open ucl section "Section 3" edit menu
     And I click on "Unhighlight" "link" in the ".section-actions" "css_element"
     And I should not see "Highlighted" in the "[data-sectionname='Section 3']" "css_element"

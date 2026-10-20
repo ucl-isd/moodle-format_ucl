@@ -283,6 +283,127 @@ final class format_ucl_test extends \advanced_testcase {
     }
 
     /**
+     * Progress is omitted when course completion is disabled or the section has no completable activities.
+     *
+     * @covers \format_ucl\output\widgets\toc::format_ucl_section_progress
+     */
+    public function test_section_progress_is_omitted_when_unavailable(): void {
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $student = $generator->create_user();
+        $disabledcourse = $generator->create_course(
+            ['format' => 'ucl', 'numsections' => 1, 'enablecompletion' => 0],
+            ['createsections' => true]
+        );
+        $nocmcompletioncourse = $generator->create_course(
+            ['format' => 'ucl', 'numsections' => 1, 'enablecompletion' => 1],
+            ['createsections' => true]
+        );
+        $generator->enrol_user($student->id, $disabledcourse->id, 'student');
+        $generator->enrol_user($student->id, $nocmcompletioncourse->id, 'student');
+        $generator->create_module('page', [
+            'course' => $disabledcourse->id,
+            'section' => 1,
+            'completion' => 1,
+            'name' => 'Completion disabled',
+        ]);
+        $generator->create_module('page', [
+            'course' => $nocmcompletioncourse->id,
+            'section' => 1,
+            'completion' => 0,
+            'name' => 'No completion tracking',
+        ]);
+
+        $this->setUser($student);
+        $disabledsection = course_get_format($disabledcourse)->get_modinfo()->get_section_info(1);
+        $this->assertNull(\format_ucl\output\widgets\toc::format_ucl_section_progress(
+            $disabledsection,
+            $disabledcourse,
+            $student->id
+        ));
+
+        $untrackedsection = course_get_format($nocmcompletioncourse)->get_modinfo()->get_section_info(1);
+        $this->assertNull(\format_ucl\output\widgets\toc::format_ucl_section_progress(
+            $untrackedsection,
+            $nocmcompletioncourse,
+            $student->id
+        ));
+    }
+
+    /**
+     * TOC warning data follows section counts, names, activity counts, configuration, and course image state.
+     *
+     * @covers \format_ucl\output\widgets\toc::export_for_template
+     */
+    public function test_toc_warning_data_for_editors(): void {
+        global $DB, $PAGE;
+
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $teacher = $generator->create_user();
+        $warningcourse = $generator->create_course(
+            ['format' => 'ucl', 'numsections' => 3],
+            ['createsections' => true]
+        );
+        $cleanersectionscourse = $generator->create_course(
+            ['format' => 'ucl', 'numsections' => 3],
+            ['createsections' => true]
+        );
+        $generator->enrol_user($teacher->id, $warningcourse->id, 'editingteacher');
+        $generator->enrol_user($teacher->id, $cleanersectionscourse->id, 'editingteacher');
+
+        $generator->create_module('page', ['course' => $warningcourse->id, 'section' => 2, 'name' => 'Page 2a']);
+        $generator->create_module('page', ['course' => $warningcourse->id, 'section' => 2, 'name' => 'Page 2b']);
+        $generator->create_module('page', ['course' => $warningcourse->id, 'section' => 3, 'name' => 'Page 3']);
+        foreach ([1, 2, 3] as $sectionnum) {
+            $DB->set_field(
+                'course_sections',
+                'name',
+                'Week ' . $sectionnum,
+                ['course' => $cleanersectionscourse->id, 'section' => $sectionnum]
+            );
+            $generator->create_module('page', [
+                'course' => $cleanersectionscourse->id,
+                'section' => $sectionnum,
+                'name' => "Page {$sectionnum}a",
+            ]);
+            $generator->create_module('page', [
+                'course' => $cleanersectionscourse->id,
+                'section' => $sectionnum,
+                'name' => "Page {$sectionnum}b",
+            ]);
+        }
+
+        $this->setUser($teacher);
+        set_config('recommendedmaxsections', 2, 'format_ucl');
+        set_config('linktoguidance', 'https://example.com/guidance', 'format_ucl');
+        config::instance(true);
+        $warningdata = (new \format_ucl\output\widgets\toc(course_get_format($warningcourse)))
+            ->export_for_template($PAGE->get_renderer('core'));
+
+        $this->assertTrue($warningdata->showwarning);
+        $this->assertTrue($warningdata->showguidance);
+        $this->assertTrue($warningdata->shownunnamedsections);
+        $this->assertSame(3, $warningdata->namecount);
+        $this->assertTrue($warningdata->showtoomanysections);
+        $this->assertSame(3, $warningdata->visiblecount);
+        $this->assertTrue($warningdata->showtoofewmods);
+        $this->assertSame(2, $warningdata->modcount);
+        $this->assertTrue($warningdata->shownocourseimg);
+
+        set_config('recommendedmaxsections', 3, 'format_ucl');
+        config::instance(true);
+        $cleanerdata = (new \format_ucl\output\widgets\toc(course_get_format($cleanersectionscourse)))
+            ->export_for_template($PAGE->get_renderer('core'));
+
+        $this->assertFalse($cleanerdata->shownunnamedsections ?? false);
+        $this->assertFalse($cleanerdata->showtoomanysections ?? false);
+        $this->assertFalse($cleanerdata->showtoofewmods ?? false);
+        $this->assertTrue($cleanerdata->shownocourseimg);
+        $this->assertFalse($cleanerdata->showguidance);
+    }
+
+    /**
      * Test get_required_jsfiles().
      *
      * @covers ::get_required_jsfiles

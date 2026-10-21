@@ -28,7 +28,6 @@ export const init = () => {
         element,
         name: normalize(element.dataset.searchName),
     }));
-    let timer;
 
     // Focus the activity target after page load or a module-fragment change.
     const focusActivity = () => {
@@ -75,17 +74,13 @@ export const init = () => {
         }
     };
 
-    input.addEventListener('input', () => {
-        window.clearTimeout(timer);
-        timer = window.setTimeout(update, 150);
-    });
+    input.addEventListener('input', update);
     list.addEventListener('click', event => {
         const link = event.target.closest('a[href]');
         if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey
                 || !link) {
             return;
         }
-        window.clearTimeout(timer);
         input.value = '';
         update();
         const destination = new URL(link.href, window.location.href);

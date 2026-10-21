@@ -31,5 +31,5 @@ Feature: Search for an activity by name
     And "#ucl-course-search-results [data-search-name='Biology overview']" "css_element" should not be visible
     And "#ucl-course-search-results [data-search-name='Café - Week 3 label']" "css_element" should not exist
     When I click on "#ucl-course-search-results [data-search-name='Café - Week 3 Quiz'] a" "css_element"
-    Then ".activityname" "css_element" should contain "Café - Week 3 Quiz"
+    Then "Café - Week 3 Quiz" "text" should exist in the ".activityname" "css_element"
     And "[data-region='ucl-course-search']" "css_element" should not exist

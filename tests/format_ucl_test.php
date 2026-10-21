@@ -283,6 +283,50 @@ final class format_ucl_test extends \advanced_testcase {
     }
 
     /**
+     * Search data spans the course and excludes labels and activities unavailable to a student.
+     *
+     * @covers \format_ucl\output\courseformat\content::get_search_activities
+     */
+    public function test_search_activities(): void {
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $course = $generator->create_course(['format' => 'ucl', 'numsections' => 3]);
+        $student = $generator->create_user();
+        $generator->enrol_user($student->id, $course->id, 'student');
+        $intro = $generator->create_module('page', ['course' => $course->id, 'section' => 0, 'name' => 'Introduction reading']);
+        $first = $generator->create_module('page', ['course' => $course->id, 'section' => 1, 'name' => 'Reading & notes']);
+        $second = $generator->create_module('page', ['course' => $course->id, 'section' => 2, 'name' => 'Week two reading']);
+        $generator->create_module('label', ['course' => $course->id, 'section' => 1, 'name' => 'Not searchable']);
+        $generator->create_module('page', ['course' => $course->id, 'section' => 1, 'visible' => 0]);
+        $generator->create_module('page', ['course' => $course->id, 'section' => 3, 'name' => 'Hidden section activity']);
+        set_section_visible($course->id, 3, 0);
+        $generator->create_module('page', ['course' => $course->id, 'section' => 2, 'availability' => json_encode([
+            'op' => '&',
+            'c' => [['type' => 'date', 'd' => '>=', 't' => time() + DAYSECS]],
+            'showc' => [true],
+        ])]);
+
+        $this->setUser($student);
+        $format = course_get_format($course);
+        $content = new \format_ucl\output\courseformat\content($format);
+        $activities = $content->get_search_activities();
+        $this->assertSame(['Introduction reading', 'Reading & notes', 'Week two reading'], array_column($activities, 'name'));
+        $modinfo = $format->get_modinfo();
+        $this->assertSame([
+            (new \moodle_url('/course/view.php', ['id' => $course->id], 'module-' . $intro->cmid))->out(false),
+            (new \moodle_url('/course/section.php', ['id' => $modinfo->get_section_info(1)->id], 'module-' . $first->cmid))
+                ->out(false),
+            (new \moodle_url('/course/section.php', ['id' => $modinfo->get_section_info(2)->id], 'module-' . $second->cmid))
+                ->out(false),
+        ], array_column($activities, 'url'));
+        $this->assertSame([
+            $modinfo->get_cm($intro->cmid)->get_icon_url()->out(false),
+            $modinfo->get_cm($first->cmid)->get_icon_url()->out(false),
+            $modinfo->get_cm($second->cmid)->get_icon_url()->out(false),
+        ], array_column($activities, 'iconurl'));
+    }
+
+    /**
      * Progress is omitted when course completion is disabled or the section has no completable activities.
      *
      * @covers \format_ucl\output\widgets\toc::format_ucl_section_progress

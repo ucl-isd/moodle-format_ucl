@@ -1,0 +1,55 @@
+{{!
+    @template format_ucl/widgets/search/search
+
+    Course search field, result count, and activity links.
+
+    Context variables required for this template:
+    * searchactivities Array of accessible activities with name, URL, icon URL, and section name.
+
+    Example context (json):
+    {
+        "searchactivities": [
+            {
+                "name": "Week one reading",
+                "url": "/mod/page/view.php?id=42",
+                "iconurl": "/theme/image.php/boost/page/0/monologo",
+                "sectionname": "Week one"
+            }
+        ]
+    }
+}}
+<div class="ucl-course-search mb-3" data-region="ucl-course-search">
+    <div class="ucl-course-search-field transition ms-auto my-2" data-region="search-field">
+        <label for="ucl-course-search" class="visually-hidden">{{#str}} searchcourse, format_ucl {{/str}}</label>
+        <div class="input-group">
+            <span class="input-group-text text-primary bg-transparent" aria-hidden="true">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
+            <input type="search" id="ucl-course-search" name="coursesearch" class="form-control"
+                aria-controls="ucl-course-search-results" autocomplete="off"
+                placeholder="{{#str}} searchcourse, format_ucl {{/str}}">
+        </div>
+            </div>
+    <div class="badge rounded-pill text-bg-info mt-1" role="status" aria-live="polite" aria-atomic="true" data-region="search-status"
+        data-results-template="{{#str}} searchresultscount, format_ucl, __COUNT__ {{/str}}"
+        data-no-results="{{#str}} searchnoresults, format_ucl {{/str}}"></div>
+    <ul id="ucl-course-search-results" class="list-unstyled mb-0 d-none">
+        {{#searchactivities}}
+            <li class="border-bottom py-2 d-none animate-down" data-search-name="{{name}}">
+                <a href="{{url}}" class="d-flex align-items-center">
+                    <img src="{{iconurl}}" alt="" width="25" height="25" class="me-2 flex-shrink-0">
+                    <div>
+                        <span class="small text-muted d-block">{{sectionname}}</span>
+                        <span>{{name}}</span>
+                    </div>
+                </a>
+            </li>
+        {{/searchactivities}}
+    </ul>
+</div>
+
+{{#js}}
+require(['format_ucl/local/search'], function(Search) {
+    Search.init();
+});
+{{/js}}

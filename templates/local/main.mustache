@@ -46,8 +46,8 @@
   Include the core content template.
   This is the top template for a course.
 }}
-
 {{#initialsection}}
+    {{> format_ucl/widgets/search/search }}
     {{> format_ucl/widgets/warnings/warnings }}
 {{/initialsection}}
 
@@ -65,7 +65,7 @@
         {{! Mobile toc. }}
         {{> format_ucl/widgets/toc/mobiletoc }}
 
-        <div class="pl-lg-3">
+        <div class="ps-lg-3">
             <div class="d-flex align-items-center">
                 {{#sectionname}}
                 <h2 data-region="ucl-section-name" class="ucl-section-name text-break">
@@ -74,13 +74,13 @@
                 {{/sectionname}}
 
                 {{#sectionactions}}
-                    <div class="ml-auto" data-for="section-controlmenu" data-id="{{id}}">
+                    <div class="ms-auto" data-for="section-controlmenu" data-id="{{id}}">
                         {{{sectionactions}}}
                     </div>
                 {{/sectionactions}}
 
                 {{#singleedit}}
-                    <div class="ml-auto">
+                    <div class="ms-auto">
                         <a class="btn btn-outline-secondary" href="{{{editurl}}}">
                             Edit
                         </a>

@@ -46,11 +46,11 @@
 {{! Contact. }}
 <div class="ucl-format-coursecontact-wrapper col-md-4 col-sm-6 mb-2 position-relative">
     {{! Contact button. }}
-    <button class="btn btn-link ucl-format-contact-trigger d-flex text-left"
+    <button class="btn btn-link ucl-format-contact-trigger d-flex text-start"
     type="button" popovertarget="popover-{{domid}}" style="anchor-name: --contact-{{domid}};">
 
         {{! Image. }}
-        <span class="ucl-format-coursecontact-picture mr-2">
+        <span class="ucl-format-coursecontact-picture me-2">
             {{{picture}}}
 
             {{^custom}}
@@ -85,16 +85,16 @@
 
     {{! Editing. }}
     {{#isediting}}
-        <div class="pl-3 pb-3 border-bottom">
+        <div class="ps-3 pb-3 border-bottom">
             {{^custom}}
-                <div class="custom-control custom-switch">
+                <div class="form-check form-switch">
                     <input type="checkbox" id="switch-{{id}}"
-                        class="contact-hide-toggle custom-control-input"
+                        class="contact-hide-toggle form-check-input"
                         data-userid="{{id}}"
                         data-action="{{#show}}hide{{/show}}{{^show}}show{{/show}}"
                         {{#show}} checked {{/show}}
                     >
-                    <label class="custom-control-label" for="switch-{{id}}">
+                    <label class="form-check-label" for="switch-{{id}}">
                         <small>{{#str}} showtostudents, format_ucl, {{{name}}}{{/str}}</small>
                     </label>
                 </div>
@@ -109,9 +109,9 @@
                         aria-expanded="false"
                         aria-controls="ucl-format-customcontact-form-{{contactid}}"
                     >
-                        <i class="fa-regular fa-circle-user mr-2"></i>
+                        <i class="fa-regular fa-circle-user me-2"></i>
                         {{#str}} editcustomcontact, format_ucl {{/str}}
-                        <span class="sr-only">{{{name}}}</span>
+                        <span class="visually-hidden">{{{name}}}</span>
                     </a>
                 </div>
             {{/custom}}
@@ -125,7 +125,7 @@
         {{! Contact. }}
         <div class="d-flex">
             {{#picture}}
-                <div class="mr-2">
+                <div class="me-2">
                     {{{.}}}
                 </div>
             {{/picture}}
@@ -155,10 +155,10 @@
         {{^custom}}
             {{#caneditprofile}}
                 <div class="py-3 border-top">
-                    <a href="{{{editurl}}}" target="_blank" class="btn btn-sm btn-add-content btn-block">
-                        <i class="fa-solid fa-circle-plus mr-2"></i>
+                    <a href="{{{editurl}}}" target="_blank" class="btn btn-sm btn-add-content w-100">
+                        <i class="fa-solid fa-circle-plus me-2"></i>
                         {{#str}} adddescription, format_ucl{{/str}}
-                        <span class="sr-only">{{#str}} forcontact, format_ucl, {{{name}}}{{/str}}</span>
+                        <span class="visually-hidden">{{#str}} forcontact, format_ucl, {{{name}}}{{/str}}</span>
                     </a>
                 </div>
             {{/caneditprofile}}

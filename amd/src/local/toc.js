@@ -142,16 +142,16 @@ export default class Component extends BaseComponent {
             return;
         }
 
-        const srOnlyElement = progressContainer.querySelector('.sr-only');
+        const srOnlyElement = progressContainer.querySelector('.visually-hidden');
         const fallbackTooltip = `${done} of ${total} complete`;
         progressElement.setAttribute('title', fallbackTooltip);
-        progressElement.setAttribute('data-original-title', fallbackTooltip);
+        progressElement.setAttribute('data-bs-original-title', fallbackTooltip);
         srOnlyElement.textContent = fallbackTooltip;
 
         getString('xofycomplete', 'format_ucl', {complete: done, total})
             .then((tooltip) => {
                 progressElement.setAttribute('title', tooltip);
-                progressElement.setAttribute('data-original-title', tooltip);
+                progressElement.setAttribute('data-bs-original-title', tooltip);
                 srOnlyElement.textContent = tooltip;
                 return tooltip;
             })

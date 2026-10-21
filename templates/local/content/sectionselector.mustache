@@ -18,11 +18,11 @@
     @template core_courseformat/local/content/sectionselector
 
     Displays the course section navigation.
-    
+
     Classes required for JS/Behat:
     * .behat-previous-section
     * .behat-next-section
-    
+
     Data attributes required for JS/Behat:
     * data-for="section"
     * data-for="section-nav"
@@ -42,29 +42,29 @@
 }}
 <nav id="ucl-section-navigation" class="bg-light my-5 p-3 d-flex justify-content-between"
      aria-label="{{#str}} next-and-previous-section-links, format_ucl {{/str}}" data-for="section-nav" data-id="{{id}}">
-    <div class="max-w-50 mr-1">
+    <div class="max-w-50 me-1">
         {{#hasprevious}}
             <div class="d-flex align-items-center">
-                <i class="fa-solid fa-circle-chevron-left mr-2"></i><small>{{#str}} previoussection {{/str}}</small>
+                <i class="fa-solid fa-circle-chevron-left me-2"></i><small>{{#str}} previoussection {{/str}}</small>
             </div>
             <a class="text-break behat-previous-section" href="{{{previousurl}}}">
-                <span class="sr-only">{{#str}} previoussection {{/str}}</span>  {{{previousname}}}
+                <span class="visually-hidden">{{#str}} previoussection {{/str}}</span>  {{{previousname}}}
                 {{#previoushidden}}
-                    <br><small class="badge badge-pill badge-warning">{{#str}} hiddenfromstudents {{/str}}</small>
+                    <br><small class="badge rounded-pill text-bg-warning">{{#str}} hiddenfromstudents {{/str}}</small>
                 {{/previoushidden}}
             </a>
         {{/hasprevious}}
     </div>
 
-    <div class="text-right max-w-50 ml-1">
+    <div class="text-end max-w-50 ms-1">
         {{#hasnext}}
             <div class="d-flex align-items-center justify-content-end">
-                <small>{{#str}} nextsection {{/str}}</small><i class="fa-solid fa-circle-chevron-right ml-2"></i>
+                <small>{{#str}} nextsection {{/str}}</small><i class="fa-solid fa-circle-chevron-right ms-2"></i>
             </div>
             <a class="text-break behat-next-section" href="{{{nexturl}}}">
-                <span class="sr-only">{{#str}} nextsection {{/str}}</span> {{{nextname}}}
+                <span class="visually-hidden">{{#str}} nextsection {{/str}}</span> {{{nextname}}}
                 {{#nexthidden}}
-                    <br><small class="badge badge-pill badge-warning">{{#str}} hiddenfromstudents {{/str}}</small>
+                    <br><small class="badge rounded-pill text-bg-warning">{{#str}} hiddenfromstudents {{/str}}</small>
                 {{/nexthidden}}
             </a>
         {{/hasnext}}

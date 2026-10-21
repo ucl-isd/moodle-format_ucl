@@ -6,25 +6,6 @@ body.format-ucl {
         background-position: center;
     }
 
-    /* Add content button. */
-    /* TODO - remove in Moodle 5 upgrade where this is in core. */
-    .btn-add-content {
-        border-radius: 1rem;
-        border: 2px dashed color-mix(in srgb, var(--primary) 20%, white);
-        color: var(--primary);
-        background-color: white;
-        font-size: .9rem;
-        font-weight: bold;
-        transition: all 1s;
-        &:hover,
-        &:focus {
-            background-color: color-mix(in srgb, var(--primary) 6%, white);
-            border-style: solid;
-            border-color: var(--primary);
-            color: color-mix(in srgb, var(--primary) 63%, black);
-        }
-    }
-
     /* Page width. */
     #page-header,
     .main-inner,
@@ -44,6 +25,30 @@ body.format-ucl {
         padding-left: 0;
     }
 
+    /* Search. */
+    /* Hide by default. */
+    .ucl-course-search-field {
+        display: none;
+    }
+    /* Show when moved with js to the secondary navigation. */
+    .secondary-navigation > .ucl-course-search-field {
+        display: block;
+    }
+    /* Flex container so search displays inline. */
+    .secondary-navigation:has(.ucl-course-search-field) {
+        display: flex;
+    }
+
+    #page:has(.ucl-course-search-field:focus-within, .ucl-course-search:focus-within, #ucl-course-search-results:not(.d-none)) {
+        .secondary-navigation:has(> .ucl-course-search-field) {
+            flex-direction: column;
+
+            > .ucl-course-search-field {
+                width: 100%;
+            }
+        }
+    }
+
     /* Remove borders. */
     .section-item {
         border: none;
@@ -51,7 +56,7 @@ body.format-ucl {
     }
 
     /* Remove "current" border. */
-    .course-content .current::before {
+    .course-section.current .section-item::before {
         border-left: none !important; /* stylelint-disable-line declaration-no-important */
         /* This removes the pseudo-element entirely */
         content: none !important; /* stylelint-disable-line declaration-no-important */
@@ -96,6 +101,7 @@ body.format-ucl {
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
+            line-clamp: 2;
             overflow: hidden;
         }
 
@@ -159,8 +165,8 @@ body.format-ucl {
     .pie:before {
         inset: 0;
         background:
-            radial-gradient(farthest-side, var(--success) 98%, #0000) top/var(--b) var(--b) no-repeat,
-            conic-gradient(var(--success) calc(var(--p) * 1%), #0000 0);
+            radial-gradient(farthest-side, var(--bs-success) 98%, #0000) top/var(--b) var(--b) no-repeat,
+            conic-gradient(var(--bs-success) calc(var(--p) * 1%), #0000 0);
         background-size: 0 0, auto;
         -webkit-mask:
             radial-gradient(
@@ -178,7 +184,7 @@ body.format-ucl {
 
     .pie:after {
         inset: calc(50% - var(--b) / 2);
-        background: var(--success);
+        background: var(--bs-success);
         transform: rotate(calc(var(--p) * 3.6deg)) translateY(calc(50% - var(--w) / 2));
         content: none;
     }
@@ -193,7 +199,7 @@ body.format-ucl {
 
     .pie.complete {
         transition: all 1s;
-        background-color: var(--success);
+        background-color: var(--bs-success);
 
         .fa-check {
             display: block;
@@ -212,11 +218,12 @@ body.format-ucl {
         .userpicture,
         .userinitials,
         .ucl-format-image-hidden {
-            border: none;
-            font-weight: bold;
             width: 3rem;
             height: 3rem;
             margin: 0;
+        }
+        .userpicture {
+            border: .1rem solid transparent;
         }
 
         /* Hidden contact icon. */
@@ -233,6 +240,20 @@ body.format-ucl {
             .userpicture,
             .userinitials {
                 display: none !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+
+        /* Button to trigger contact popover. */
+        .ucl-format-contact-trigger {
+            &:hover,
+            &:focus {
+                .ucl-format-coursecontact-picture {
+                    .userinitials,
+                    img {
+                        color: var(--bs-primary);
+                        border-color: var(--bs-primary);
+                    }
+                }
             }
         }
 

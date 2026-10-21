@@ -1,4 +1,5 @@
-# Exclude all the templates here from HTML validity checks
-# Partials are linted with the main template.
-# They fail when linted as if directly included in <body> tags.
-*.mustache
+# Exclude structural partials from standalone HTML validity checks.
+# They are linted with the parent template and can be invalid inside <body> on their own.
+cmitem.mustache
+cmlist.mustache
+content.mustache

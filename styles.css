@@ -32,6 +32,40 @@ body.format-ucl {
         padding-left: 0;
     }
 
+    /* Inline section summary editor. */
+    .ucl-section-summary [data-region="summary-form"] {
+        .fitem:has(textarea[id^="id_summary_editor"], .editor_atto_wrap, .tox-tinymce) {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+
+            .col-form-label,
+            .felement,
+            .editor_atto_wrap {
+                display: block;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .tox-tinymce {
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+
+        [data-groupname="buttonar"] {
+            > .col-form-label {
+                display: none;
+            }
+
+            > .felement {
+                flex: 0 0 100%;
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+    }
+
     /* Search. */
     /* Hide by default. */
     .ucl-course-search-field {

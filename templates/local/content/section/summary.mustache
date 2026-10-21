@@ -17,26 +17,50 @@
 {{!
     @template format_ucl/local/content/section/summary
 
-    Displays the course section summary.
+    Displays a course section summary and inline edit controls.
 
     Example context (json):
     {
-        "hassummary": false,
+        "id": 12,
+        "hassummary": true,
         "isediting": true,
-        "addsectiondescurl": "/course/editsection.php?id=555555&sr=5#id_summary_editor"
+        "summary": {
+            "summarytext": "Section description"
+        }
     }
 }}
-{{#hassummary}}
-    {{> core_courseformat/local/content/section/summary }}
-{{/hassummary}}
+<div class="ucl-section-summary" data-region="ucl-section-summary" data-sectionid="{{id}}"
+    data-has-summary="{{#hassummary}}true{{/hassummary}}{{^hassummary}}false{{/hassummary}}">
+    <div data-region="summary-display" {{^hassummary}}class="d-none"{{/hassummary}}>
+        {{#hassummary}}
+            {{> core_courseformat/local/content/section/summary }}
+        {{/hassummary}}
+    </div>
 
-{{^hassummary}}
     {{#isediting}}
-        <div>
-            <a class="btn btn-add-content" href="{{{addsectiondescurl}}}">
-                <i class="fa-solid fa-circle-plus me-2"></i>
-                {{#str}}addsectiondescription, format_ucl{{/str}}
-            </a>
-        </div>
+        <a href="#section-summary-form-{{id}}" class="btn btn-primary" data-action="edit-section-summary"
+            data-add-label="{{#str}} addsectiondescription, format_ucl {{/str}}"
+            data-edit-label="{{#str}} editsectiondescription, format_ucl {{/str}}"
+            aria-controls="section-summary-form-{{id}}" aria-expanded="false">
+            <i class="fa-solid fa-pen-to-square me-2" aria-hidden="true"></i>
+            <span data-region="summary-action-label">
+                {{#hassummary}}{{#str}} editsectiondescription, format_ucl {{/str}}{{/hassummary}}
+                {{^hassummary}}{{#str}} addsectiondescription, format_ucl {{/str}}{{/hassummary}}
+            </span>
+        </a>
+        <template data-region="summary-loading-template">
+            <div class="py-2" role="status" aria-live="polite">
+                <span>{{#str}} loading, core {{/str}}</span>
+            </div>
+        </template>
+        <div id="section-summary-form-{{id}}" data-region="summary-form"></div>
     {{/isediting}}
-{{/hassummary}}
+</div>
+
+{{#isediting}}
+    {{#js}}
+        require(['format_ucl/local/sectiondescription'], function(component) {
+            component.init();
+        });
+    {{/js}}
+{{/isediting}}

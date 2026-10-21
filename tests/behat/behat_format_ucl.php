@@ -35,6 +35,24 @@ require_once(__DIR__ . '/../../../../tests/behat/behat_course.php');
  */
 class behat_format_ucl extends behat_base {
     /**
+     * Wait until Moodle's TinyMCE API has loaded.
+     *
+     * @Then /^TinyMCE should be preloaded$/
+     * @return void
+     */
+    public function tinymce_should_be_preloaded(): void {
+        $exception = new ExpectationException('TinyMCE was not preloaded', $this->getSession());
+        $this->spin(
+            static function ($context) {
+                return $context->evaluate_script('return Boolean(window.tinyMCE);');
+            },
+            false,
+            false,
+            $exception
+        );
+    }
+
+    /**
      * Return the list of partial named selectors
      *
      * @return behat_component_named_selector[]

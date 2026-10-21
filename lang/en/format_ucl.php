@@ -58,6 +58,7 @@ $string['duplicate'] = 'Duplicate';
 $string['editcourseroles'] = 'Edit course roles';
 $string['editcustomcontact'] = 'Edit custom contact';
 $string['editsection'] = 'Edit section';
+$string['editsectiondescription'] = 'Edit section description';
 $string['editsectionname'] = 'Edit section name';
 $string['email:placeholder'] = 'name@example.com';
 $string['forcontact'] = 'for contact {$a}';

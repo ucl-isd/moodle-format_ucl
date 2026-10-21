@@ -39,23 +39,23 @@ Feature: TOC progress is shown on load and updates after manual completion
   Scenario: TOC progress is hidden when editing mode is on
     Given I am on the "PROG1" "Course" page logged in as "teacher1"
     And I turn editing mode on
-    Then "#toc .progress-indicator[data-id] .pie" "css_element" should not exist
+    Then "#toc .progress-indicator[data-id] .progress-ring" "css_element" should not exist
 
   Scenario: TOC progress updates after manual completion
     Given I am on the "PROG1" "Course" page logged in as "student1"
     And I click on "Section 2" "link" in the "#toc" "css_element"
-    And "#toc [data-section='2'] .progress-indicator[data-id] .pie" "css_element" should exist
-    And the "data-behat-percentage" attribute of "#toc [data-section='2'] .progress-indicator[data-id] .pie" "css_element" should contain "0"
+    And "#toc [data-section='2'] .progress-indicator[data-id] .progress-ring" "css_element" should exist
+    And the "data-behat-percentage" attribute of "#toc [data-section='2'] .progress-indicator[data-id] .progress-ring" "css_element" should contain "0"
     When I toggle the manual completion state of "Activity sample 2"
-    Then the "data-behat-percentage" attribute of "#toc [data-section='2'] .progress-indicator[data-id] .pie" "css_element" should contain "50"
+    Then the "data-behat-percentage" attribute of "#toc [data-section='2'] .progress-indicator[data-id] .progress-ring" "css_element" should contain "50"
     And I reload the page
-    And the "data-behat-percentage" attribute of "#toc [data-section='2'] .progress-indicator[data-id] .pie" "css_element" should contain "50"
+    And the "data-behat-percentage" attribute of "#toc [data-section='2'] .progress-indicator[data-id] .progress-ring" "css_element" should contain "50"
 
   Scenario: TOC progress in section 0 updates after manual completion
     Given I am on the "PROG1" "Course" page logged in as "student1"
-    And "#toc [data-section='0'] .progress-indicator[data-id] .pie" "css_element" should exist
-    And the "data-behat-percentage" attribute of "#toc [data-section='0'] .progress-indicator[data-id] .pie" "css_element" should contain "0"
+    And "#toc [data-section='0'] .progress-indicator[data-id] .progress-ring" "css_element" should exist
+    And the "data-behat-percentage" attribute of "#toc [data-section='0'] .progress-indicator[data-id] .progress-ring" "css_element" should contain "0"
     When I toggle the manual completion state of "Activity sample 0"
-    Then the "data-behat-percentage" attribute of "#toc [data-section='0'] .progress-indicator[data-id] .pie" "css_element" should contain "100"
+    Then the "data-behat-percentage" attribute of "#toc [data-section='0'] .progress-indicator[data-id] .progress-ring" "css_element" should contain "100"
     And I reload the page
-    And the "data-behat-percentage" attribute of "#toc [data-section='0'] .progress-indicator[data-id] .pie" "css_element" should contain "100"
+    And the "data-behat-percentage" attribute of "#toc [data-section='0'] .progress-indicator[data-id] .progress-ring" "css_element" should contain "100"

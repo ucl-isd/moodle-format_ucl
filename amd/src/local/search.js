@@ -66,9 +66,13 @@ export const init = () => {
             }
         });
         list.classList.toggle('d-none', count === 0);
-        status.textContent = terms.length === 0 ? '' : (count > 0
-            ? status.dataset.resultsTemplate.replace('__COUNT__', String(count))
-            : status.dataset.noResults);
+        if (terms.length === 0) {
+            status.textContent = '';
+        } else if (count > 0) {
+            status.textContent = status.dataset.resultsTemplate.replace('__COUNT__', String(count));
+        } else {
+            status.textContent = status.dataset.noResults;
+        }
     };
 
     input.addEventListener('input', () => {

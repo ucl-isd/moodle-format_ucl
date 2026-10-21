@@ -1,4 +1,11 @@
 /* UCL course format. */
+/* Register the percentage so JS updates animate smoothly. */
+@property --progress {
+    syntax: "<percentage>";
+    inherits: true;
+    initial-value: 0%; /* stylelint-disable-line */
+}
+
 body.format-ucl {
     /* Utility class from theme. */
     .bg-cover {
@@ -132,83 +139,58 @@ body.format-ucl {
     }
 
     /* Progress cicle. */
-    @property --p {
-        syntax: "<number>";
-        inherits: true;
-        initial-value: 0; /* stylelint-disable-line */
-    }
-
-    .pie {
-        --p: 0;
-        --b: 3px;
-        --c: transparent;
-        --w: 26px;
-
-        width: var(--w);
-        min-width: var(--w);
+    .progress-ring {
+        width: 1.6rem;
+        min-width: 1.6rem;
         aspect-ratio: 1;
         position: relative;
         display: inline-grid;
-        margin: 5px;
+        margin: .3rem;
         place-content: center;
-        background-color: #e9ecef;
+        transition: --progress .3s ease-out, background-color .5s ease-out;
+        background-color: var(--bs-secondary);
+        /* The conic gradient draws the completed arc over the remaining track. */
+        background-image: conic-gradient(var(--bs-success) var(--progress), transparent 0);
         border-radius: 50%;
-    }
 
-    .pie:before,
-    .pie:after {
-        content: "";
-        position: absolute;
-        border-radius: 50%;
-    }
-
-    .pie:before {
-        inset: 0;
-        background:
-            radial-gradient(farthest-side, var(--bs-success) 98%, #0000) top/var(--b) var(--b) no-repeat,
-            conic-gradient(var(--bs-success) calc(var(--p) * 1%), #0000 0);
-        background-size: 0 0, auto;
-        -webkit-mask:
-            radial-gradient(
-                farthest-side,
-                #0000 calc(99% - var(--b)),
-                #000 calc(100% - var(--b))
-            );
-        mask:
-            radial-gradient(
-                farthest-side,
-                #0000 calc(99% - var(--b)),
-                #000 calc(100% - var(--b))
-            );
-    }
-
-    .pie:after {
-        inset: calc(50% - var(--b) / 2);
-        background: var(--bs-success);
-        transform: rotate(calc(var(--p) * 3.6deg)) translateY(calc(50% - var(--w) / 2));
-        content: none;
-    }
-
-    .pie.animate {
-        animation: p 1s 1s both;
+        /* Cover the center until the ring is complete. */
+        &::after {
+            content: "";
+            position: absolute;
+            inset: .2rem;
+            background: var(--bs-secondary);
+            border-radius: 50%;
+            transition: transform .3s ease-out;
+        }
 
         .fa-check {
+            position: relative;
+            z-index: 1;
             display: none;
         }
-    }
 
-    .pie.complete {
-        transition: all 1s;
-        background-color: var(--bs-success);
+        /* Draw the initial server-rendered progress value. */
+        &.animate {
+            animation: progress 1s 1s backwards;
+        }
 
-        .fa-check {
-            display: block;
+        /* Fill the center and show the check at 100%. */
+        &.complete {
+            background-color: var(--bs-success);
+
+            &::after {
+                transform: scale(0);
+            }
+
+            .fa-check {
+                display: block;
+            }
         }
     }
 
-    @keyframes p {
+    @keyframes progress {
         from {
-            --p: 0;
+            --progress: 0%;
         }
     }
 

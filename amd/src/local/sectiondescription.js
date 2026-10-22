@@ -85,6 +85,7 @@ const initLabelEditing = () => {
             .then(() => {
                 const editor = formcontainer.querySelector('textarea[name="introeditor[text]"]');
                 editor?.closest('.fitem')?.querySelector(':scope > .col-form-label')?.classList.add('visually-hidden');
+                return editor;
             })
             .catch(exception => {
                 finishEditing();

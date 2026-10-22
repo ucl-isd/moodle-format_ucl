@@ -13,7 +13,7 @@
 }}
 {{!
     @template format_ucl/local/content/section/cmitem
-    Template purpose and description.
+    Reuse Moodle's activity item wrapper while rendering its module content with the UCL template.
     Classes required for JS:
     * none
     Data attributes required for JS:
@@ -24,9 +24,7 @@
     {
     }
 }}
-{{!
-  Include the core content/section/cmitem template.
-}}
+{{! Inherit the core wrapper and replace its course-module template with UCL's. }}
 {{< core_courseformat/local/content/section/cmitem }}
     {{$ core_courseformat/local/content/cm }}
         {{> format_ucl/local/content/cm }}

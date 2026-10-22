@@ -88,15 +88,11 @@
     }
 }}
 
+{{! Keep Moodle's section structure; replace its header, actions, summary, and activity list with UCL output. }}
 {{< core_courseformat/local/content/section/content }}
-    {{$ core_courseformat/local/content/section/header }}
-        {{! We output this in a different place }}
-    {{/ core_courseformat/local/content/section/header }}
-    {{$ core_courseformat/local/content/section/controlmenu }}
-        {{! We output this in a different place }}
-    {{/ core_courseformat/local/content/section/controlmenu }}
+    {{$ core_courseformat/local/content/section/header}}{{/ core_courseformat/local/content/section/header}}
+    {{$ core_courseformat/local/content/section/controlmenu}}{{/ core_courseformat/local/content/section/controlmenu}}
     {{$ core_courseformat/local/content/section/summary }}
-        {{! We output this in a different place for initial section }}
         {{^initialsection}}
             {{> format_ucl/local/content/section/summary }}
         {{/initialsection}}

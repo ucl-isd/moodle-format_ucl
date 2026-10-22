@@ -22,7 +22,6 @@ use core_courseformat\output\section_renderer;
 use format_ucl\output\courseformat\content\section\controlmenu;
 use format_ucl\output\courseformat\content\sectionnavigation;
 use format_ucl\output\courseformat\content\sectionselector;
-use moodle_url;
 use section_info;
 
 /**
@@ -105,16 +104,7 @@ class renderer extends section_renderer {
                 'id' => $section->id,
                 'section' => $section->section,
                 'courseid' => $courseid,
-                'labelurl' => new moodle_url(
-                    '/course/mod.php',
-                    [
-                        'id' => $courseid,
-                        'add' => 'label',
-                        'section' => $section->section,
-                        'beforemod' => $mod?->id ?? 0,
-                        'pagesectionid' => $section->section,
-                    ]
-                ),
+                'labelurl' => $format->get_add_label_url($section, $mod?->id),
             ]
         );
     }

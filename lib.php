@@ -219,6 +219,28 @@ class format_ucl extends core_courseformat\base {
     }
 
     /**
+     * Return the URL for adding a label before an optional activity in a section.
+     *
+     * Include the section page ID in the return options so Moodle returns to the
+     * section page after the label is saved.
+     *
+     * @param section_info $section Section where the label will be added.
+     * @param int|null $beforemod Activity to insert the label before, or null to append it.
+     * @return moodle_url
+     */
+    public function get_add_label_url(section_info $section, ?int $beforemod = null): moodle_url {
+        return new moodle_url('/course/mod.php', [
+            'id' => $this->get_courseid(),
+            'add' => 'label',
+            'section' => $section->section,
+            'beforemod' => $beforemod ?? 0,
+            'returnoptions' => [
+                'pagesectionid' => $section->id,
+            ],
+        ]);
+    }
+
+    /**
      * Definitions of the additional options that this course format uses for course
      *
      * @param bool $foreditform

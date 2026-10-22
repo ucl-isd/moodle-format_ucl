@@ -12,8 +12,8 @@ Feature: A prompt appears if a section has no description
     And I am on "Course 1" course homepage with editing mode on
     And I click on "Section 2" "link" in the "#toc" "css_element"
     Then TinyMCE should be preloaded
-    Then "Add section description" "link" should exist
-    And "summarytext" "css_element" should not exist
+    And "Add section description" "link" should exist
+    And ".summarytext" "css_element" should not exist
     And I click on "Add section description" "link"
     And I set the field "Description" to "Welcome to Stamptown"
     And I click on "Save" "button" in the "[data-region='summary-form']" "css_element"

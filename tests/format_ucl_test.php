@@ -36,6 +36,92 @@ require_once($CFG->dirroot . '/course/lib.php');
  */
 final class format_ucl_test extends \advanced_testcase {
     /**
+     * Inline label edits preserve embedded files and AI settings and emit the core update event.
+     *
+     * @covers \format_ucl\form\label_content_form::process_dynamic_submission
+     */
+    public function test_inline_label_update_preserves_files_and_settings(): void {
+        global $CFG, $DB, $PAGE;
+
+        require_once($CFG->libdir . '/filelib.php');
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course(['format' => 'ucl']);
+        $label = $this->getDataGenerator()->create_module('label', [
+            'course' => $course->id,
+            'name' => 'Existing label',
+            'intro' => '<p><a href="@@PLUGINFILE@@/attachment.txt">Attachment</a></p>',
+            'introformat' => FORMAT_HTML,
+        ]);
+        $context = \context_module::instance($label->cmid);
+        $PAGE->set_context($context);
+        $aiactions = array_fill_keys(array_column(
+            \core_ai\manager::get_placement_actions_available($context, false),
+            'action'
+        ), 1);
+        $DB->set_field('course_modules', 'enableaitools', 1, ['id' => $label->cmid]);
+        $DB->set_field('course_modules', 'enabledaiactions', null, ['id' => $label->cmid]);
+        get_file_storage()->create_file_from_string([
+            'contextid' => $context->id,
+            'component' => 'mod_label',
+            'filearea' => 'intro',
+            'itemid' => 0,
+            'filepath' => '/',
+            'filename' => 'attachment.txt',
+        ], 'Existing attachment');
+
+        $draftid = 0;
+        $intro = file_prepare_draft_area(
+            $draftid,
+            $context->id,
+            'mod_label',
+            'intro',
+            0,
+            ['subdirs' => true],
+            $label->intro
+        );
+        $form = $this->getMockBuilder(\format_ucl\form\label_content_form::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['get_data', 'optional_param'])
+            ->getMock();
+        $form->method('optional_param')->willReturn($label->cmid);
+        $form->method('get_data')->willReturn((object)[
+            'introeditor' => [
+                'text' => $intro . '<p>Updated inline content</p>',
+                'format' => FORMAT_HTML,
+                'itemid' => $draftid,
+            ],
+        ]);
+        $sink = $this->redirectEvents();
+        $result = $form->process_dynamic_submission();
+        $events = $sink->get_events();
+        $sink->close();
+
+        $savedlabel = $DB->get_record('label', ['id' => $label->id], '*', MUST_EXIST);
+        $savedcm = $DB->get_record('course_modules', ['id' => $label->cmid], '*', MUST_EXIST);
+        $this->assertStringContainsString('@@PLUGINFILE@@/attachment.txt', $savedlabel->intro);
+        $this->assertStringContainsString('Updated inline content', $savedlabel->intro);
+        $this->assertSame('Existing label', $savedlabel->name);
+        $this->assertEquals(1, $savedcm->enableaitools);
+        if ($aiactions) {
+            $this->assertEquals($aiactions, json_decode($savedcm->enabledaiactions, true));
+        } else {
+            $this->assertNull($savedcm->enabledaiactions);
+        }
+        $file = get_file_storage()->get_file($context->id, 'mod_label', 'intro', 0, '/', 'attachment.txt');
+        $this->assertNotFalse($file);
+        $this->assertSame('Existing attachment', $file->get_content());
+        $this->assertTrue($result['hascontent']);
+        $this->assertStringContainsString('Updated inline content', $result['labelhtml']);
+        $updatedevents = array_values(array_filter($events, static function ($event) {
+            return $event instanceof \core\event\course_module_updated;
+        }));
+        $this->assertCount(1, $updatedevents);
+        $this->assertEquals($label->cmid, $updatedevents[0]->objectid);
+        $this->assertSame('label', $updatedevents[0]->other['modulename']);
+    }
+
+    /**
      * Tests for format_ucl::get_section_name method with default section names.
      *
      * @return void

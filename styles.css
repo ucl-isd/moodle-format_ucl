@@ -32,9 +32,10 @@ body.format-ucl {
         padding-left: 0;
     }
 
-    /* Inline section summary editor. */
-    .ucl-section-summary [data-region="summary-form"] {
-        .fitem:has(textarea[id^="id_summary_editor"], .editor_atto_wrap, .tox-tinymce) {
+    /* Inline editors. */
+    .ucl-section-summary [data-region="summary-form"],
+    .ucl-inline-editor {
+        .fitem:has(textarea[id^="id_summary_editor"], textarea[id^="id_introeditor"], .editor_atto_wrap, .tox-tinymce) {
             display: block;
             width: 100%;
             max-width: 100%;
@@ -64,6 +65,11 @@ body.format-ucl {
                 max-width: 100%;
             }
         }
+    }
+
+    /* Hide label content when inline editor is shown. */
+    .activity-item:has([data-region="label-form"]:not(.d-none)) .activity-altcontent {
+        display: none;
     }
 
     /* Search. */

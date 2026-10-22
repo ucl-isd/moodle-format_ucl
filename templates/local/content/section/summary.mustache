@@ -38,7 +38,7 @@
     </div>
 
     {{#isediting}}
-        <a href="#section-summary-form-{{id}}" class="btn btn-primary" data-action="edit-section-summary"
+        <a href="#section-summary-form-{{id}}" class="btn btn-outline-primary btn-sm" data-action="edit-section-summary"
             data-add-label="{{#str}} addsectiondescription, format_ucl {{/str}}"
             data-edit-label="{{#str}} editsectiondescription, format_ucl {{/str}}"
             aria-controls="section-summary-form-{{id}}" aria-expanded="false">
@@ -48,11 +48,6 @@
                 {{^hassummary}}{{#str}} addsectiondescription, format_ucl {{/str}}{{/hassummary}}
             </span>
         </a>
-        <template data-region="summary-loading-template">
-            <div class="py-2" role="status" aria-live="polite">
-                <span>{{#str}} loading, core {{/str}}</span>
-            </div>
-        </template>
         <div id="section-summary-form-{{id}}" data-region="summary-form"></div>
     {{/isediting}}
 </div>

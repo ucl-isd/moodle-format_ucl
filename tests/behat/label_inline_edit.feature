@@ -59,10 +59,11 @@ Feature: Edit label content inline
   Scenario: The inline editor remains available after hiding and showing a label
     When I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
-    And I click on "Hide" "link" in the "Label 1" activity
-    Then "Edit label content" "link" should exist in the "Label 1" activity
-    When I click on "Show" "link" in the "Label 1" activity
-    Then "Edit label content" "link" should exist in the "Label 1" activity
+    And I click on "Section 1" "link" in the "#toc" "css_element"
+    And I click on "Hide" "link" in the "Original label content" activity
+    Then "[data-action='edit-label-content']" "css_element" should exist
+    When I click on "Show" "link" in the "Original label content" activity
+    Then "[data-action='edit-label-content']" "css_element" should exist
 
   Scenario: Adding a label from a section returns to that section
     When I log in as "teacher1"

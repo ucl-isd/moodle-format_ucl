@@ -71,6 +71,8 @@ class section extends section_base {
      */
     public function export_for_template(renderer_base $output): stdClass {
         $data = parent::export_for_template($output);
+        $data->isediting = $data->editing;
+        $data->hassummary = !empty($data->summary->summarytext);
 
         $sectionnumber = $this->section->section;
         $sectionnavigation = new $this->sectionnavigationclass($this->format, $sectionnumber);

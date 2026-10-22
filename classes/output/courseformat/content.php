@@ -76,7 +76,6 @@ class content extends content_base {
         $data->course = $format->get_course();
         $data->courseid = $data->course->id;
         $data->searchactivities = $this->get_search_activities();
-        $PAGE->requires->js_call_amd('format_ucl/local/search', 'init');
         $sectioninfo = $format->get_modinfo()->get_section_info($singlesectionnum);
         $data->coursename = $format->get_course()->fullname;
         $data->courseimg = course_summary_exporter::get_course_image($format->get_course());

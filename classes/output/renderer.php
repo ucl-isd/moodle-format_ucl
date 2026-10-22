@@ -111,7 +111,7 @@ class renderer extends section_renderer {
                         'id' => $courseid,
                         'add' => 'label',
                         'section' => $section->section,
-                        'beforemod' => '0',
+                        'beforemod' => $mod?->id ?? 0,
                         'pagesectionid' => $section->section,
                     ]
                 ),

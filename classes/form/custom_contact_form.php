@@ -151,7 +151,7 @@ class custom_contact_form extends \core\form\persistent implements renderable, t
             'data-bs-toggle' => 'collapse',
             'href' => "#$targetid",
             'aria-expanded' => 'false',
-            'aria-controls' => '$targetid',
+            'aria-controls' => $targetid,
         ];
         $mform->addElement('button', 'cancelbutton', get_string('cancel'), $attributes, $options);
 

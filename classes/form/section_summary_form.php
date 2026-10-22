@@ -79,7 +79,7 @@ class section_summary_form extends dynamic_form {
      * @return array
      */
     public function process_dynamic_submission() {
-        global $CFG;
+        global $CFG, $OUTPUT;
 
         require_once($CFG->dirroot . '/course/lib.php');
         require_once($CFG->libdir . '/filelib.php');
@@ -115,8 +115,15 @@ class section_summary_form extends dynamic_form {
             'overflowdiv' => true,
         ];
 
+        $summaryhtml = $OUTPUT->render_from_template(
+            'core_courseformat/local/content/section/summary',
+            [
+                'summarytext' => format_text($summarytext, $updatedsection->summaryformat, $options),
+            ]
+        );
+
         return [
-            'summaryhtml' => format_text($summarytext, $updatedsection->summaryformat, $options),
+            'summaryhtml' => $summaryhtml,
             'hassummary' => !empty($updatedsection->summary),
         ];
     }

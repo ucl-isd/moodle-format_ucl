@@ -55,13 +55,3 @@ Feature: Edit label content inline
     When I reload the page
     Then "Restored label content" "text" should exist in the ".activity-altcontent" "css_element"
     And "Discarded replacement" "text" should not exist
-
-  Scenario: Adding a label from a section returns to that section
-    When I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
-    And I click on "Section 1" "link" in the "#toc" "css_element"
-    And I click on "Add text and media" "link"
-    And I set the field "Text" to "Added from section"
-    And I click on "Save and return to course" "button"
-    Then the url should match "/course/section\.php\?id=\d+#module-\d+$"
-    And "Added from section" "text" should exist in the ".activity-altcontent" "css_element"

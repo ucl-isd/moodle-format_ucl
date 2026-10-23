@@ -13,7 +13,7 @@ Feature: Changes made using section controls are reflected in the table of conte
       | numsections   | 5        |
       | initsections  | 1        |
 
-  Scenario: Section controls appear in expected order
+  Scenario: Section controls appear in expected order and hide updates the table of contents
     Given I log in as "admin"
     And I am on "Course 1" course homepage with editing mode on
     And I click on "Section 2" "link" in the "#toc" "css_element"
@@ -23,14 +23,8 @@ Feature: Changes made using section controls are reflected in the table of conte
     And "Highlight" "link" should appear after "Hide" "link"
     And "Duplicate" "link" should appear after "Highlight" "link"
     And "Delete" "link" should appear after "Duplicate" "link"
-
-  Scenario: Hide section action updates table of contents
-    Given I log in as "admin"
-    And I am on "Course 1" course homepage with editing mode on
-    When I click on "Section 2" "link" in the "#toc" "css_element"
-    Then "[data-region='sectionvisibility']" "css_element" should not be visible
+    And "[data-region='sectionvisibility']" "css_element" should not be visible
     And "#toc [data-section='2'] .flag-hidden" "css_element" should not be visible
-    And I open ucl section "Section 2" edit menu
     And I click on "Hide" "link" in the ".section-actions" "css_element"
     And "[data-region='sectionvisibility']" "css_element" should be visible
     And "#toc [data-section='2'] .flag-hidden" "css_element" should be visible

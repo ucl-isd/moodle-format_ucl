@@ -1,28 +1,16 @@
 /* UCL course format. */
+/* Register the percentage so JS updates animate smoothly. */
+@property --progress {
+    syntax: "<percentage>";
+    inherits: true;
+    initial-value: 0%; /* stylelint-disable-line */
+}
+
 body.format-ucl {
     /* Utility class from theme. */
     .bg-cover {
         background-size: cover;
         background-position: center;
-    }
-
-    /* Add content button. */
-    /* TODO - remove in Moodle 5 upgrade where this is in core. */
-    .btn-add-content {
-        border-radius: 1rem;
-        border: 2px dashed color-mix(in srgb, var(--primary) 20%, white);
-        color: var(--primary);
-        background-color: white;
-        font-size: .9rem;
-        font-weight: bold;
-        transition: all 1s;
-        &:hover,
-        &:focus {
-            background-color: color-mix(in srgb, var(--primary) 6%, white);
-            border-style: solid;
-            border-color: var(--primary);
-            color: color-mix(in srgb, var(--primary) 63%, black);
-        }
     }
 
     /* Page width. */
@@ -44,6 +32,70 @@ body.format-ucl {
         padding-left: 0;
     }
 
+    /* Inline editors. */
+    .ucl-section-summary [data-region="summary-form"],
+    .ucl-inline-editor {
+        .fitem:has(textarea[id^="id_summary_editor"], textarea[id^="id_introeditor"], .editor_atto_wrap, .tox-tinymce) {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+
+            .col-form-label,
+            .felement,
+            .editor_atto_wrap {
+                display: block;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .tox-tinymce {
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+
+        [data-groupname="buttonar"] {
+            > .col-form-label {
+                display: none;
+            }
+
+            > .felement {
+                flex: 0 0 100%;
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+    }
+
+    /* Hide label content when inline editor is shown. */
+    .activity-item:has([data-region="label-form"]:not(.d-none)) .activity-altcontent {
+        display: none;
+    }
+
+    /* Search. */
+    /* Hide by default. */
+    .ucl-course-search-field {
+        display: none;
+    }
+    /* Show when moved with js to the secondary navigation. */
+    .secondary-navigation > .ucl-course-search-field {
+        display: block;
+    }
+    /* Flex container so search displays inline. */
+    .secondary-navigation:has(.ucl-course-search-field) {
+        display: flex;
+    }
+
+    #page:has(.ucl-course-search-field:focus-within, .ucl-course-search:focus-within, #ucl-course-search-results:not(.d-none)) {
+        .secondary-navigation:has(> .ucl-course-search-field) {
+            flex-direction: column;
+
+            > .ucl-course-search-field {
+                width: 100%;
+            }
+        }
+    }
+
     /* Remove borders. */
     .section-item {
         border: none;
@@ -51,7 +103,7 @@ body.format-ucl {
     }
 
     /* Remove "current" border. */
-    .course-content .current::before {
+    .course-section.current .section-item::before {
         border-left: none !important; /* stylelint-disable-line declaration-no-important */
         /* This removes the pseudo-element entirely */
         content: none !important; /* stylelint-disable-line declaration-no-important */
@@ -96,6 +148,7 @@ body.format-ucl {
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
+            line-clamp: 2;
             overflow: hidden;
         }
 
@@ -126,83 +179,58 @@ body.format-ucl {
     }
 
     /* Progress cicle. */
-    @property --p {
-        syntax: "<number>";
-        inherits: true;
-        initial-value: 0; /* stylelint-disable-line */
-    }
-
-    .pie {
-        --p: 0;
-        --b: 3px;
-        --c: transparent;
-        --w: 26px;
-
-        width: var(--w);
-        min-width: var(--w);
+    .progress-ring {
+        width: 1.6rem;
+        min-width: 1.6rem;
         aspect-ratio: 1;
         position: relative;
         display: inline-grid;
-        margin: 5px;
+        margin: .3rem;
         place-content: center;
-        background-color: #e9ecef;
+        transition: --progress .3s ease-out, background-color .5s ease-out;
+        background-color: var(--bs-secondary);
+        /* The conic gradient draws the completed arc over the remaining track. */
+        background-image: conic-gradient(var(--bs-success) var(--progress), transparent 0);
         border-radius: 50%;
-    }
 
-    .pie:before,
-    .pie:after {
-        content: "";
-        position: absolute;
-        border-radius: 50%;
-    }
-
-    .pie:before {
-        inset: 0;
-        background:
-            radial-gradient(farthest-side, var(--success) 98%, #0000) top/var(--b) var(--b) no-repeat,
-            conic-gradient(var(--success) calc(var(--p) * 1%), #0000 0);
-        background-size: 0 0, auto;
-        -webkit-mask:
-            radial-gradient(
-                farthest-side,
-                #0000 calc(99% - var(--b)),
-                #000 calc(100% - var(--b))
-            );
-        mask:
-            radial-gradient(
-                farthest-side,
-                #0000 calc(99% - var(--b)),
-                #000 calc(100% - var(--b))
-            );
-    }
-
-    .pie:after {
-        inset: calc(50% - var(--b) / 2);
-        background: var(--success);
-        transform: rotate(calc(var(--p) * 3.6deg)) translateY(calc(50% - var(--w) / 2));
-        content: none;
-    }
-
-    .pie.animate {
-        animation: p 1s 1s both;
+        /* Cover the center until the ring is complete. */
+        &::after {
+            content: "";
+            position: absolute;
+            inset: .2rem;
+            background: var(--bs-white);
+            border-radius: 50%;
+            transition: transform .3s ease-out;
+        }
 
         .fa-check {
+            position: relative;
+            z-index: 1;
             display: none;
         }
-    }
 
-    .pie.complete {
-        transition: all 1s;
-        background-color: var(--success);
+        /* Draw the initial server-rendered progress value. */
+        &.animate {
+            animation: progress 1s 1s backwards;
+        }
 
-        .fa-check {
-            display: block;
+        /* Fill the center and show the check at 100%. */
+        &.complete {
+            background-color: var(--bs-success);
+
+            &::after {
+                transform: scale(0);
+            }
+
+            .fa-check {
+                display: block;
+            }
         }
     }
 
-    @keyframes p {
+    @keyframes progress {
         from {
-            --p: 0;
+            --progress: 0%;
         }
     }
 
@@ -212,11 +240,12 @@ body.format-ucl {
         .userpicture,
         .userinitials,
         .ucl-format-image-hidden {
-            border: none;
-            font-weight: bold;
             width: 3rem;
             height: 3rem;
             margin: 0;
+        }
+        .userpicture {
+            border: .1rem solid transparent;
         }
 
         /* Hidden contact icon. */
@@ -233,6 +262,20 @@ body.format-ucl {
             .userpicture,
             .userinitials {
                 display: none !important; /* stylelint-disable-line declaration-no-important */
+            }
+        }
+
+        /* Button to trigger contact popover. */
+        .ucl-format-contact-trigger {
+            &:hover,
+            &:focus {
+                .ucl-format-coursecontact-picture {
+                    .userinitials,
+                    img {
+                        color: var(--bs-primary);
+                        border-color: var(--bs-primary);
+                    }
+                }
             }
         }
 

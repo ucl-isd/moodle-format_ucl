@@ -75,6 +75,7 @@ class content extends content_base {
         $format = $this->format;
         $data->course = $format->get_course();
         $data->courseid = $data->course->id;
+        $data->searchactivities = $this->get_search_activities();
         $sectioninfo = $format->get_modinfo()->get_section_info($singlesectionnum);
         $data->coursename = $format->get_course()->fullname;
         $data->courseimg = course_summary_exporter::get_course_image($format->get_course());
@@ -82,11 +83,6 @@ class content extends content_base {
         // Am i editing?
         $data->isediting = $USER->editing;
         $data->hassummary = (bool)$data->singlesection?->summary?->summarytext;
-        $data->addsectiondescurl = new moodle_url(
-            '/course/editsection.php',
-            ['id' => $sectioninfo->id, 'sr' => $singlesectionnum]
-        );
-        $data->addsectiondescurl->set_anchor('id_summary_editor');
 
         // Single section specific data.
         if (isset($data->singlesection) && $singlesectionnum > 0) {
@@ -118,6 +114,44 @@ class content extends content_base {
         }
 
         return $data;
+    }
+
+    /**
+     * Return searchable activity names and links from the current user's course module cache.
+     *
+     * Labels, inaccessible sections and activities, and activities without a destination URL are excluded.
+     * Section names provide result context only; they are not part of the searchable activity name.
+     *
+     * @return array Activity records containing a plain-text name, URL, icon URL, and plain-text section name.
+     */
+    public function get_search_activities(): array {
+        $activities = [];
+        $modinfo = $this->format->get_modinfo();
+        foreach ($modinfo->get_section_info_all() as $section) {
+            if (!$section->uservisible) {
+                continue;
+            }
+            $sectionname = html_entity_decode(
+                strip_tags($this->format->get_section_name($section)),
+                ENT_QUOTES | ENT_HTML5,
+                'UTF-8'
+            );
+            foreach ($modinfo->sections[$section->section] ?? [] as $cmid) {
+                $activity = $modinfo->get_cm($cmid);
+                if ($activity->modname === 'label' || !$activity->uservisible || !$activity->available || !$activity->url) {
+                    continue;
+                }
+                $url = $this->format->get_view_url($section, ['navigation' => true]);
+                $url->set_anchor('module-' . $activity->id);
+                $activities[] = [
+                    'name' => html_entity_decode(strip_tags($activity->get_formatted_name()), ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+                    'url' => $url->out(false),
+                    'iconurl' => $activity->get_icon_url()->out(false),
+                    'sectionname' => $sectionname,
+                ];
+            }
+        }
+        return $activities;
     }
 
     /**

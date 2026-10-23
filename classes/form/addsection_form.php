@@ -92,7 +92,7 @@ class addsection_form extends dynamic_form {
 
         $data = $this->get_data();
         $section = formatactions::section($data->courseid)->create_from_form($data);
-        $returnurl = course_get_url($data->courseid, $section, ['sr' => $section->section]);
+        $returnurl = course_get_url($data->courseid, $section, ['pagesectionid' => $section->section]);
         return [
             'result' => true,
             'url' => $returnurl->out(false),

@@ -49,7 +49,7 @@ export default class Component extends BaseComponent {
      */
     static init(target, selectors) {
         return new this({
-            element: document.getElementById(target),
+            element: document.querySelector(target),
             reactive: getCurrentCourseEditor(),
             selectors,
         });
@@ -130,7 +130,7 @@ export default class Component extends BaseComponent {
     _renderProgress(progress) {
         const {sectionId, total, done} = progress;
         const progressContainer = this.element.querySelector(`.progress-indicator[data-id="${sectionId}"]`);
-        const progressElement = progressContainer?.querySelector('.pie');
+        const progressElement = progressContainer?.querySelector('.progress-ring');
         if (!progressElement || total <= 0) {
             return;
         }
@@ -142,16 +142,16 @@ export default class Component extends BaseComponent {
             return;
         }
 
-        const srOnlyElement = progressContainer.querySelector('.sr-only');
+        const srOnlyElement = progressContainer.querySelector('.visually-hidden');
         const fallbackTooltip = `${done} of ${total} complete`;
         progressElement.setAttribute('title', fallbackTooltip);
-        progressElement.setAttribute('data-original-title', fallbackTooltip);
+        progressElement.setAttribute('data-bs-original-title', fallbackTooltip);
         srOnlyElement.textContent = fallbackTooltip;
 
         getString('xofycomplete', 'format_ucl', {complete: done, total})
             .then((tooltip) => {
                 progressElement.setAttribute('title', tooltip);
-                progressElement.setAttribute('data-original-title', tooltip);
+                progressElement.setAttribute('data-bs-original-title', tooltip);
                 srOnlyElement.textContent = tooltip;
                 return tooltip;
             })
@@ -165,17 +165,8 @@ export default class Component extends BaseComponent {
         // Add the percentage value for Behat.
         progressElement.setAttribute('data-behat-percentage', percentage);
 
-        // Animate from the current value to the new value.
-        let value = currentPercentage;
-        const interval = setInterval(() => {
-            value += percentage > value ? 1 : -1;
-            progressElement.style.setProperty('--p', value);
-
-            // Stop once we hit the target.
-            if (value === percentage) {
-                clearInterval(interval);
-            }
-        }, 20);
+        // CSS transitions the registered custom property to the new value.
+        progressElement.style.setProperty('--progress', `${percentage}%`);
     }
 
     /**

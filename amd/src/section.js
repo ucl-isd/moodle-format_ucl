@@ -240,7 +240,7 @@ export const init = () => {
     const courseEditor = getCurrentCourseEditor();
     if (courseEditor.supportComponents && courseEditor.isEditing) {
         new Section({
-            element: document.getElementById('page'),
+            element: document.querySelector('#page'),
             reactive: courseEditor,
         });
     }

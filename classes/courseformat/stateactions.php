@@ -16,10 +16,10 @@
 
 namespace format_ucl\courseformat;
 
-use context_course;
-use core_courseformat\stateactions as stateactions_base;
 use core_courseformat\stateupdates;
+use core_courseformat\stateactions as stateactions_base;
 use stdClass;
+use context_course;
 
 /**
  * Contains the core course state actions specific to ucl format.
@@ -63,7 +63,8 @@ class stateactions extends stateactions_base {
         }
 
         // Mark the new one.
-        course_set_marker($course->id, $section->section);
+        $sectioninfo = get_fast_modinfo($course->id)->get_section_info($section->section);
+        \core_courseformat\formatactions::section($course->id)->set_marker($sectioninfo, true);
         $updates->add_section_put($section->id);
         if ($previousmarker) {
             $section = $modinfo->get_section_info($previousmarker);
@@ -98,7 +99,7 @@ class stateactions extends stateactions_base {
         // Get the previous marked section and unmark it.
         $modinfo = get_fast_modinfo($course);
         $previousmarker = $DB->get_field("course", "marker", ['id' => $course->id]);
-        course_set_marker($course->id, 0);
+        \core_courseformat\formatactions::section($course->id)->remove_all_markers();
         $section = $modinfo->get_section_info($previousmarker, MUST_EXIST);
         $updates->add_section_put($section->id);
 

@@ -58,9 +58,27 @@
     }
 }}
 {{< core_courseformat/local/content/cm}}
+
+    {{! Mod Label specific edit link. }}
+    {{$ core_courseformat/local/content/cm/activity}}
+        {{> core_courseformat/local/content/cm/activity}}
+        {{#editlabelcontent}}
+            <div data-region="label-inline-editor" data-cmid="{{cmid}}">
+                <a href="#label-content-form-{{cmid}}" class="btn btn-outline-primary btn-sm"
+                    data-action="edit-label-content" aria-controls="label-content-form-{{cmid}}"
+                    aria-expanded="false">
+                    <i class="fa-solid fa-pen-to-square me-2" aria-hidden="true"></i>
+                    {{#str}} editlabelcontent, format_ucl {{/str}}
+                </a>
+                <div id="label-content-form-{{cmid}}" class="ucl-inline-editor d-none" data-region="label-form"></div>
+            </div>
+        {{/editlabelcontent}}
+    {{/ core_courseformat/local/content/cm/activity}}
+
+    {{! Add content controls. }}
     {{$content}}
-        <a role="button" href="{{{labelurl}}}" class="btn btn-add-content mr-3">
-            <i class="fa-solid fa-circle-plus mr-2"></i>
+        <a role="button" href="{{{labelurl}}}" class="btn btn-add-content me-3">
+            <i class="fa-solid fa-circle-plus me-2"></i>
             {{#str}}addtextmedia, format_ucl{{/str}}
         </a>
         <button
@@ -70,7 +88,7 @@
                 data-beforemod="{{cmid}}"
                 data-sectionreturnnum="{{sectionnum}}"
         >
-            <i class="fa-solid fa-file-circle-plus mr-2"></i>
+            <i class="fa-solid fa-file-circle-plus me-2"></i>
             {{#str}}addactivity, format_ucl{{/str}}
         </button>
     {{/content}}

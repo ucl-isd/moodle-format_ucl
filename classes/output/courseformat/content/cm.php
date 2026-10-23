@@ -19,7 +19,6 @@ namespace format_ucl\output\courseformat\content;
 use core_courseformat\output\local\content\cm as cm_base;
 use renderer_base;
 use stdClass;
-use moodle_url;
 
 /**
  * UCL cm class.
@@ -50,20 +49,13 @@ class cm extends cm_base {
      * @return stdClass data context for a mustache template
      */
     public function export_for_template(renderer_base $output): stdClass {
-        $data = parent::export_for_template($output);
+        global $USER;
 
-        $course = $this->format->get_course();
-        $section = $this->format->get_sectionnum();
-        $data->labelurl = new moodle_url(
-            '/course/mod.php',
-            [
-                'id' => $course->id,
-                'add' => 'label',
-                'section' => $section,
-                'beforemod' => $this->mod->id,
-                'sr' => $section,
-            ]
-        );
+        $data = parent::export_for_template($output);
+        $data->editlabelcontent = $this->mod->modname === 'label'
+            && !empty($USER->editing);
+
+        $data->labelurl = $this->format->get_add_label_url($this->section, $this->mod->id);
 
         return $data;
     }

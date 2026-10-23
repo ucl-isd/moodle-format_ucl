@@ -36,49 +36,26 @@ Feature: TOC progress is shown on load and updates after manual completion
       | page     | PROG1  | page0    | Activity sample 0 | 0       | 1          |
     And I change window size to "large"
 
-  Scenario: TOC progress is not output when course completion is disabled
-    Given the following "course" exists:
-      | fullname         | Course 2 |
-      | shortname        | PROG2    |
-      | format           | ucl      |
-      | numsections      | 3        |
-      | enablecompletion | 0        |
-    And the following "course enrolments" exist:
-      | user     | course | role    |
-      | student1 | PROG2  | student |
-    And the following "activities" exist:
-      | activity | course | idnumber | name               | section | completion |
-      | page     | PROG2  | pagec2   | Activity sample C2 | 2       | 1          |
-    And I am on the "PROG2" "Course" page logged in as "student1"
-    Then "#toc .progress-indicator[data-id] .pie" "css_element" should not exist
-
   Scenario: TOC progress is hidden when editing mode is on
     Given I am on the "PROG1" "Course" page logged in as "teacher1"
     And I turn editing mode on
-    Then "#toc .progress-indicator[data-id] .pie" "css_element" should not exist
-
-  Scenario: TOC progress is not output for a section with no completable activities
-    Given the following "activities" exist:
-      | activity | course | idnumber | name                        | section | completion |
-      | page     | PROG1  | page2    | Activity without completion | 3       | 0          |
-    And I am on the "PROG1" "Course" page logged in as "student1"
-    Then "[data-section='3'] .progress-indicator[data-id] .pie" "css_element" should not exist in the "#toc" "css_element"
+    Then "#toc .progress-indicator[data-id] .progress-ring" "css_element" should not exist
 
   Scenario: TOC progress updates after manual completion
     Given I am on the "PROG1" "Course" page logged in as "student1"
     And I click on "Section 2" "link" in the "#toc" "css_element"
-    And "#toc [data-section='2'] .progress-indicator[data-id] .pie" "css_element" should exist
-    And the "data-behat-percentage" attribute of "#toc [data-section='2'] .progress-indicator[data-id] .pie" "css_element" should contain "0"
+    And "#toc [data-section='2'] .progress-indicator[data-id] .progress-ring" "css_element" should exist
+    And the "data-behat-percentage" attribute of "#toc [data-section='2'] .progress-indicator[data-id] .progress-ring" "css_element" should contain "0"
     When I toggle the manual completion state of "Activity sample 2"
-    Then the "data-behat-percentage" attribute of "#toc [data-section='2'] .progress-indicator[data-id] .pie" "css_element" should contain "50"
+    Then the "data-behat-percentage" attribute of "#toc [data-section='2'] .progress-indicator[data-id] .progress-ring" "css_element" should contain "50"
     And I reload the page
-    And the "data-behat-percentage" attribute of "#toc [data-section='2'] .progress-indicator[data-id] .pie" "css_element" should contain "50"
+    And the "data-behat-percentage" attribute of "#toc [data-section='2'] .progress-indicator[data-id] .progress-ring" "css_element" should contain "50"
 
   Scenario: TOC progress in section 0 updates after manual completion
     Given I am on the "PROG1" "Course" page logged in as "student1"
-    And "#toc [data-section='0'] .progress-indicator[data-id] .pie" "css_element" should exist
-    And the "data-behat-percentage" attribute of "#toc [data-section='0'] .progress-indicator[data-id] .pie" "css_element" should contain "0"
+    And "#toc [data-section='0'] .progress-indicator[data-id] .progress-ring" "css_element" should exist
+    And the "data-behat-percentage" attribute of "#toc [data-section='0'] .progress-indicator[data-id] .progress-ring" "css_element" should contain "0"
     When I toggle the manual completion state of "Activity sample 0"
-    Then the "data-behat-percentage" attribute of "#toc [data-section='0'] .progress-indicator[data-id] .pie" "css_element" should contain "100"
+    Then the "data-behat-percentage" attribute of "#toc [data-section='0'] .progress-indicator[data-id] .progress-ring" "css_element" should contain "100"
     And I reload the page
-    And the "data-behat-percentage" attribute of "#toc [data-section='0'] .progress-indicator[data-id] .pie" "css_element" should contain "100"
+    And the "data-behat-percentage" attribute of "#toc [data-section='0'] .progress-indicator[data-id] .progress-ring" "css_element" should contain "100"

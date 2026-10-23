@@ -176,29 +176,24 @@
             }}
             {{#initialsection}}
                 {{> format_ucl/local/content/initialsection }}
-                {{$ core_courseformat/local/content/section }}
-                    {{> format_ucl/local/content/section }}
-                {{/ core_courseformat/local/content/section }}
+                {{> format_ucl/local/content/section }}
             {{/initialsection}}
 
             {{^initialsection}}
                 {{#singlesection}}
-                    {{$ core_courseformat/local/content/section }}
-                        {{> format_ucl/local/content/section }}
-                    {{/ core_courseformat/local/content/section }}
+                    {{> format_ucl/local/content/section }}
                 {{/singlesection}}
             {{/initialsection}}
         </div>
     </div>
 
     {{#bulkedittools}}
-        {{$ core_courseformat/local/content/bulkedittools}}
-            {{> core_courseformat/local/content/bulkedittools}}
-        {{/ core_courseformat/local/content/bulkedittools}}
+        {{> core_courseformat/local/content/bulkedittools}}
     {{/bulkedittools}}
 </div>
+
 {{#js}}
     require(['core_courseformat/local/content'], function(component) {
-    component.init('page', {}{{#sectionreturn}}, {{sectionreturn}}{{/sectionreturn}});
+    component.init('#page', {}{{#sectionreturn}}, {{sectionreturn}}{{/sectionreturn}});
     });
 {{/js}}

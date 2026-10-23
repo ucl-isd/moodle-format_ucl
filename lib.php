@@ -104,6 +104,49 @@ class format_ucl extends core_courseformat\base {
     }
 
     /**
+     * Callback used in WS core_course_edit_section when teacher performs an AJAX action on a section (show/hide).
+     *
+     * Access to the course is already validated in the WS but the callback has to make sure
+     * that particular action is allowed by checking capabilities
+     *
+     * Course formats should register.
+     *
+     * @param section_info|stdClass $section
+     * @param string $action
+     * @param int $sr
+     * @return null|array any data for the Javascript post-processor (must be json-encodeable)
+     */
+    public function section_action($section, $action, $sr) {
+        global $PAGE;
+
+        if ($section->section && ($action === 'setmarker' || $action === 'removemarker')) {
+            // Format 'ucl' allows to set and remove markers in addition to common section actions.
+            require_capability('moodle/course:setcurrentsection', context_course::instance($this->courseid));
+            if ($action === 'setmarker') {
+                $sectioninfo = get_fast_modinfo($this->courseid)->get_section_info($section->section);
+                \core_courseformat\formatactions::section($this->courseid)->set_marker($sectioninfo, true);
+            } else {
+                \core_courseformat\formatactions::section($this->courseid)->remove_all_markers();
+            }
+            return null;
+        }
+
+        // For show/hide actions call the parent method and return the new content for .section_availability element.
+        $rv = parent::section_action($section, $action, $sr);
+        $renderer = $PAGE->get_renderer('format_ucl');
+
+        if (!($section instanceof section_info)) {
+            $modinfo = course_modinfo::instance($this->courseid);
+            $section = $modinfo->get_section_info($section->section);
+        }
+        $elementclass = $this->get_output_classname('content\\section\\availability');
+        $availability = new $elementclass($this, $section);
+
+        $rv['section_availability'] = $renderer->render($availability);
+        return $rv;
+    }
+
+    /**
      * Returns the display name of the given section that the course prefers.
      *
      * @param int|stdClass|section_info $section Section object from database or just field course_sections.section
@@ -154,7 +197,7 @@ class format_ucl extends core_courseformat\base {
      *     if null the course view page is returned
      * @param array $options options for view URL. At the moment core uses:
      *     'navigation' (bool) if true and section not empty, the function returns section page; otherwise, it returns course page.
-     *     'sr' (int) used by course formats to specify to which section to return
+     *     'pagesectionid' (int) used by course formats to specify to which section to return
      *     'expanded' (bool) if true the section will be shown expanded, true by default
      * @return null|moodle_url
      */
@@ -167,12 +210,34 @@ class format_ucl extends core_courseformat\base {
         } else {
             $sectionno = $section;
         }
-        if ((!empty($options['navigation']) || array_key_exists('sr', $options)) && (int)$sectionno > 0) {
+        if ((!empty($options['navigation']) || array_key_exists('pagesectionid', $options)) && (int)$sectionno > 0) {
             // Display section on separate page.
             $sectioninfo = $this->get_section($sectionno);
             return new moodle_url('/course/section.php', ['id' => $sectioninfo->id]);
         }
         return $url;
+    }
+
+    /**
+     * Return the URL for adding a label before an optional activity in a section.
+     *
+     * Include the section page ID in the return options so Moodle returns to the
+     * section page after the label is saved.
+     *
+     * @param section_info $section Section where the label will be added.
+     * @param int|null $beforemod Activity to insert the label before, or null to append it.
+     * @return moodle_url
+     */
+    public function get_add_label_url(section_info $section, ?int $beforemod = null): moodle_url {
+        return new moodle_url('/course/mod.php', [
+            'id' => $this->get_courseid(),
+            'add' => 'label',
+            'section' => $section->section,
+            'beforemod' => $beforemod ?? 0,
+            'returnoptions' => [
+                'pagesectionid' => $section->id,
+            ],
+        ]);
     }
 
     /**
@@ -232,7 +297,7 @@ function format_ucl_inplace_editable($itemtype, $itemid, $newvalue) {
 /**
  * Section navigation fragment renderer method.
  *
- * The fragment arguments are courseid, section id and sr (section return).
+ * The fragment arguments are courseid, section id and pagesectionid (section return).
  *
  * @param array $args The fragment arguments.
  * @return string The rendered section.
@@ -261,7 +326,7 @@ function format_ucl_output_fragment_section_navigation($args): string {
 /**
  * Section divider fragment renderer method.
  *
- * The fragment arguments are courseid, section id and sr (section return).
+ * The fragment arguments are courseid, section id and pagesectionid (section return).
  *
  * @param array $args The fragment arguments.
  * @return string The rendered section.
@@ -284,13 +349,13 @@ function format_ucl_output_fragment_section_divider($args): string {
     }
 
     $renderer = $format->get_renderer($PAGE);
-    return $renderer->course_section_add_cm_control($course, $section->section, $section->section);
+    return $renderer->section_add_cm_controls($format, $section);
 }
 
 /**
  * Section actions fragment renderer method.
  *
- * The fragment arguments are courseid, section id and sr (section return).
+ * The fragment arguments are courseid, section id and pagesectionid (section return).
  *
  * @param array $args The fragment arguments.
  * @return string The rendered section.

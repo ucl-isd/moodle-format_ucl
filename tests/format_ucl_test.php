@@ -36,6 +36,92 @@ require_once($CFG->dirroot . '/course/lib.php');
  */
 final class format_ucl_test extends \advanced_testcase {
     /**
+     * Inline label edits preserve embedded files and AI settings and emit the core update event.
+     *
+     * @covers \format_ucl\form\label_content_form::process_dynamic_submission
+     */
+    public function test_inline_label_update_preserves_files_and_settings(): void {
+        global $CFG, $DB, $PAGE;
+
+        require_once($CFG->libdir . '/filelib.php');
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course(['format' => 'ucl']);
+        $label = $this->getDataGenerator()->create_module('label', [
+            'course' => $course->id,
+            'name' => 'Existing label',
+            'intro' => '<p><a href="@@PLUGINFILE@@/attachment.txt">Attachment</a></p>',
+            'introformat' => FORMAT_HTML,
+        ]);
+        $context = \context_module::instance($label->cmid);
+        $PAGE->set_context($context);
+        $aiactions = array_fill_keys(array_column(
+            \core_ai\manager::get_placement_actions_available($context, false),
+            'action'
+        ), 1);
+        $DB->set_field('course_modules', 'enableaitools', 1, ['id' => $label->cmid]);
+        $DB->set_field('course_modules', 'enabledaiactions', null, ['id' => $label->cmid]);
+        get_file_storage()->create_file_from_string([
+            'contextid' => $context->id,
+            'component' => 'mod_label',
+            'filearea' => 'intro',
+            'itemid' => 0,
+            'filepath' => '/',
+            'filename' => 'attachment.txt',
+        ], 'Existing attachment');
+
+        $draftid = 0;
+        $intro = file_prepare_draft_area(
+            $draftid,
+            $context->id,
+            'mod_label',
+            'intro',
+            0,
+            ['subdirs' => true],
+            $label->intro
+        );
+        $form = $this->getMockBuilder(\format_ucl\form\label_content_form::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['get_data', 'optional_param'])
+            ->getMock();
+        $form->method('optional_param')->willReturn($label->cmid);
+        $form->method('get_data')->willReturn((object)[
+            'introeditor' => [
+                'text' => $intro . '<p>Updated inline content</p>',
+                'format' => FORMAT_HTML,
+                'itemid' => $draftid,
+            ],
+        ]);
+        $sink = $this->redirectEvents();
+        $result = $form->process_dynamic_submission();
+        $events = $sink->get_events();
+        $sink->close();
+
+        $savedlabel = $DB->get_record('label', ['id' => $label->id], '*', MUST_EXIST);
+        $savedcm = $DB->get_record('course_modules', ['id' => $label->cmid], '*', MUST_EXIST);
+        $this->assertStringContainsString('@@PLUGINFILE@@/attachment.txt', $savedlabel->intro);
+        $this->assertStringContainsString('Updated inline content', $savedlabel->intro);
+        $this->assertSame('Existing label', $savedlabel->name);
+        $this->assertEquals(1, $savedcm->enableaitools);
+        if ($aiactions) {
+            $this->assertEquals($aiactions, json_decode($savedcm->enabledaiactions, true));
+        } else {
+            $this->assertNull($savedcm->enabledaiactions);
+        }
+        $file = get_file_storage()->get_file($context->id, 'mod_label', 'intro', 0, '/', 'attachment.txt');
+        $this->assertNotFalse($file);
+        $this->assertSame('Existing attachment', $file->get_content());
+        $this->assertTrue($result['hascontent']);
+        $this->assertStringContainsString('Updated inline content', $result['labelhtml']);
+        $updatedevents = array_values(array_filter($events, static function ($event) {
+            return $event instanceof \core\event\course_module_updated;
+        }));
+        $this->assertCount(1, $updatedevents);
+        $this->assertEquals($label->cmid, $updatedevents[0]->objectid);
+        $this->assertSame('label', $updatedevents[0]->other['modulename']);
+    }
+
+    /**
      * Tests for format_ucl::get_section_name method with default section names.
      *
      * @return void
@@ -272,14 +358,179 @@ final class format_ucl_test extends \advanced_testcase {
         $this->assertStringContainsString('course/view.php', $format->get_view_url(0));
         $this->assertStringContainsString('course/view.php', $format->get_view_url(1));
         $this->assertStringContainsString('course/section.php', $format->get_view_url(1, ['navigation' => 1]));
-        // When section and/or sr parameter is 0 (first section), the course page should be returned.
+        // When section and/or pagesectionid parameter is 0 (first section), the course page should be returned.
         $this->assertStringContainsString('course/view.php', $format->get_view_url(0, ['navigation' => 1]));
-        $this->assertStringContainsString('course/view.php', $format->get_view_url(0, ['sr' => 0]));
-        $this->assertStringContainsString('course/view.php', $format->get_view_url(0, ['sr' => 1]));
+        $this->assertStringContainsString('course/view.php', $format->get_view_url(0, ['pagesectionid' => 0]));
+        $this->assertStringContainsString('course/view.php', $format->get_view_url(0, ['pagesectionid' => 1]));
 
-        // When sr parameter is > 0, the section.php page should be returned.
-        $this->assertStringContainsString('course/section.php', $format->get_view_url(1, ['sr' => 0]));
-        $this->assertStringContainsString('course/section.php', $format->get_view_url(1, ['sr' => 1]));
+        // When pagesectionid parameter is > 0, the section.php page should be returned.
+        $this->assertStringContainsString('course/section.php', $format->get_view_url(1, ['pagesectionid' => 0]));
+        $this->assertStringContainsString('course/section.php', $format->get_view_url(1, ['pagesectionid' => 1]));
+    }
+
+    /**
+     * Search data spans the course and excludes labels and activities unavailable to a student.
+     *
+     * @covers \format_ucl\output\courseformat\content::get_search_activities
+     */
+    public function test_search_activities(): void {
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $course = $generator->create_course(['format' => 'ucl', 'numsections' => 3]);
+        $student = $generator->create_user();
+        $generator->enrol_user($student->id, $course->id, 'student');
+        $intro = $generator->create_module('page', ['course' => $course->id, 'section' => 0, 'name' => 'Introduction reading']);
+        $first = $generator->create_module('page', ['course' => $course->id, 'section' => 1, 'name' => 'Reading & notes']);
+        $second = $generator->create_module('page', ['course' => $course->id, 'section' => 2, 'name' => 'Week two reading']);
+        $generator->create_module('label', ['course' => $course->id, 'section' => 1, 'name' => 'Not searchable']);
+        $generator->create_module('page', ['course' => $course->id, 'section' => 1, 'visible' => 0]);
+        $generator->create_module('page', ['course' => $course->id, 'section' => 3, 'name' => 'Hidden section activity']);
+        set_section_visible($course->id, 3, 0);
+        $generator->create_module('page', ['course' => $course->id, 'section' => 2, 'availability' => json_encode([
+            'op' => '&',
+            'c' => [['type' => 'date', 'd' => '>=', 't' => time() + DAYSECS]],
+            'showc' => [true],
+        ])]);
+
+        $this->setUser($student);
+        $format = course_get_format($course);
+        $content = new \format_ucl\output\courseformat\content($format);
+        $activities = $content->get_search_activities();
+        $this->assertSame(['Introduction reading', 'Reading & notes', 'Week two reading'], array_column($activities, 'name'));
+        $modinfo = $format->get_modinfo();
+        $this->assertSame([
+            (new \moodle_url('/course/view.php', ['id' => $course->id], 'module-' . $intro->cmid))->out(false),
+            (new \moodle_url('/course/section.php', ['id' => $modinfo->get_section_info(1)->id], 'module-' . $first->cmid))
+                ->out(false),
+            (new \moodle_url('/course/section.php', ['id' => $modinfo->get_section_info(2)->id], 'module-' . $second->cmid))
+                ->out(false),
+        ], array_column($activities, 'url'));
+        $this->assertSame([
+            $modinfo->get_cm($intro->cmid)->get_icon_url()->out(false),
+            $modinfo->get_cm($first->cmid)->get_icon_url()->out(false),
+            $modinfo->get_cm($second->cmid)->get_icon_url()->out(false),
+        ], array_column($activities, 'iconurl'));
+    }
+
+    /**
+     * Progress is omitted when course completion is disabled or the section has no completable activities.
+     *
+     * @covers \format_ucl\output\widgets\toc::format_ucl_section_progress
+     */
+    public function test_section_progress_is_omitted_when_unavailable(): void {
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $student = $generator->create_user();
+        $disabledcourse = $generator->create_course(
+            ['format' => 'ucl', 'numsections' => 1, 'enablecompletion' => 0],
+            ['createsections' => true]
+        );
+        $nocmcompletioncourse = $generator->create_course(
+            ['format' => 'ucl', 'numsections' => 1, 'enablecompletion' => 1],
+            ['createsections' => true]
+        );
+        $generator->enrol_user($student->id, $disabledcourse->id, 'student');
+        $generator->enrol_user($student->id, $nocmcompletioncourse->id, 'student');
+        $generator->create_module('page', [
+            'course' => $disabledcourse->id,
+            'section' => 1,
+            'completion' => 1,
+            'name' => 'Completion disabled',
+        ]);
+        $generator->create_module('page', [
+            'course' => $nocmcompletioncourse->id,
+            'section' => 1,
+            'completion' => 0,
+            'name' => 'No completion tracking',
+        ]);
+
+        $this->setUser($student);
+        $disabledsection = course_get_format($disabledcourse)->get_modinfo()->get_section_info(1);
+        $this->assertNull(\format_ucl\output\widgets\toc::format_ucl_section_progress(
+            $disabledsection,
+            $disabledcourse,
+            $student->id
+        ));
+
+        $untrackedsection = course_get_format($nocmcompletioncourse)->get_modinfo()->get_section_info(1);
+        $this->assertNull(\format_ucl\output\widgets\toc::format_ucl_section_progress(
+            $untrackedsection,
+            $nocmcompletioncourse,
+            $student->id
+        ));
+    }
+
+    /**
+     * TOC warning data follows section counts, names, activity counts, configuration, and course image state.
+     *
+     * @covers \format_ucl\output\widgets\toc::export_for_template
+     */
+    public function test_toc_warning_data_for_editors(): void {
+        global $DB, $PAGE;
+
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $teacher = $generator->create_user();
+        $warningcourse = $generator->create_course(
+            ['format' => 'ucl', 'numsections' => 3],
+            ['createsections' => true]
+        );
+        $cleanersectionscourse = $generator->create_course(
+            ['format' => 'ucl', 'numsections' => 3],
+            ['createsections' => true]
+        );
+        $generator->enrol_user($teacher->id, $warningcourse->id, 'editingteacher');
+        $generator->enrol_user($teacher->id, $cleanersectionscourse->id, 'editingteacher');
+
+        $generator->create_module('page', ['course' => $warningcourse->id, 'section' => 2, 'name' => 'Page 2a']);
+        $generator->create_module('page', ['course' => $warningcourse->id, 'section' => 2, 'name' => 'Page 2b']);
+        $generator->create_module('page', ['course' => $warningcourse->id, 'section' => 3, 'name' => 'Page 3']);
+        foreach ([1, 2, 3] as $sectionnum) {
+            $DB->set_field(
+                'course_sections',
+                'name',
+                'Week ' . $sectionnum,
+                ['course' => $cleanersectionscourse->id, 'section' => $sectionnum]
+            );
+            $generator->create_module('page', [
+                'course' => $cleanersectionscourse->id,
+                'section' => $sectionnum,
+                'name' => "Page {$sectionnum}a",
+            ]);
+            $generator->create_module('page', [
+                'course' => $cleanersectionscourse->id,
+                'section' => $sectionnum,
+                'name' => "Page {$sectionnum}b",
+            ]);
+        }
+
+        $this->setUser($teacher);
+        set_config('recommendedmaxsections', 2, 'format_ucl');
+        set_config('linktoguidance', 'https://example.com/guidance', 'format_ucl');
+        config::instance(true);
+        $warningdata = (new \format_ucl\output\widgets\toc(course_get_format($warningcourse)))
+            ->export_for_template($PAGE->get_renderer('core'));
+
+        $this->assertTrue($warningdata->showwarning);
+        $this->assertTrue($warningdata->showguidance);
+        $this->assertTrue($warningdata->shownunnamedsections);
+        $this->assertSame(3, $warningdata->namecount);
+        $this->assertTrue($warningdata->showtoomanysections);
+        $this->assertSame(3, $warningdata->visiblecount);
+        $this->assertTrue($warningdata->showtoofewmods);
+        $this->assertSame(2, $warningdata->modcount);
+        $this->assertTrue($warningdata->shownocourseimg);
+
+        set_config('recommendedmaxsections', 3, 'format_ucl');
+        config::instance(true);
+        $cleanerdata = (new \format_ucl\output\widgets\toc(course_get_format($cleanersectionscourse)))
+            ->export_for_template($PAGE->get_renderer('core'));
+
+        $this->assertFalse($cleanerdata->shownunnamedsections ?? false);
+        $this->assertFalse($cleanerdata->showtoomanysections ?? false);
+        $this->assertFalse($cleanerdata->showtoofewmods ?? false);
+        $this->assertTrue($cleanerdata->shownocourseimg);
+        $this->assertFalse($cleanerdata->showguidance);
     }
 
     /**

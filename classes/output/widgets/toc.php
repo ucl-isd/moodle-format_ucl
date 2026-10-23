@@ -76,7 +76,7 @@ class toc implements renderable, templatable {
                 $s->id = $section->id;
                 $s->section = $section->section;
                 $s->name = $this->format->get_section_name($section);
-                $s->url = $this->format->get_view_url($section, ['sr' => $section->section]);
+                $s->url = $this->format->get_view_url($section, ['pagesectionid' => $section->section]);
                 $s->visible = $section->visible;
 
                 // Active section - either the section in the URL, or section 0 if on the course home page.

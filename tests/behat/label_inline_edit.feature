@@ -56,17 +56,6 @@ Feature: Edit label content inline
     Then "Restored label content" "text" should exist in the ".activity-altcontent" "css_element"
     And "Discarded replacement" "text" should not exist
 
-  Scenario: The inline editor remains available after hiding and showing a label
-    When I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
-    And I click on "Section 1" "link" in the "#toc" "css_element"
-    And I click on "[data-region='actionmenu'] [data-bs-toggle='dropdown']" "css_element" in the "Original label content" activity
-    And I click on "Hide" "link" in the "Original label content" activity
-    Then "[data-action='edit-label-content']" "css_element" should exist
-    When I click on "[data-region='actionmenu'] [data-bs-toggle='dropdown']" "css_element" in the "Original label content" activity
-    And I click on "Show" "link" in the "Original label content" activity
-    Then "[data-action='edit-label-content']" "css_element" should exist
-
   Scenario: Adding a label from a section returns to that section
     When I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on

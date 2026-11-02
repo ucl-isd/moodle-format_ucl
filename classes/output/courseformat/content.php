@@ -80,7 +80,7 @@ class content extends content_base {
         $data->courseimg = course_summary_exporter::get_course_image($format->get_course());
 
         // Am i editing?
-        $data->isediting = $USER->editing;
+        $data->isediting = $PAGE->user_is_editing();
         $data->hassummary = (bool)$data->singlesection?->summary?->summarytext;
         $data->addsectiondescurl = new moodle_url(
             '/course/editsection.php',
@@ -97,7 +97,7 @@ class content extends content_base {
             );
 
             if ($data->isediting) {
-                $data->sectionactions = $this->get_page_header_action($output);
+                $data->sectionactions = parent::get_page_header_action($output);
             }
         }
 

@@ -97,7 +97,7 @@ class content extends content_base {
             );
 
             if ($data->isediting) {
-                $data->sectionactions = parent::get_page_header_action($output);
+                $data->sectionactions = $this->get_page_header_action($output);
             }
         }
 

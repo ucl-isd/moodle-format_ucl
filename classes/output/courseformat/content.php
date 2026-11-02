@@ -54,7 +54,7 @@ class content extends content_base {
      * @return mixed
      */
     public function export_for_template(\renderer_base $output) {
-        global $USER, $PAGE;
+        global $PAGE;
 
         $PAGE->requires->js_call_amd('format_ucl/mutations', 'init');
         $PAGE->requires->js_call_amd('format_ucl/section', 'init');
@@ -81,7 +81,7 @@ class content extends content_base {
         $data->courseimg = course_summary_exporter::get_course_image($format->get_course());
 
         // Am i editing?
-        $data->isediting = $USER->editing;
+        $data->isediting = $format->show_editor();
         $data->hassummary = (bool)$data->singlesection?->summary?->summarytext;
 
         // Single section specific data.
@@ -98,7 +98,6 @@ class content extends content_base {
         }
 
         // TOC layout.
-        // TODO.
         $layout = 'toc';
         if ($layout == 'toc') {
             // Table of contents for ucl format.

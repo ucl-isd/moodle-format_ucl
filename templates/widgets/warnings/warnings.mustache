@@ -26,41 +26,38 @@
 }}
 {{#toc}}
 {{#showwarning}}
-<div class="d-none d-lg-block p-3 alert alert-info behat-ucl-tips">
-    <div class="badge text-bg-warning rounded-pill ">Tips</div><br>
-    {{courseimage}}
+<div class="d-none d-lg-block px-3 behat-ucl-tips">
+    <p><span class="badge text-bg-warning rounded-pill">Tips</span> {{#str}}linktoguidance, format_ucl, {{linktoguidance}}{{/str}}</p>
+    <div class="row small">
     {{#shownocourseimg}}
-        <div class="behat-nocourseimg">
+        <div class="col-md-4 py-1 alert alert-info behat-nocourseimg">
             <b>{{#str}}nocourseimg, format_ucl{{/str}}</b>
-            <p>{{#str}}nocourseimg:desc, format_ucl, {{url}}{{/str}}</p>
+            <div>{{#str}}nocourseimg:desc, format_ucl, {{url}}{{/str}}</div>
         </div>
     {{/shownocourseimg}}
 
     {{#shownunnamedsections}}
-        <div class="behat-unnamedsections">
+        <div class="col-md-4 py-1 alert alert-info behat-unnamedsections">
             <b><span class="behat-namecount">{{namecount}}</span> {{#str}}unnamedsections, format_ucl{{/str}}</b>
-            <p>{{#str}}unnamedsections:desc, format_ucl{{/str}}</p>
+            <div>{{#str}}unnamedsections:desc, format_ucl{{/str}}</div>
         </div>
     {{/shownunnamedsections}}
 
     {{#showtoomanysections}}
-        <div class="behat-toomanysections">
+        <div class="col-md-4 py-1 alert alert-info behat-toomanysections">
             <b>{{#str}}toomanysections, format_ucl, {{visiblecount}}{{/str}}</b>
-            <p>{{#str}}toomanysections:desc, format_ucl, {{{recommendedmaxsections}}}{{/str}}</p>
+            <div>{{#str}}toomanysections:desc, format_ucl, {{{recommendedmaxsections}}}{{/str}}</div>
         </div>
     {{/showtoomanysections}}
 
     {{#showtoofewmods}}
-        <div class="behat-toofewmods">
+        <div class="col-md-4 py-1 alert alert-info behat-toofewmods">
             <b><span class="behat-modcount">{{modcount}}</span> {{#str}}toofewmods, format_ucl{{/str}}</b>
-            <p>{{#str}}toofewmods:desc, format_ucl{{/str}}</p>
+            <div>{{#str}}toofewmods:desc, format_ucl{{/str}}</div>
         </div>
     {{/showtoofewmods}}
-    {{#showguidance}}
-        <div class="behat-linktoguidance">
-            <p>{{#str}}linktoguidance, format_ucl, {{linktoguidance}}{{/str}}</p>
-        </div>
-    {{/showguidance}}
+
+    </div>
 </div>
 {{/showwarning}}
 {{/toc}}

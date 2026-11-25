@@ -122,6 +122,60 @@ final class format_ucl_test extends \advanced_testcase {
     }
 
     /**
+     * Summary editor files uploaded in the add section modal are moved to the new section.
+     *
+     * @covers \format_ucl\form\addsection_form::process_dynamic_submission
+     */
+    public function test_add_section_form_saves_summary_and_files(): void {
+        global $CFG, $DB, $USER;
+
+        require_once($CFG->libdir . '/filelib.php');
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course(['format' => 'ucl']);
+        $draftid = file_get_unused_draft_itemid();
+        $usercontext = \context_user::instance($USER->id);
+        get_file_storage()->create_file_from_string([
+            'contextid' => $usercontext->id,
+            'component' => 'user',
+            'filearea' => 'draft',
+            'itemid' => $draftid,
+            'filepath' => '/',
+            'filename' => 'image.txt',
+        ], 'Draft image');
+
+        $form = $this->getMockBuilder(\format_ucl\form\addsection_form::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['get_data'])
+            ->getMock();
+        $form->method('get_data')->willReturn((object)[
+            'courseid' => $course->id,
+            'name' => 'Stamptown',
+            'summary_editor' => [
+                'text' => '<p>Welcome <img src="/draftfile.php/' . $usercontext->id . '/user/draft/' . $draftid
+                    . '/image.txt" alt="Image"></p>',
+                'format' => FORMAT_HTML,
+                'itemid' => $draftid,
+            ],
+        ]);
+        $result = $form->process_dynamic_submission();
+
+        $section = $DB->get_record('course_sections', ['course' => $course->id, 'name' => 'Stamptown'], '*', MUST_EXIST);
+        $this->assertStringContainsString('Welcome', $section->summary);
+        $this->assertStringContainsString('@@PLUGINFILE@@/image.txt', $section->summary);
+        $this->assertNotEmpty($result['url']);
+        $file = get_file_storage()->get_file(
+            \context_course::instance($course->id)->id,
+            'course',
+            'section',
+            $section->id,
+            '/',
+            'image.txt'
+        );
+        $this->assertNotFalse($file);
+    }
+
+    /**
      * Tests for format_ucl::get_section_name method with default section names.
      *
      * @return void

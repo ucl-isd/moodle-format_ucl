@@ -156,8 +156,8 @@ class toc implements renderable, templatable {
             $data->recommendedmaxsections = '<span class="behat-sectioncount">' . $recommendedmaxsections . '</span>';
         }
 
-        // Activites per section in check.
-        if ($modcount > 0) {
+        // Activites per section in check. Only warn when more than one section has one or fewer activities.
+        if ($modcount > 1) {
             $data->showwarning = true;
             $data->showguidance = true;
             $data->showtoofewmods = true;

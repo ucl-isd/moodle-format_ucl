@@ -55,6 +55,16 @@ class addsection_form extends dynamic_form {
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addRule('name', null, 'required', null, 'client');
 
+        $datasource = $this->_customdata ?? $this->_ajaxformdata;
+        $mform->addElement(
+            'editor',
+            'summary_editor',
+            get_string('description'),
+            null,
+            $this->get_editor_options($datasource['courseid'])
+        );
+        $mform->setType('summary_editor', PARAM_RAW);
+
         $mform->addElement('hidden', 'courseid', 0);
         $mform->setType('courseid', PARAM_INT);
     }
@@ -87,11 +97,30 @@ class addsection_form extends dynamic_form {
      * @return array
      */
     public function process_dynamic_submission() {
-        global $CFG;
+        global $CFG, $DB;
         require_once($CFG->dirroot . '/course/lib.php');
+        require_once($CFG->libdir . '/filelib.php');
 
         $data = $this->get_data();
+        $course = $DB->get_record('course', ['id' => $data->courseid], '*', MUST_EXIST);
         $section = formatactions::section($data->courseid)->create_from_form($data);
+
+        // Draft files can only be moved once the section exists, so save the summary afterwards.
+        $data = file_postupdate_standard_editor(
+            $data,
+            'summary',
+            $this->get_editor_options($data->courseid),
+            context_course::instance($data->courseid),
+            'course',
+            'section',
+            $section->id
+        );
+        course_update_section($course, $section, (object)[
+            'summary' => $data->summary,
+            'summaryformat' => $data->summaryformat,
+            'summarytrust' => $data->summarytrust,
+        ]);
+
         $returnurl = course_get_url($data->courseid, $section, ['pagesectionid' => $section->section]);
         return [
             'result' => true,
@@ -101,14 +130,41 @@ class addsection_form extends dynamic_form {
     }
 
     /**
-     * Load in existing data as form defaults (not applicable)
+     * Load in existing data as form defaults, with an empty draft area for the summary files
      */
     public function set_data_for_dynamic_submission(): void {
+        global $CFG;
+        require_once($CFG->libdir . '/filelib.php');
+
         $datasource = $this->_customdata ?? $this->_ajaxformdata;
         $data = (object)[
             'courseid' => $datasource['courseid'],
+            'summary_editor' => [
+                'text' => '',
+                'format' => FORMAT_HTML,
+                'itemid' => file_get_unused_draft_itemid(),
+            ],
         ];
         $this->set_data($data);
+    }
+
+    /**
+     * Returns the editor options for the section summary
+     *
+     * @param int $courseid
+     * @return array
+     */
+    private function get_editor_options(int $courseid): array {
+        global $CFG;
+
+        return [
+            'context' => context_course::instance($courseid),
+            'maxfiles' => EDITOR_UNLIMITED_FILES,
+            'maxbytes' => $CFG->maxbytes,
+            'trusttext' => false,
+            'noclean' => true,
+            'subdirs' => true,
+        ];
     }
 
     /**

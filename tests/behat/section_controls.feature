@@ -16,6 +16,7 @@ Feature: Changes made using section controls are reflected in the table of conte
   Scenario: Section controls appear in expected order and hide updates the table of contents
     Given I log in as "admin"
     And I am on "Course 1" course homepage with editing mode on
+    And I close block drawer if open
     And I click on "Section 2" "link" in the "#toc" "css_element"
     When I open ucl section "Section 2" edit menu
     Then "Move" "link" should appear after "Edit section" "link"
@@ -32,6 +33,7 @@ Feature: Changes made using section controls are reflected in the table of conte
   Scenario: Duplicate section action updates table of contents
     Given I log in as "admin"
     And I am on "Course 1" course homepage with editing mode on
+    And I close block drawer if open
     When I click on "Section 2" "link" in the "#toc" "css_element"
     And I set the field "Edit section name" to "Stamptown"
     And I open ucl section "Stamptown" edit menu
@@ -41,6 +43,7 @@ Feature: Changes made using section controls are reflected in the table of conte
   Scenario: Delete section action redirects to course page
     Given I log in as "admin"
     And I am on "Course 1" course homepage with editing mode on
+    And I close block drawer if open
     When I click on "Section 2" "link" in the "#toc" "css_element"
     And I open ucl section "Section 2" edit menu
     And I click on "Delete" "link" in the ".section-actions" "css_element"

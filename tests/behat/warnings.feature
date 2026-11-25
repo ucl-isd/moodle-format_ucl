@@ -41,6 +41,7 @@ Feature: Appropriate Tips are shown to user
       | Number of sections to suggest as Tip | 1 |
     And I press "Save changes"
     And I am on "Course 1" course homepage with editing mode on
+    And I close block drawer if open
     And I am on the "Course 1 > New section" "course > section" page
     And I set the field "Edit section name" in the ".ucl-section-name" "css_element" to "Stamptown"
     And I am on "Course 1" course homepage

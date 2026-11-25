@@ -564,6 +564,7 @@ final class format_ucl_test extends \advanced_testcase {
         $USER->editing = true;
         $PAGE->set_context(\context_course::instance($warningcourse->id));
 
+        set_config('recommendedmaxsections', 2, 'format_ucl');
         set_config('linktoguidance', 'https://example.com/guidance', 'format_ucl');
         config::instance(true);
         $warningdata = (new \format_ucl\output\widgets\toc(course_get_format($warningcourse)))
@@ -622,6 +623,7 @@ final class format_ucl_test extends \advanced_testcase {
 
         // Nobody is visible and editing is off.
         $this->setUser($student);
+        $USER->editing = false;
         $this->assertSame([], $widget->get_course_contacts($renderer));
 
         (new course_contacts($course->id, $teacher1->id, 'show'))->set_contact_visibility();

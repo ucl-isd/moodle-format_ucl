@@ -29,7 +29,8 @@ Feature: UCL sections can be highlighted
 
   @javascript
   Scenario: Highlight, move, and clear the highlighted section
-    Given I click on "Section 2" "link" in the "#toc" "css_element"
+    Given I change window size to "large"
+    And I click on "Section 2" "link" in the "#toc" "css_element"
     And I open ucl section "Section 2" edit menu
     When I click on "Highlight" "link" in the ".section-actions" "css_element"
     Then I should see "Highlighted" in the "[data-sectionname='Section 2']" "css_element"

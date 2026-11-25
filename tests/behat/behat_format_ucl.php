@@ -80,6 +80,11 @@ class behat_format_ucl extends behat_base {
             "/descendant::div[contains(@class, 'section-actions')]/descendant::a[@data-bs-toggle='dropdown']";
         $exception = new ExpectationException('Section "' . $section . '" was not found', $this->getSession());
         $menu = $this->find('xpath', $xpath, $exception);
+        // Lift the section actions above the blocks drawer, which can overlap the menu toggle at wide widths.
+        $this->getSession()->executeScript(
+            "document.querySelectorAll('.section-actions').forEach(function(el) {"
+            . " el.style.position = 'relative'; el.style.zIndex = '9999'; });"
+        );
         $menu->click();
     }
 }

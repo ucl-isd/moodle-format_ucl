@@ -525,6 +525,7 @@ final class format_ucl_test extends \advanced_testcase {
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
         $teacher = $generator->create_user();
+        $student = $generator->create_user();
         $warningcourse = $generator->create_course(
             ['format' => 'ucl', 'numsections' => 3],
             ['createsections' => true]
@@ -534,6 +535,7 @@ final class format_ucl_test extends \advanced_testcase {
             ['createsections' => true]
         );
         $generator->enrol_user($teacher->id, $warningcourse->id, 'editingteacher');
+        $generator->enrol_user($student->id, $warningcourse->id, 'student');
         $generator->enrol_user($teacher->id, $cleanersectionscourse->id, 'editingteacher');
 
         $generator->create_module('page', ['course' => $warningcourse->id, 'section' => 2, 'name' => 'Page 2a']);
@@ -585,6 +587,58 @@ final class format_ucl_test extends \advanced_testcase {
         $this->assertFalse($cleanerdata->showtoomanysections ?? false);
         $this->assertFalse($cleanerdata->showtoofewmods ?? false);
         $this->assertTrue($cleanerdata->shownocourseimg);
+
+        $this->setUser($student);
+        $studentdata = (new \format_ucl\output\widgets\toc(course_get_format($warningcourse)))
+            ->export_for_template($PAGE->get_renderer('core'));
+        $this->assertFalse($studentdata->showwarning ?? false);
+    }
+
+    /**
+     * Course contacts follow editing mode, visibility toggles, role filtering, ordering and mail display.
+     *
+     * @covers \format_ucl\output\widgets\contacts::get_course_contacts
+     */
+    public function test_course_contacts_follow_editing_and_visibility(): void {
+        global $PAGE, $USER;
+
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $course = $generator->create_course(['format' => 'ucl', 'numsections' => 5]);
+        $teacher1 = $generator->create_user(['lastname' => '1', 'maildisplay' => 1]);
+        $teacher2 = $generator->create_user(['lastname' => '2', 'maildisplay' => 1]);
+        $teacher3 = $generator->create_user(['lastname' => '3', 'maildisplay' => 1]);
+        $teacher5 = $generator->create_user(['lastname' => '5', 'maildisplay' => 0]);
+        $student = $generator->create_user();
+        $generator->enrol_user($teacher1->id, $course->id, 'editingteacher');
+        $generator->enrol_user($teacher2->id, $course->id, 'editingteacher');
+        $generator->enrol_user($teacher3->id, $course->id, 'teacher');
+        $generator->enrol_user($teacher5->id, $course->id, 'editingteacher');
+        $generator->enrol_user($student->id, $course->id, 'student');
+
+        $PAGE->set_context(\context_course::instance($course->id));
+        $renderer = $PAGE->get_renderer('core');
+        $widget = new \format_ucl\output\widgets\contacts(course_get_format($course));
+
+        // Nobody is visible and editing is off.
+        $this->setUser($student);
+        $this->assertSame([], $widget->get_course_contacts($renderer));
+
+        (new course_contacts($course->id, $teacher1->id, 'show'))->set_contact_visibility();
+        (new course_contacts($course->id, $teacher5->id, 'show'))->set_contact_visibility();
+
+        // Only visible contacts are shown to students, and hidden email addresses are not returned.
+        $contacts = $widget->get_course_contacts($renderer);
+        $this->assertSame([$teacher1->id, $teacher5->id], array_column($contacts, 'id'));
+        $this->assertSame($teacher1->email, $contacts[0]->email);
+        $this->assertNull($contacts[1]->email);
+
+        // Editing teachers see every course contact, ordered by last name, with visibility flags.
+        $this->setUser($teacher2);
+        $USER->editing = true;
+        $contacts = $widget->get_course_contacts($renderer);
+        $this->assertSame([$teacher1->id, $teacher2->id, $teacher5->id], array_column($contacts, 'id'));
+        $this->assertSame([true, false, true], array_column($contacts, 'show'));
     }
 
     /**

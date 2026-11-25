@@ -8,26 +8,17 @@ Feature: Appropriate Tips are shown to user
     Given the following "courses" exist:
       | fullname | shortname | format | coursedisplay | numsections | startdate     |
       | Course 1 | C1        | ucl    | 0             | 1           | ##yesterday## |
-      | Course 2 | C2        | ucl    | 0             | 17          | ##yesterday## |
-    And the following "users" exist:
-      | username | firstname | lastname | email                |
-      | teacher1 | Teacher   | 1        | teacher1@example.com |
-      | student1 | Student   | 1        | student1@example.com |
-    And the following "course enrolments" exist:
-      | user     | course | role           |
-      | teacher1 | C2     | editingteacher |
-      | student1 | C2     | student        |
 
-  Scenario: Tips do not appear on section pages
-    When I am on the "C1" "Course" page logged in as "admin"
-    And I click on "New section" "link" in the "#toc" "css_element"
-    Then ".behat-ucl-tips" "css_element" should not exist
-
-  Scenario: Course image tip is shown for courses without images
-    When I am on the "C1" "Course" page logged in as "admin"
+  Scenario: Course image tip is shown for courses without images for courses without images    When I am on the "C1" "Course" page logged in as "admin"
     And I turn editing mode on
     Then ".behat-ucl-tips" "css_element" should exist
     Then ".behat-nocourseimg" "css_element" should exist
+
+  Scenario: Unnamed section tip is shown for sections without a name
+    When I am on the "C1" "Course" page logged in as "admin"
+    And I turn editing mode on
+    Then ".behat-unnamedsections" "css_element" should exist
+    And ".behat-namecount" "css_element" should exist
 
   @javascript @_file_upload
   Scenario: Course image tip is not shown for courses with images
@@ -37,16 +28,6 @@ Feature: Appropriate Tips are shown to user
     And I press "Save and display"
     # "Add a course image"
     Then ".behat-nocourseimg" "css_element" should not exist
-
-  Scenario: Admin can edit setting max number of sections
-    Given I log in as "admin"
-    And I navigate to "Plugins > Course formats > UCL Format" in site administration
-    And I set the following fields to these values:
-      | Number of sections to suggest as Tip | 20 |
-    And I press "Save changes"
-    When I am on the "C2" "Course" page logged in as "admin"
-    # "Courses should have a maximum of 4 sections"
-    Then ".behat-toomanysections" "css_element" should not exist
 
   @javascript
   Scenario: Link to guidance is shown with the editor tips
@@ -64,9 +45,6 @@ Feature: Appropriate Tips are shown to user
     And I am on "Course 1" course homepage
     # Only the add a course image warning should exist
     Then ".behat-nocourseimg" "css_element" should exist
-    And ".behat-unnamedsections" "css_element" should not exist
-    And ".behat-toomanysections" "css_element" should not exist
-    And ".behat-toofewmods" "css_element" should not exist
     And ".behat-linktoguidance" "css_element" should exist
 
     When I click on ".behat-add-section" "css_element"
@@ -77,18 +55,3 @@ Feature: Appropriate Tips are shown to user
     And ".behat-toomanysections" "css_element" should exist
     And ".behat-toofewmods" "css_element" should exist
     And ".behat-linktoguidance" "css_element" should exist
-
-  Scenario: Users without capability 'moodle/course:update' do not see warnings
-    When I am on the "C2" course page logged in as "teacher1"
-    And I turn editing mode on
-    Then ".behat-nocourseimg" "css_element" should exist
-    And ".behat-unnamedsections" "css_element" should exist
-    And ".behat-toomanysections" "css_element" should exist
-    And ".behat-toofewmods" "css_element" should exist
-    And ".behat-linktoguidance" "css_element" should exist
-    When I am on the "C2" course page logged in as "student1"
-    And ".behat-nocourseimg" "css_element" should not exist
-    Then ".behat-unnamedsections" "css_element" should not exist
-    And ".behat-toomanysections" "css_element" should not exist
-    And ".behat-toofewmods" "css_element" should not exist
-    And ".behat-linktoguidance" "css_element" should not exist

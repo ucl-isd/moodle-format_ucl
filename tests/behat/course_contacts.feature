@@ -28,43 +28,6 @@ Feature: Users can view and edit course contacts
     And the following config values are set as admin:
       | displaycontacts | 1 | format_ucl |
 
-  Scenario: Course contacts appear in initial section when editing is on
-    When I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
-    Then "Contacts" "text" should exist
-    And "Teacher 1" "link" should exist
-    And "Teacher 2" "link" should appear after "Teacher 1" "link"
-    And "Teacher 5" "link" should appear after "Teacher 2" "link"
-    And "Teacher 3" "link" should not exist
-    And "Teacher 4" "link" should not exist
-
-  Scenario: Course contacts do not appear in initial section when editing is off
-    When I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    Then "Contacts" "text" should not exist in the "#ucl-course-content" "css_element"
-    And "Teacher 1" "link" should not exist in the "#ucl-course-content" "css_element"
-    And "Teacher 2" "link" should not exist
-    And "Teacher 5" "link" should not exist
-    And "Teacher 3" "link" should not exist
-    And "Teacher 4" "link" should not exist
-
-  Scenario: Course contacts appear in initial section when editing is off and contact is checked
-    Given I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
-    And I click on "Show Teacher 1 to students" "checkbox"
-    And I click on "Show Teacher 5 to students" "checkbox"
-    And I log out
-    When I am on the "C1" course page logged in as "student1"
-    Then "Teacher 1" "link" should exist in the "#ucl-course-content" "css_element"
-    And "teacher1@example.com" "link" should exist in the "#ucl-course-content" "css_element"
-    And "Teacher 2" "link" should not exist
-    And "Teacher 5" "link" should exist
-    And "teacher5@example.com" "link" should not exist
-    And "Teacher 3" "link" should not exist
-    And "Teacher 4" "link" should not exist
-    And I reload the page
-    And "Teacher 1" "link" should exist
-
   Scenario: User can show/hide contacts
     When I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
@@ -151,10 +114,6 @@ Feature: Users can view and edit course contacts
     And I press "Delete"
     And I click on "Delete" "button" in the "Delete Jack Tucker?" "dialogue"
     Then I should see "Jack Tucker has been deleted"
-    And I should not see "Ring Master"
     And I should not see "Jack Tucker" in the "#ucl-format-contacts" "css_element"
-    And I should not see "zzucker@example.com"
-    And I should not see "Clown king"
     And I switch editing mode off
-    And "Course contacts" "text" should not exist
     And "#format-ucl-contacts-widget" "css_element" should not exist

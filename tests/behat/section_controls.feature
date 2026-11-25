@@ -12,6 +12,7 @@ Feature: Section edit menu actions are reflected in the course page
       | coursedisplay | 0        |
       | numsections   | 5        |
       | initsections  | 1        |
+    And I change window size to "large"
     And I log in as "admin"
     And I am on "Course 1" course homepage with editing mode on
     And I click on "Section 2" "link" in the "#toc" "css_element"

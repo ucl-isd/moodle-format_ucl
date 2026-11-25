@@ -37,8 +37,8 @@ Feature: TOC progress is shown on load and updates after manual completion
     And I change window size to "large"
 
   Scenario: TOC progress is hidden when editing mode is on
-    Given I am on the "PROG1" "Course" page logged in as "teacher1"
-    And I turn editing mode on
+    Given I log in as "teacher1"
+    And I am on "Course 1" course homepage with editing mode on
     Then "#toc .progress-indicator[data-id] .progress-ring" "css_element" should not exist
 
   Scenario: TOC progress updates after manual completion

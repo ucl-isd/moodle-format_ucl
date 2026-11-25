@@ -520,7 +520,7 @@ final class format_ucl_test extends \advanced_testcase {
      * @covers \format_ucl\output\widgets\toc::export_for_template
      */
     public function test_toc_warning_data_for_editors(): void {
-        global $DB, $PAGE;
+        global $DB, $PAGE, $USER;
 
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
@@ -559,7 +559,8 @@ final class format_ucl_test extends \advanced_testcase {
         }
 
         $this->setUser($teacher);
-        set_config('recommendedmaxsections', 2, 'format_ucl');
+        $USER->editing = true;
+
         set_config('linktoguidance', 'https://example.com/guidance', 'format_ucl');
         config::instance(true);
         $warningdata = (new \format_ucl\output\widgets\toc(course_get_format($warningcourse)))

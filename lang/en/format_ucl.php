@@ -67,7 +67,7 @@ $string['forcontact'] = 'for contact {$a}';
 $string['hiddenfromstudents'] = 'Hidden from students';
 $string['hidefromothers'] = 'Hide';
 $string['highlight'] = 'Highlight';
-$string['linktoguidance'] = 'For more information see <a href="{$a}" target="_blank">How to structure content</a>';
+$string['linktoguidance'] = 'For more information visit <a href="{$a}" target="_blank">How to structure content in your Moodle course</a>.';
 $string['messageprovider:expiry'] = 'Expiry message';
 $string['messageprovider:submission'] = 'Submission message';
 $string['name'] = 'Name';

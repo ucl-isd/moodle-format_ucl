@@ -132,7 +132,7 @@ class toc implements renderable, templatable {
             }
         }
 
-        if (!$caneditcourse) {
+        if (!$caneditcourse || !$this->format->show_editor()) {
             return $data;
         }
         // Editor warnings.

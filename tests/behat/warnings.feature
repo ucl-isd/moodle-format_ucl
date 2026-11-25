@@ -25,6 +25,7 @@ Feature: Appropriate Tips are shown to user
 
   Scenario: Course image tip is shown for courses without images
     When I am on the "C1" "Course" page logged in as "admin"
+    And I turn editing mode on
     Then ".behat-ucl-tips" "css_element" should exist
     Then ".behat-nocourseimg" "css_element" should exist
 
@@ -79,6 +80,7 @@ Feature: Appropriate Tips are shown to user
 
   Scenario: Users without capability 'moodle/course:update' do not see warnings
     When I am on the "C2" course page logged in as "teacher1"
+    And I turn editing mode on
     Then ".behat-nocourseimg" "css_element" should exist
     And ".behat-unnamedsections" "css_element" should exist
     And ".behat-toomanysections" "css_element" should exist

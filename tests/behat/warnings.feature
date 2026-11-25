@@ -49,7 +49,7 @@ Feature: Appropriate Tips are shown to user
     Then ".behat-toomanysections" "css_element" should not exist
 
   @javascript
-  Scenario: Link to guidance is shown if any other warning (excluding add a course image) is shown
+  Scenario: Link to guidance is shown with the editor tips
     Given the following "activities" exist:
       | activity | name                 | intro                       | course | section | idnumber |
       | assign   | Test assignment name | Test assignment description | C1     | 1       | assign1  |
@@ -67,7 +67,7 @@ Feature: Appropriate Tips are shown to user
     And ".behat-unnamedsections" "css_element" should not exist
     And ".behat-toomanysections" "css_element" should not exist
     And ".behat-toofewmods" "css_element" should not exist
-    And ".behat-linktoguidance" "css_element" should not exist
+    And ".behat-linktoguidance" "css_element" should exist
 
     When I click on ".behat-add-section" "css_element"
     And I set the field "Section name" to "Welcome to Stamptown"

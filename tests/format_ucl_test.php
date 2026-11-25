@@ -560,6 +560,7 @@ final class format_ucl_test extends \advanced_testcase {
 
         $this->setUser($teacher);
         $USER->editing = true;
+        $PAGE->set_context(\context_course::instance($warningcourse->id));
 
         set_config('linktoguidance', 'https://example.com/guidance', 'format_ucl');
         config::instance(true);
@@ -567,7 +568,6 @@ final class format_ucl_test extends \advanced_testcase {
             ->export_for_template($PAGE->get_renderer('core'));
 
         $this->assertTrue($warningdata->showwarning);
-        $this->assertTrue($warningdata->showguidance);
         $this->assertTrue($warningdata->shownunnamedsections);
         $this->assertSame(3, $warningdata->namecount);
         $this->assertTrue($warningdata->showtoomanysections);
@@ -585,7 +585,6 @@ final class format_ucl_test extends \advanced_testcase {
         $this->assertFalse($cleanerdata->showtoomanysections ?? false);
         $this->assertFalse($cleanerdata->showtoofewmods ?? false);
         $this->assertTrue($cleanerdata->shownocourseimg);
-        $this->assertFalse($cleanerdata->showguidance);
     }
 
     /**

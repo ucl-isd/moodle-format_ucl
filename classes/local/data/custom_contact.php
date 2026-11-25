@@ -16,7 +16,6 @@
 
 namespace format_ucl\local\data;
 
-
 use core\persistent;
 
 /**

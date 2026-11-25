@@ -22,41 +22,63 @@
     * attributes Array of name / value pairs.
     Example context (json):
     {
+        "toc": [
+            {
+                "showwarning": true,
+                "showguidance": true,
+                "linktoguidance": "https://example.com/guidance",
+                "shownocourseimg": true,
+                "url": "https://example.com/course/edit.php?id=2#fitem_id_overviewfiles_filemanager",
+                "shownunnamedsections": true,
+                "namecount": 2,
+                "showtoomanysections": true,
+                "visiblecount": 17,
+                "recommendedmaxsections": "<span class=\"behat-sectioncount\">4</span>",
+                "showtoofewmods": true,
+                "modcount": 3
+            }
+        ]
     }
 }}
 {{#toc}}
 {{#showwarning}}
 <div class="d-none d-lg-block px-3 behat-ucl-tips">
-    <p><span class="badge text-bg-warning rounded-pill">Tips</span> {{#str}}linktoguidance, format_ucl, {{linktoguidance}}{{/str}}</p>
-    <div class="row small">
-    {{#shownocourseimg}}
-        <div class="col-md-4 py-1 alert alert-info behat-nocourseimg">
-            <b>{{#str}}nocourseimg, format_ucl{{/str}}</b>
-            <div>{{#str}}nocourseimg:desc, format_ucl, {{url}}{{/str}}</div>
-        </div>
-    {{/shownocourseimg}}
+    <div class="behat-linktoguidance">
+        <span class="badge text-bg-warning rounded-pill me-1">
+            <i class="fa-solid fa-heart-circle-exclamation m-1"></i>
+            {{#str}}editortips, format_ucl{{/str}}
+        </span>
+        {{#str}}linktoguidance, format_ucl, {{linktoguidance}}{{/str}}
+    </div>
 
-    {{#shownunnamedsections}}
-        <div class="col-md-4 py-1 alert alert-info behat-unnamedsections">
-            <b><span class="behat-namecount">{{namecount}}</span> {{#str}}unnamedsections, format_ucl{{/str}}</b>
-            <div>{{#str}}unnamedsections:desc, format_ucl{{/str}}</div>
-        </div>
-    {{/shownunnamedsections}}
+    <div class="row small pt-3">
+        {{#shownocourseimg}}
+            <div class="col-md-4 py-1 alert alert-info behat-nocourseimg">
+                <b>{{#str}}nocourseimg, format_ucl{{/str}}</b>
+                <div>{{#str}}nocourseimg:desc, format_ucl, {{url}}{{/str}}</div>
+            </div>
+        {{/shownocourseimg}}
 
-    {{#showtoomanysections}}
-        <div class="col-md-4 py-1 alert alert-info behat-toomanysections">
-            <b>{{#str}}toomanysections, format_ucl, {{visiblecount}}{{/str}}</b>
-            <div>{{#str}}toomanysections:desc, format_ucl, {{{recommendedmaxsections}}}{{/str}}</div>
-        </div>
-    {{/showtoomanysections}}
+        {{#shownunnamedsections}}
+            <div class="col-md-4 py-1 alert alert-info behat-unnamedsections">
+                <b><span class="behat-namecount">{{namecount}}</span> {{#str}}unnamedsections, format_ucl{{/str}}</b>
+                <div>{{#str}}unnamedsections:desc, format_ucl{{/str}}</div>
+            </div>
+        {{/shownunnamedsections}}
 
-    {{#showtoofewmods}}
-        <div class="col-md-4 py-1 alert alert-info behat-toofewmods">
-            <b><span class="behat-modcount">{{modcount}}</span> {{#str}}toofewmods, format_ucl{{/str}}</b>
-            <div>{{#str}}toofewmods:desc, format_ucl{{/str}}</div>
-        </div>
-    {{/showtoofewmods}}
+        {{#showtoomanysections}}
+            <div class="col-md-4 py-1 alert alert-info behat-toomanysections">
+                <b>{{#str}}toomanysections, format_ucl, {{visiblecount}}{{/str}}</b>
+                <div>{{#str}}toomanysections:desc, format_ucl, {{{recommendedmaxsections}}}{{/str}}</div>
+            </div>
+        {{/showtoomanysections}}
 
+        {{#showtoofewmods}}
+            <div class="col-md-4 py-1 alert alert-info behat-toofewmods">
+                <b><span class="behat-modcount">{{modcount}}</span> {{#str}}toofewmods, format_ucl{{/str}}</b>
+                <div>{{#str}}toofewmods:desc, format_ucl{{/str}}</div>
+            </div>
+        {{/showtoofewmods}}
     </div>
 </div>
 {{/showwarning}}

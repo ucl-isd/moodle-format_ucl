@@ -23,6 +23,7 @@
  * @author      Stuart Lamour <s.lamour@ucl.ac.uk>
  * @author      Amanda Doughty <m.doughty@ucl.ac.uk>
  */
+
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/course/format/lib.php');
 

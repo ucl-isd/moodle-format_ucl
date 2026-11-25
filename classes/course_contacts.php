@@ -16,7 +16,6 @@
 
 namespace format_ucl;
 
-
 /**
  * Stores course contact visibility
  *

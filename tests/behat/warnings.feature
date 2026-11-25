@@ -34,7 +34,7 @@ Feature: Appropriate Tips are shown to user
     And I navigate to "Settings" in current page administration
     And I upload "course/format/ucl/tests/fixtures/stamptown.jpg" file to "Course image" filemanager
     And I press "Save and display"
-    # "No course image"
+    # "Add a course image"
     Then ".behat-nocourseimg" "css_element" should not exist
 
   Scenario: Admin can edit setting max number of sections
@@ -48,12 +48,10 @@ Feature: Appropriate Tips are shown to user
     Then ".behat-toomanysections" "css_element" should not exist
 
   @javascript
-  Scenario: Link to guidance is shown if any other warning (excluding no course image) is shown
+  Scenario: Link to guidance is shown if any other warning (excluding add a course image) is shown
     Given the following "activities" exist:
       | activity | name                 | intro                       | course | section | idnumber |
       | assign   | Test assignment name | Test assignment description | C1     | 1       | assign1  |
-      | book     | Test book name       | Test book description       | C1     | 1       | book1    |
-      | choice   | Test choice name     | Test choice description     | C1     | 1       | choice1  |
     And I log in as "admin"
     And I navigate to "Plugins > Course formats > UCL Format" in site administration
     And I set the following fields to these values:
@@ -63,7 +61,7 @@ Feature: Appropriate Tips are shown to user
     And I turn editing mode on
     And I set the field "Edit section name" in the ".ucl-section-name" "css_element" to "Stamptown"
     And I am on "Course 1" course homepage
-    # Only the no course image warning should exist
+    # Only the add a course image warning should exist
     Then ".behat-nocourseimg" "css_element" should exist
     And ".behat-unnamedsections" "css_element" should not exist
     And ".behat-toomanysections" "css_element" should not exist

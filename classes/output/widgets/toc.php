@@ -106,7 +106,8 @@ class toc implements renderable, templatable {
             if (!$caneditcourse) {
                 continue;
             }
-            if ($section->section) { // Don't count section 0.
+            // Don't count section 0.
+            if ($section->section) {
                 if ($section->visible) {
                     $visiblecount++;
 

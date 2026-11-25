@@ -146,7 +146,8 @@ class controlmenu extends controlmenu_base {
         $highlighton = get_string('highlight');
         $highlightonicon = 'i/marker';
 
-        if ($course->marker == $section->sectionnum) {  // Show the "light globe" on/off.
+        // Show the "light globe" on/off.
+        if ($course->marker == $section->sectionnum) {
             $action = 'section_unhighlight';
             $icon = $highlightofficon;
             $name = $highlightoff;

@@ -152,8 +152,8 @@ final class format_ucl_test extends \advanced_testcase {
             'courseid' => $course->id,
             'name' => 'Stamptown',
             'summary_editor' => [
-                'text' => '<p>Welcome <img src="/draftfile.php/' . $usercontext->id . '/user/draft/' . $draftid
-                    . '/image.txt" alt="Image"></p>',
+                'text' => '<p>Welcome <img src="' . $CFG->wwwroot . '/draftfile.php/' . $usercontext->id . '/user/draft/'
+                    . $draftid . '/image.txt" alt="Image"></p>',
                 'format' => FORMAT_HTML,
                 'itemid' => $draftid,
             ],

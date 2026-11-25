@@ -596,6 +596,73 @@ final class format_ucl_test extends \advanced_testcase {
     }
 
     /**
+     * Moving a section changes the previous and next links shown by section navigation.
+     *
+     * @covers \format_ucl\output\courseformat\content\sectionnavigation::export_for_template
+     */
+    public function test_section_navigation_follows_moved_section(): void {
+        global $DB, $PAGE;
+
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course(
+            ['format' => 'ucl', 'numsections' => 4],
+            ['createsections' => true]
+        );
+        foreach ([1, 2, 3, 4] as $sectionnum) {
+            $DB->set_field(
+                'course_sections',
+                'name',
+                'Week ' . $sectionnum,
+                ['course' => $course->id, 'section' => $sectionnum]
+            );
+        }
+        $PAGE->set_context(\context_course::instance($course->id));
+
+        $modinfo = course_get_format($course)->get_modinfo();
+        \core_courseformat\formatactions::section($course)->move_after(
+            $modinfo->get_section_info(2),
+            $modinfo->get_section_info(3)
+        );
+
+        // Week 2 is now in position 3, between Week 3 and Week 4.
+        $navigation = new \format_ucl\output\courseformat\content\sectionnavigation(course_get_format($course->id), 3);
+        $data = $navigation->export_for_template($PAGE->get_renderer('core'));
+        $this->assertSame('Week 3', $data->previousname);
+        $this->assertSame('Week 4', $data->nextname);
+    }
+
+    /**
+     * Highlighting a section moves the course marker and unhighlighting clears it.
+     *
+     * @covers \format_ucl\courseformat\stateactions::section_highlight
+     * @covers \format_ucl\courseformat\stateactions::section_unhighlight
+     */
+    public function test_section_highlight_moves_and_clears_marker(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course(
+            ['format' => 'ucl', 'numsections' => 3],
+            ['createsections' => true]
+        );
+        $format = course_get_format($course);
+        $modinfo = $format->get_modinfo();
+        $actions = new \format_ucl\courseformat\stateactions();
+        $updates = new \core_courseformat\stateupdates($format);
+
+        $actions->section_highlight($updates, $course, [$modinfo->get_section_info(2)->id]);
+        $this->assertEquals(2, $DB->get_field('course', 'marker', ['id' => $course->id]));
+
+        $actions->section_highlight($updates, $course, [$modinfo->get_section_info(3)->id]);
+        $this->assertEquals(3, $DB->get_field('course', 'marker', ['id' => $course->id]));
+
+        $actions->section_unhighlight($updates, $course, [$modinfo->get_section_info(3)->id]);
+        $this->assertEquals(0, (int) $DB->get_field('course', 'marker', ['id' => $course->id]));
+    }
+
+    /**
      * Course contacts follow editing mode, visibility toggles, role filtering, ordering and mail display.
      *
      * @covers \format_ucl\output\widgets\contacts::get_course_contacts

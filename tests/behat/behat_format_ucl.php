@@ -81,25 +81,4 @@ class behat_format_ucl extends behat_base {
         $menu = $this->find('xpath', $xpath, $exception);
         $menu->click();
     }
-
-    /**
-     * Closes the right-hand block drawer if it is open, so it does not cover course section controls.
-     *
-     * @Given /^I close block drawer if open$/
-     */
-    public function i_close_block_drawer_if_open(): void {
-        if (!$this->running_javascript()) {
-            return;
-        }
-
-        $drawer = $this->getSession()->getPage()->find('css', '#theme_boost-drawers-blocks[data-state="show-drawer-right"]');
-        if (!$drawer) {
-            return;
-        }
-
-        $close = $drawer->find('css', '[data-action="closedrawer"]');
-        if ($close) {
-            $close->click();
-        }
-    }
 }

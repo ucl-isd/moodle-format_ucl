@@ -521,7 +521,7 @@ final class format_ucl_test extends \advanced_testcase {
      * @covers \format_ucl\output\widgets\toc::export_for_template
      */
     public function test_toc_warning_data_for_editors(): void {
-        global $DB, $PAGE;
+        global $DB, $PAGE, $USER;
 
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
@@ -560,14 +560,21 @@ final class format_ucl_test extends \advanced_testcase {
         }
 
         $this->setUser($teacher);
+        $PAGE->set_context(\context_course::instance($warningcourse->id));
         set_config('recommendedmaxsections', 2, 'format_ucl');
         set_config('linktoguidance', 'https://example.com/guidance', 'format_ucl');
         config::instance(true);
+        $USER->editing = false;
+        $noneditingdata = (new \format_ucl\output\widgets\toc(course_get_format($warningcourse)))
+            ->export_for_template($PAGE->get_renderer('core'));
+        $this->assertObjectNotHasProperty('showwarning', $noneditingdata);
+
+        $USER->editing = true;
         $warningdata = (new \format_ucl\output\widgets\toc(course_get_format($warningcourse)))
             ->export_for_template($PAGE->get_renderer('core'));
 
         $this->assertTrue($warningdata->showwarning);
-        $this->assertTrue($warningdata->showguidance);
+        $this->assertSame('https://example.com/guidance', $warningdata->linktoguidance);
         $this->assertTrue($warningdata->shownunnamedsections);
         $this->assertSame(3, $warningdata->namecount);
         $this->assertTrue($warningdata->showtoomanysections);
@@ -585,7 +592,8 @@ final class format_ucl_test extends \advanced_testcase {
         $this->assertFalse($cleanerdata->showtoomanysections ?? false);
         $this->assertFalse($cleanerdata->showtoofewmods ?? false);
         $this->assertTrue($cleanerdata->shownocourseimg);
-        $this->assertFalse($cleanerdata->showguidance);
+        $this->assertTrue($cleanerdata->showwarning);
+        $this->assertSame('https://example.com/guidance', $cleanerdata->linktoguidance);
     }
 
     /**

@@ -10,7 +10,7 @@ Feature: A prompt appears if a section has no description
       | Course 1 | C1        | ucl    | 0             | 5           | 1           |##yesterday## |
     When I log in as "admin"
     And I am on "Course 1" course homepage with editing mode on
-    And I click on "Section 2" "link" in the "#toc" "css_element"
+    And I am on the "Course 1 > Section 2" "course > section" page
     Then TinyMCE should be preloaded
     And "Add section description" "link" should exist
     And ".summarytext" "css_element" should not exist

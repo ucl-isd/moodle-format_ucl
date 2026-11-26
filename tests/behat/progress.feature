@@ -43,7 +43,7 @@ Feature: TOC progress is shown on load and updates after manual completion
 
   Scenario: TOC progress updates after manual completion
     Given I am on the "PROG1" "Course" page logged in as "student1"
-    And I click on "Section 2" "link" in the "#toc" "css_element"
+    And I am on the "Course 1 > Section 2" "course > section" page
     And "#toc [data-section='2'] .progress-indicator[data-id] .progress-ring" "css_element" should exist
     And the "data-behat-percentage" attribute of "#toc [data-section='2'] .progress-indicator[data-id] .progress-ring" "css_element" should contain "0"
     When I toggle the manual completion state of "Activity sample 2"

@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\ExpectationException;
+use Behat\Gherkin\Node\TableNode;
 
 require_once(__DIR__ . '/../../../../../lib/behat/behat_base.php');
 require_once(__DIR__ . '/../../../../tests/behat/behat_course.php');
@@ -72,6 +73,41 @@ class behat_format_ucl extends behat_base {
             'filename' => 'stamptown.jpg',
         ], __DIR__ . '/../fixtures/stamptown.jpg');
         cache::make('core', 'course_image')->delete($course->id);
+    }
+
+    /**
+     * Create a custom contact for a course.
+     *
+     * @Given /^the course "([^"]*)" has the custom contact:$/
+     * @param string $shortname Course short name
+     * @param TableNode $data Contact properties
+     */
+    public function the_course_has_the_custom_contact(string $shortname, TableNode $data): void {
+        global $DB;
+
+        $courseid = $DB->get_field('course', 'id', ['shortname' => $shortname], MUST_EXIST);
+        $properties = $data->getRowsHash();
+        $properties['courseid'] = $courseid;
+        (new \format_ucl\local\data\custom_contact(0, (object)$properties))->create();
+    }
+
+    /**
+     * Set the summary of the initial course section.
+     *
+     * @Given /^the course "([^"]*)" has the initial section summary "([^"]*)"$/
+     * @param string $shortname Course short name
+     * @param string $summary Section summary
+     */
+    public function the_course_has_the_initial_section_summary(string $shortname, string $summary): void {
+        global $CFG, $DB;
+
+        require_once($CFG->dirroot . '/course/lib.php');
+        $course = $DB->get_record('course', ['shortname' => $shortname], '*', MUST_EXIST);
+        $section = course_get_format($course)->get_modinfo()->get_section_info(0, MUST_EXIST);
+        course_update_section($course, $section, (object)[
+            'summary' => $summary,
+            'summaryformat' => FORMAT_HTML,
+        ]);
     }
 
     /**

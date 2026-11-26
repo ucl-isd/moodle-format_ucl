@@ -25,7 +25,7 @@ Feature: Edit label content inline
   Scenario: Save and cancel inline label edits
     When I log in as "admin"
     And I am on "Course 1" course homepage with editing mode on
-    And I click on "Section 1" "link" in the "#toc" "css_element"
+    And I am on the "Course 1 > Section 1" "course > section" page
     Then "Original label content" "text" should exist in the ".activity-altcontent" "css_element"
     And "Edit label content" "link" should exist
     When I click on "Edit label content" "link"

@@ -18,15 +18,11 @@ Feature: Custom contacts are backed up and restored
       | enableasyncbackup | 0 |
     And the following config values are set as admin:
       | displaycontacts   | 1 | format_ucl |
-    And I log in as "admin"
-    And I am on "Course 1" course homepage with editing mode on
-    And I click on "Add custom contact" "link"
-    And I set the following fields to these values:
-      | Role        | Ring Master           |
-      | Name        | Jack Tucker           |
-      | Email       | zzucker@example.com |
-      | Description | Clown king            |
-    And I press "Save"
+    And the course "C1" has the custom contact:
+      | role        | Ring Master         |
+      | name        | Jack Tucker         |
+      | email       | zzucker@example.com |
+      | description | Clown king          |
 
   Scenario: Backup and restore a course containing custom contacts
     When I am on the "Course 1" course page logged in as admin

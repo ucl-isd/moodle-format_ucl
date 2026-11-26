@@ -17,7 +17,7 @@ Feature: Moving a section updates section navigation links
   Scenario: Move section action updates section navigation
     Given I log in as "admin"
     And I am on "Course 1" course homepage with editing mode on
-    When I click on "Section 2" "link" in the "#toc" "css_element"
+    When I am on the "Course 1 > Section 2" "course > section" page
     Then I should see "Section 1" in the ".behat-previous-section" "css_element"
     And I should see "Section 3" in the ".behat-next-section" "css_element"
     And I open ucl section "Section 2" edit menu

@@ -12,11 +12,15 @@ Feature: Changes made using section controls are reflected in the table of conte
       | coursedisplay | 0        |
       | numsections   | 5        |
       | initsections  | 1        |
+    And the following "user preferences" exist:
+      | user  | preference               | value |
+      | admin | behat_keep_drawer_closed | 1     |
+      | admin | drawer-open-block        | 0     |
 
   Scenario: Section controls appear in expected order and hide updates the table of contents
     Given I log in as "admin"
     And I am on "Course 1" course homepage with editing mode on
-    And I click on "Section 2" "link" in the "#toc" "css_element"
+    And I am on the "Course 1 > Section 2" "course > section" page
     When I open ucl section "Section 2" edit menu
     Then "Move" "link" should appear after "Edit section" "link"
     And "Hide" "link" should appear after "Move" "link"
@@ -32,16 +36,15 @@ Feature: Changes made using section controls are reflected in the table of conte
   Scenario: Duplicate section action updates table of contents
     Given I log in as "admin"
     And I am on "Course 1" course homepage with editing mode on
-    When I click on "Section 2" "link" in the "#toc" "css_element"
-    And I set the field "Edit section name" to "Stamptown"
-    And I open ucl section "Stamptown" edit menu
+    When I am on the "Course 1 > Section 2" "course > section" page
+    And I open ucl section "Section 2" edit menu
     And I click on "Duplicate" "link" in the ".section-actions" "css_element"
-    Then "Stamptown (copy)" "link" should exist in the "#toc" "css_element"
+    Then "Section 2 (copy)" "link" should exist in the "#toc" "css_element"
 
   Scenario: Delete section action redirects to course page
     Given I log in as "admin"
     And I am on "Course 1" course homepage with editing mode on
-    When I click on "Section 2" "link" in the "#toc" "css_element"
+    When I am on the "Course 1 > Section 2" "course > section" page
     And I open ucl section "Section 2" edit menu
     And I click on "Delete" "link" in the ".section-actions" "css_element"
     And I click on "Delete" "button" in the "Delete section?" "dialogue"

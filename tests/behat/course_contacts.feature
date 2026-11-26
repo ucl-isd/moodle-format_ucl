@@ -49,11 +49,13 @@ Feature: Users can view and edit course contacts
     And "Teacher 4" "link" should not exist
 
   Scenario: Course contacts appear in initial section when editing is off and contact is checked
-    Given I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
-    And I click on "Show Teacher 1 to students" "checkbox"
-    And I click on "Show Teacher 5 to students" "checkbox"
-    And I log out
+    Given the following "groups" exist:
+      | course | idnumber                   | name            | visibility |
+      | C1     | format_ucl_course_contacts | Course contacts | 3          |
+    And the following "group members" exist:
+      | group                      | user     |
+      | format_ucl_course_contacts | teacher1 |
+      | format_ucl_course_contacts | teacher5 |
     When I am on the "C1" course page logged in as "student1"
     Then "Teacher 1" "link" should exist in the "#ucl-course-content" "css_element"
     And "teacher1@example.com" "link" should exist in the "#ucl-course-content" "css_element"
@@ -69,6 +71,14 @@ Feature: Users can view and edit course contacts
     When I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     Then "Show Teacher 1 to students" "checkbox" should exist
+    When I click on "Show Teacher 1 to students" "checkbox"
+    And I am on the "C1" course page logged in as "student1"
+    Then "Teacher 1" "link" should exist in the "#ucl-course-content" "css_element"
+    When I am on the "C1" course page logged in as "teacher1"
+    And I turn editing mode on
+    And I click on "Show Teacher 1 to students" "checkbox"
+    And I am on the "C1" course page logged in as "student1"
+    Then "Teacher 1" "link" should not exist in the "#ucl-course-content" "css_element"
 
   Scenario: User with 'moodle/user:editownprofile' can edit own profile description
     When I log in as "teacher1"
@@ -113,15 +123,13 @@ Feature: Users can view and edit course contacts
     And I should see "Clown king"
 
   Scenario: User can edit custom contacts
+    Given the course "C1" has the custom contact:
+      | role        | Ring Master         |
+      | name        | Jack Tucker         |
+      | email       | zzucker@example.com |
+      | description | Clown king          |
     When I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
-    And I click on "Add custom contact" "link"
-    And I set the following fields to these values:
-      | Role        | Ring Master         |
-      | Name        | Jack Tucker         |
-      | Email       | zzucker@example.com |
-      | Description | Clown king          |
-    And I press "Save"
     And I click on "Edit custom contact Jack Tucker" "link"
     And I set the following fields to these values:
       | Role  | Director             |
@@ -138,15 +146,13 @@ Feature: Users can view and edit course contacts
     And I should see "Clown king"
 
   Scenario: User can delete custom contacts
+    Given the course "C1" has the custom contact:
+      | role        | Ring Master         |
+      | name        | Jack Tucker         |
+      | email       | zzucker@example.com |
+      | description | Clown king          |
     When I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
-    And I click on "Add custom contact" "link"
-    And I set the following fields to these values:
-      | Role        | Ring Master         |
-      | Name        | Jack Tucker         |
-      | Email       | zzucker@example.com |
-      | Description | Clown king          |
-    And I press "Save"
     And I click on "Edit custom contact Jack Tucker" "link"
     And I press "Delete"
     And I click on "Delete" "button" in the "Delete Jack Tucker?" "dialogue"

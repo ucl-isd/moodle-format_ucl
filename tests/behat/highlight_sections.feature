@@ -29,17 +29,17 @@ Feature: UCL sections can be highlighted
 
   @javascript
   Scenario: Highlight, move, and clear the highlighted section
-    Given I click on "Section 2" "link" in the "#toc" "css_element"
+    Given I am on the "Course 1 > Section 2" "course > section" page
     And I open ucl section "Section 2" edit menu
     When I click on "Highlight" "link" in the ".section-actions" "css_element"
     Then I should see "Highlighted" in the "[data-sectionname='Section 2']" "css_element"
-    Given I click on "Section 3" "link" in the "#toc" "css_element"
+    Given I am on the "Course 1 > Section 3" "course > section" page
     And I open ucl section "Section 3" edit menu
     And I click on "Highlight" "link" in the ".section-actions" "css_element"
     And I should see "Highlighted" in the "[data-sectionname='Section 3']" "css_element"
-    And I click on "Section 2" "link" in the "#toc" "css_element"
+    And I am on the "Course 1 > Section 2" "course > section" page
     And I should not see "Highlighted" in the "[data-sectionname='Section 2']" "css_element"
-    And I click on "Section 3" "link" in the "#toc" "css_element"
+    And I am on the "Course 1 > Section 3" "course > section" page
     And I open ucl section "Section 3" edit menu
     And I click on "Unhighlight" "link" in the ".section-actions" "css_element"
     And I should not see "Highlighted" in the "[data-sectionname='Section 3']" "css_element"

@@ -76,15 +76,21 @@ class behat_format_ucl extends behat_base {
         // Wait for section to be available, before clicking on the menu.
         $this->execute('behat_course::i_wait_until_section_is_available', [$section]);
 
-        $xpath = "//*[@data-sectionname='" . $section . "']" .
-            "/descendant::div[contains(@class, 'section-actions')]/descendant::a[@data-bs-toggle='dropdown']";
-        $exception = new ExpectationException('Section "' . $section . '" was not found', $this->getSession());
-        $menu = $this->find('xpath', $xpath, $exception);
-        // Lift the section actions above the blocks drawer, which can overlap the menu toggle at wide widths.
-        $this->getSession()->executeScript(
-            "document.querySelectorAll('.section-actions').forEach(function(el) {"
-            . " el.style.position = 'relative'; el.style.zIndex = '9999'; });"
-        );
-        $menu->click();
+        $toggle = "/descendant::div[contains(@class, 'section-actions')]/descendant::a[@data-bs-toggle='dropdown']";
+        $page = $this->getSession()->getPage();
+
+        // On the course page each section has its own menu, so match by section name.
+        $menu = $page->find('xpath', "//*[@data-sectionname='" . $section . "']" . $toggle);
+        if ($menu) {
+            $menu->click();
+            return;
+        }
+
+        // The single-section page only has one menu, which belongs to the section being shown. Only accept it when unambiguous.
+        $menus = $page->findAll('xpath', "//div[contains(@class, 'section-actions')]/descendant::a[@data-bs-toggle='dropdown']");
+        if (count($menus) !== 1) {
+            throw new ExpectationException('Section "' . $section . '" menu was not found', $this->getSession());
+        }
+        reset($menus)->click();
     }
 }

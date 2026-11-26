@@ -663,6 +663,43 @@ final class format_ucl_test extends \advanced_testcase {
     }
 
     /**
+     * Hiding, duplicating and deleting a section update the course structure.
+     *
+     * @covers \format_ucl\courseformat\stateactions::section_hide
+     * @covers \format_ucl\courseformat\stateactions::section_duplicate
+     * @covers \format_ucl\courseformat\stateactions::section_delete
+     */
+    public function test_section_hide_duplicate_and_delete(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course(
+            ['format' => 'ucl', 'numsections' => 3],
+            ['createsections' => true]
+        );
+        $DB->set_field('course_sections', 'name', 'Stamptown', ['course' => $course->id, 'section' => 2]);
+        $actions = new \format_ucl\courseformat\stateactions();
+
+        $modinfo = get_fast_modinfo($course);
+        $actions->section_hide(new \core_courseformat\stateupdates(course_get_format($course)), $course,
+            [$modinfo->get_section_info(2)->id]);
+        $this->assertEquals(0, $DB->get_field('course_sections', 'visible', ['course' => $course->id, 'section' => 2]));
+
+        $modinfo = get_fast_modinfo($course);
+        $actions->section_duplicate(new \core_courseformat\stateupdates(course_get_format($course)), $course,
+            [$modinfo->get_section_info(2)->id]);
+        $this->assertEquals(5, $DB->count_records('course_sections', ['course' => $course->id]));
+        $this->assertTrue($DB->record_exists_select('course_sections',
+            "course = :course AND name LIKE 'Stamptown%copy%'", ['course' => $course->id]));
+
+        $modinfo = get_fast_modinfo($course);
+        $actions->section_delete(new \core_courseformat\stateupdates(course_get_format($course)), $course,
+            [$modinfo->get_section_info(2)->id]);
+        $this->assertFalse($DB->record_exists('course_sections', ['course' => $course->id, 'name' => 'Stamptown']));
+    }
+
+    /**
      * Course contacts follow editing mode, visibility toggles, role filtering, ordering and mail display.
      *
      * @covers \format_ucl\output\widgets\contacts::get_course_contacts

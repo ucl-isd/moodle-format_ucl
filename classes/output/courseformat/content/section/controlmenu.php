@@ -189,26 +189,4 @@ class controlmenu extends controlmenu_base {
             attributes: $attributes,
         );
     }
-
-
-
-    /**
-     * Return the course url.
-     *
-     * @return moodle_url
-     */
-    protected function get_course_url(): moodle_url {
-        $format = $this->format;
-        $section = $this->section;
-        $course = $format->get_course();
-        $sectionreturn = $format->get_sectionnum();
-
-        if ($sectionreturn) {
-            $url = course_get_url($course, $section->section);
-        } else {
-            $url = course_get_url($course);
-        }
-        $url->param('sesskey', sesskey());
-        return $url;
-    }
 }

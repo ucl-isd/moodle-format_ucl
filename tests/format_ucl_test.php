@@ -18,6 +18,9 @@ namespace format_ucl;
 
 use core_external\external_api;
 use format_ucl\local\data\custom_contact;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -32,13 +35,16 @@ require_once($CFG->dirroot . '/course/lib.php');
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author      Stuart Lamour <s.lamour@ucl.ac.uk>
  * @author      Amanda Doughty <m.doughty@ucl.ac.uk>
- * @covers     \format_ucl
  */
+#[CoversClass(\format_ucl::class)]
+#[CoversMethod(\format_ucl\form\label_content_form::class, 'process_dynamic_submission')]
+#[CoversMethod(\format_ucl\form\addsection_form::class, 'process_dynamic_submission')]
+#[CoversMethod(\format_ucl\output\courseformat\content::class, 'get_search_activities')]
+#[CoversMethod(\format_ucl\output\widgets\toc::class, 'format_ucl_section_progress')]
+#[CoversMethod(\format_ucl\output\widgets\toc::class, 'export_for_template')]
 final class format_ucl_test extends \advanced_testcase {
     /**
      * Inline label edits preserve embedded files and AI settings and emit the core update event.
-     *
-     * @covers \format_ucl\form\label_content_form::process_dynamic_submission
      */
     public function test_inline_label_update_preserves_files_and_settings(): void {
         global $CFG, $DB, $PAGE;
@@ -123,8 +129,6 @@ final class format_ucl_test extends \advanced_testcase {
 
     /**
      * Summary editor files uploaded in the add section modal are moved to the new section.
-     *
-     * @covers \format_ucl\form\addsection_form::process_dynamic_submission
      */
     public function test_add_section_form_saves_summary_and_files(): void {
         global $CFG, $DB, $USER;
@@ -388,8 +392,6 @@ final class format_ucl_test extends \advanced_testcase {
 
     /**
      * Test for get_view_url().
-     *
-     * @covers ::get_view_url
      */
     public function test_get_view_url(): void {
         global $CFG;
@@ -425,8 +427,6 @@ final class format_ucl_test extends \advanced_testcase {
 
     /**
      * Search data spans the course and excludes labels and activities unavailable to a student.
-     *
-     * @covers \format_ucl\output\courseformat\content::get_search_activities
      */
     public function test_search_activities(): void {
         $this->resetAfterTest();
@@ -440,7 +440,8 @@ final class format_ucl_test extends \advanced_testcase {
         $generator->create_module('label', ['course' => $course->id, 'section' => 1, 'name' => 'Not searchable']);
         $generator->create_module('page', ['course' => $course->id, 'section' => 1, 'visible' => 0]);
         $generator->create_module('page', ['course' => $course->id, 'section' => 3, 'name' => 'Hidden section activity']);
-        set_section_visible($course->id, 3, 0);
+        $section = course_get_format($course)->get_modinfo()->get_section_info(3);
+        \core_courseformat\formatactions::section($course->id)->set_visibility($section, false);
         $generator->create_module('page', ['course' => $course->id, 'section' => 2, 'availability' => json_encode([
             'op' => '&',
             'c' => [['type' => 'date', 'd' => '>=', 't' => time() + DAYSECS]],
@@ -469,15 +470,13 @@ final class format_ucl_test extends \advanced_testcase {
 
     /**
      * Progress is omitted when course completion is disabled or the section has no completable activities.
-     *
-     * @covers \format_ucl\output\widgets\toc::format_ucl_section_progress
      */
     public function test_section_progress_is_omitted_when_unavailable(): void {
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
         $student = $generator->create_user();
         $disabledcourse = $generator->create_course(
-            ['format' => 'ucl', 'numsections' => 1, 'enablecompletion' => 0],
+            ['format' => 'ucl', 'numsections' => 1, 'enablecompletion' => 1],
             ['createsections' => true]
         );
         $nocmcompletioncourse = $generator->create_course(
@@ -492,6 +491,8 @@ final class format_ucl_test extends \advanced_testcase {
             'completion' => 1,
             'name' => 'Completion disabled',
         ]);
+        $disabledcourse->enablecompletion = 0;
+        update_course($disabledcourse);
         $generator->create_module('page', [
             'course' => $nocmcompletioncourse->id,
             'section' => 1,
@@ -517,8 +518,6 @@ final class format_ucl_test extends \advanced_testcase {
 
     /**
      * TOC warning data follows section counts, names, activity counts, configuration, and course image state.
-     *
-     * @covers \format_ucl\output\widgets\toc::export_for_template
      */
     public function test_toc_warning_data_for_editors(): void {
         global $DB, $PAGE, $USER;
@@ -598,8 +597,6 @@ final class format_ucl_test extends \advanced_testcase {
 
     /**
      * Test get_required_jsfiles().
-     *
-     * @covers ::get_required_jsfiles
      */
     public function test_get_required_jsfiles(): void {
         $this->resetAfterTest();
@@ -614,10 +611,9 @@ final class format_ucl_test extends \advanced_testcase {
     /**
      * Test for the delete format data behaviour.
      *
-     * @covers ::delete_format_data
-     * @dataProvider delete_format_data_provider
      * @param bool $usehook if it should use course_delete to trigger $format->delete_format_data as a hook
      */
+    #[DataProvider('delete_format_data_provider')]
     public function test_delete_format_data(bool $usehook): void {
         global $DB;
 

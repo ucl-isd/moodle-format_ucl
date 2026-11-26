@@ -53,6 +53,28 @@ class behat_format_ucl extends behat_base {
     }
 
     /**
+     * Add the fixture image to a course's overview files.
+     *
+     * @Given /^the course "([^"]*)" has an image$/
+     * @param string $shortname Course short name
+     */
+    public function the_course_has_an_image(string $shortname): void {
+        global $DB;
+
+        $course = $DB->get_record('course', ['shortname' => $shortname], '*', MUST_EXIST);
+        $context = context_course::instance($course->id);
+        get_file_storage()->create_file_from_pathname([
+            'contextid' => $context->id,
+            'component' => 'course',
+            'filearea' => 'overviewfiles',
+            'itemid' => 0,
+            'filepath' => '/',
+            'filename' => 'stamptown.jpg',
+        ], __DIR__ . '/../fixtures/stamptown.jpg');
+        cache::make('core', 'course_image')->delete($course->id);
+    }
+
+    /**
      * Return the list of partial named selectors
      *
      * @return behat_component_named_selector[]
@@ -76,21 +98,9 @@ class behat_format_ucl extends behat_base {
         // Wait for section to be available, before clicking on the menu.
         $this->execute('behat_course::i_wait_until_section_is_available', [$section]);
 
-        $toggle = "/descendant::div[contains(@class, 'section-actions')]/descendant::a[@data-bs-toggle='dropdown']";
-        $page = $this->getSession()->getPage();
-
-        // On the course page each section has its own menu, so match by section name.
-        $menu = $page->find('xpath', "//*[@data-sectionname='" . $section . "']" . $toggle);
-        if ($menu) {
-            $menu->click();
-            return;
-        }
-
-        // The single-section page only has one menu, which belongs to the section being shown. Only accept it when unambiguous.
-        $menus = $page->findAll('xpath', "//div[contains(@class, 'section-actions')]/descendant::a[@data-bs-toggle='dropdown']");
-        if (count($menus) !== 1) {
-            throw new ExpectationException('Section "' . $section . '" menu was not found', $this->getSession());
-        }
-        reset($menus)->click();
+        $xpath = "//div[contains(@class, 'section-actions')]/descendant::a[@data-bs-toggle='dropdown']";
+        $exception = new ExpectationException('Section "' . $section . '" was not found', $this->getSession());
+        $menu = $this->find('xpath', $xpath, $exception);
+        $menu->click();
     }
 }

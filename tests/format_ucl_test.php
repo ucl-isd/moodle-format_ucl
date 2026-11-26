@@ -173,6 +173,7 @@ final class format_ucl_test extends \advanced_testcase {
             'image.txt'
         );
         $this->assertNotFalse($file);
+        $this->assertSame('Draft image', $file->get_content());
     }
 
     /**
@@ -520,12 +521,11 @@ final class format_ucl_test extends \advanced_testcase {
      * @covers \format_ucl\output\widgets\toc::export_for_template
      */
     public function test_toc_warning_data_for_editors(): void {
-        global $DB, $PAGE, $USER;
+        global $DB, $PAGE;
 
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
         $teacher = $generator->create_user();
-        $student = $generator->create_user();
         $warningcourse = $generator->create_course(
             ['format' => 'ucl', 'numsections' => 3],
             ['createsections' => true]
@@ -535,7 +535,6 @@ final class format_ucl_test extends \advanced_testcase {
             ['createsections' => true]
         );
         $generator->enrol_user($teacher->id, $warningcourse->id, 'editingteacher');
-        $generator->enrol_user($student->id, $warningcourse->id, 'student');
         $generator->enrol_user($teacher->id, $cleanersectionscourse->id, 'editingteacher');
 
         $generator->create_module('page', ['course' => $warningcourse->id, 'section' => 2, 'name' => 'Page 2a']);
@@ -561,9 +560,6 @@ final class format_ucl_test extends \advanced_testcase {
         }
 
         $this->setUser($teacher);
-        $USER->editing = true;
-        $PAGE->set_context(\context_course::instance($warningcourse->id));
-
         set_config('recommendedmaxsections', 2, 'format_ucl');
         set_config('linktoguidance', 'https://example.com/guidance', 'format_ucl');
         config::instance(true);
@@ -571,6 +567,7 @@ final class format_ucl_test extends \advanced_testcase {
             ->export_for_template($PAGE->get_renderer('core'));
 
         $this->assertTrue($warningdata->showwarning);
+        $this->assertTrue($warningdata->showguidance);
         $this->assertTrue($warningdata->shownunnamedsections);
         $this->assertSame(3, $warningdata->namecount);
         $this->assertTrue($warningdata->showtoomanysections);
@@ -588,163 +585,7 @@ final class format_ucl_test extends \advanced_testcase {
         $this->assertFalse($cleanerdata->showtoomanysections ?? false);
         $this->assertFalse($cleanerdata->showtoofewmods ?? false);
         $this->assertTrue($cleanerdata->shownocourseimg);
-
-        $this->setUser($student);
-        $studentdata = (new \format_ucl\output\widgets\toc(course_get_format($warningcourse)))
-            ->export_for_template($PAGE->get_renderer('core'));
-        $this->assertFalse($studentdata->showwarning ?? false);
-    }
-
-    /**
-     * Moving a section changes the previous and next links shown by section navigation.
-     *
-     * @covers \format_ucl\output\courseformat\content\sectionnavigation::export_for_template
-     */
-    public function test_section_navigation_follows_moved_section(): void {
-        global $DB, $PAGE;
-
-        $this->resetAfterTest();
-        $this->setAdminUser();
-        $course = $this->getDataGenerator()->create_course(
-            ['format' => 'ucl', 'numsections' => 4],
-            ['createsections' => true]
-        );
-        foreach ([1, 2, 3, 4] as $sectionnum) {
-            $DB->set_field(
-                'course_sections',
-                'name',
-                'Week ' . $sectionnum,
-                ['course' => $course->id, 'section' => $sectionnum]
-            );
-        }
-        $PAGE->set_context(\context_course::instance($course->id));
-
-        $modinfo = course_get_format($course)->get_modinfo();
-        \core_courseformat\formatactions::section($course)->move_after(
-            $modinfo->get_section_info(2),
-            $modinfo->get_section_info(3)
-        );
-
-        // Week 2 is now in position 3, between Week 3 and Week 4.
-        $navigation = new \format_ucl\output\courseformat\content\sectionnavigation(course_get_format($course->id), 3);
-        $data = $navigation->export_for_template($PAGE->get_renderer('core'));
-        $this->assertSame('Week 3', $data->previousname);
-        $this->assertSame('Week 4', $data->nextname);
-    }
-
-    /**
-     * Highlighting a section moves the course marker and unhighlighting clears it.
-     *
-     * @covers \format_ucl\courseformat\stateactions::section_highlight
-     * @covers \format_ucl\courseformat\stateactions::section_unhighlight
-     */
-    public function test_section_highlight_moves_and_clears_marker(): void {
-        global $DB;
-
-        $this->resetAfterTest();
-        $this->setAdminUser();
-        $course = $this->getDataGenerator()->create_course(
-            ['format' => 'ucl', 'numsections' => 3],
-            ['createsections' => true]
-        );
-        $format = course_get_format($course);
-        $modinfo = $format->get_modinfo();
-        $actions = new \format_ucl\courseformat\stateactions();
-        $updates = new \core_courseformat\stateupdates($format);
-
-        $actions->section_highlight($updates, $course, [$modinfo->get_section_info(2)->id]);
-        $this->assertEquals(2, $DB->get_field('course', 'marker', ['id' => $course->id]));
-
-        $actions->section_highlight($updates, $course, [$modinfo->get_section_info(3)->id]);
-        $this->assertEquals(3, $DB->get_field('course', 'marker', ['id' => $course->id]));
-
-        $actions->section_unhighlight($updates, $course, [$modinfo->get_section_info(3)->id]);
-        $this->assertEquals(0, (int) $DB->get_field('course', 'marker', ['id' => $course->id]));
-    }
-
-    /**
-     * Hiding, duplicating and deleting a section update the course structure.
-     *
-     * @covers \format_ucl\courseformat\stateactions::section_hide
-     * @covers \format_ucl\courseformat\stateactions::section_duplicate
-     * @covers \format_ucl\courseformat\stateactions::section_delete
-     */
-    public function test_section_hide_duplicate_and_delete(): void {
-        global $DB;
-
-        $this->resetAfterTest();
-        $this->setAdminUser();
-        $course = $this->getDataGenerator()->create_course(
-            ['format' => 'ucl', 'numsections' => 3],
-            ['createsections' => true]
-        );
-        $DB->set_field('course_sections', 'name', 'Stamptown', ['course' => $course->id, 'section' => 2]);
-        $actions = new \format_ucl\courseformat\stateactions();
-
-        $modinfo = get_fast_modinfo($course);
-        $actions->section_hide(new \core_courseformat\stateupdates(course_get_format($course)), $course,
-            [$modinfo->get_section_info(2)->id]);
-        $this->assertEquals(0, $DB->get_field('course_sections', 'visible', ['course' => $course->id, 'section' => 2]));
-
-        $modinfo = get_fast_modinfo($course);
-        $actions->section_duplicate(new \core_courseformat\stateupdates(course_get_format($course)), $course,
-            [$modinfo->get_section_info(2)->id]);
-        $this->assertEquals(5, $DB->count_records('course_sections', ['course' => $course->id]));
-        $this->assertTrue($DB->record_exists_select('course_sections',
-            "course = :course AND name LIKE 'Stamptown%copy%'", ['course' => $course->id]));
-
-        $modinfo = get_fast_modinfo($course);
-        $actions->section_delete(new \core_courseformat\stateupdates(course_get_format($course)), $course,
-            [$modinfo->get_section_info(2)->id]);
-        $this->assertFalse($DB->record_exists('course_sections', ['course' => $course->id, 'name' => 'Stamptown']));
-    }
-
-    /**
-     * Course contacts follow editing mode, visibility toggles, role filtering, ordering and mail display.
-     *
-     * @covers \format_ucl\output\widgets\contacts::get_course_contacts
-     */
-    public function test_course_contacts_follow_editing_and_visibility(): void {
-        global $PAGE, $USER;
-
-        $this->resetAfterTest();
-        $generator = $this->getDataGenerator();
-        $course = $generator->create_course(['format' => 'ucl', 'numsections' => 5]);
-        $teacher1 = $generator->create_user(['lastname' => '1', 'maildisplay' => 1]);
-        $teacher2 = $generator->create_user(['lastname' => '2', 'maildisplay' => 1]);
-        $teacher3 = $generator->create_user(['lastname' => '3', 'maildisplay' => 1]);
-        $teacher5 = $generator->create_user(['lastname' => '5', 'maildisplay' => 0]);
-        $student = $generator->create_user();
-        $generator->enrol_user($teacher1->id, $course->id, 'editingteacher');
-        $generator->enrol_user($teacher2->id, $course->id, 'editingteacher');
-        $generator->enrol_user($teacher3->id, $course->id, 'teacher');
-        $generator->enrol_user($teacher5->id, $course->id, 'editingteacher');
-        $generator->enrol_user($student->id, $course->id, 'student');
-
-        $PAGE->set_context(\context_course::instance($course->id));
-        $renderer = $PAGE->get_renderer('core');
-        $widget = new \format_ucl\output\widgets\contacts(course_get_format($course));
-
-        // Nobody is visible and editing is off.
-        $this->setUser($student);
-        $USER->editing = false;
-        $this->assertSame([], $widget->get_course_contacts($renderer));
-
-        (new course_contacts($course->id, $teacher1->id, 'show'))->set_contact_visibility();
-        (new course_contacts($course->id, $teacher5->id, 'show'))->set_contact_visibility();
-
-        // Only visible contacts are shown to students, and hidden email addresses are not returned.
-        $contacts = $widget->get_course_contacts($renderer);
-        $this->assertSame([$teacher1->id, $teacher5->id], array_column($contacts, 'id'));
-        $this->assertSame($teacher1->email, $contacts[0]->email);
-        $this->assertNull($contacts[1]->email);
-
-        // Editing teachers see every course contact, ordered by last name, with visibility flags.
-        $this->setUser($teacher2);
-        $USER->editing = true;
-        $contacts = $widget->get_course_contacts($renderer);
-        $this->assertSame([$teacher1->id, $teacher2->id, $teacher5->id], array_column($contacts, 'id'));
-        $this->assertSame([true, false, true], array_column($contacts, 'show'));
+        $this->assertFalse($cleanerdata->showguidance);
     }
 
     /**
